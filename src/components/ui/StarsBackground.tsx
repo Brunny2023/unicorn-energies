@@ -8,6 +8,7 @@ type Star = {
   y: number;
   opacity: number;
   animationDelay: string;
+  animationDuration: string;
 };
 
 const StarsBackground = () => {
@@ -15,17 +16,18 @@ const StarsBackground = () => {
 
   useEffect(() => {
     const generateStars = () => {
-      const starCount = Math.floor(window.innerWidth / 8);
+      const starCount = Math.floor(window.innerWidth / 6); // More stars
       const newStars: Star[] = [];
 
       for (let i = 0; i < starCount; i++) {
         newStars.push({
           id: i,
-          size: Math.random() * 2 + 1,
+          size: Math.random() * 3 + 1, // Larger stars
           x: Math.random() * 100,
           y: Math.random() * 100,
-          opacity: Math.random() * 0.5 + 0.3,
-          animationDelay: `${Math.random() * 5}s`,
+          opacity: Math.random() * 0.7 + 0.3, // Higher opacity
+          animationDelay: `${Math.random() * 3}s`, // Shorter delay
+          animationDuration: `${Math.random() * 3 + 2}s`, // Faster animation
         });
       }
 
@@ -45,6 +47,13 @@ const StarsBackground = () => {
       {/* Animated gradient overlay */}
       <div className="absolute inset-0 bg-gradient-radial from-unicorn-purple/20 via-transparent to-transparent animate-pulse-glow"></div>
       
+      {/* Shooting stars */}
+      <div className="absolute w-full h-full overflow-hidden">
+        <span className="shooting-star"></span>
+        <span className="shooting-star" style={{ animationDelay: '1.5s' }}></span>
+        <span className="shooting-star" style={{ animationDelay: '3s' }}></span>
+      </div>
+      
       {/* Stars */}
       {stars.map((star) => (
         <div
@@ -57,6 +66,7 @@ const StarsBackground = () => {
             top: `${star.y}%`,
             opacity: star.opacity,
             animationDelay: star.animationDelay,
+            animationDuration: star.animationDuration,
           }}
         />
       ))}

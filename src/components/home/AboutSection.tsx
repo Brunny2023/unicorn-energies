@@ -66,8 +66,8 @@ const AboutSection = () => {
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-unicorn-gold to-unicorn-purple rounded-lg blur-sm"></div>
                 
                 <img 
-                  src="https://images.unsplash.com/photo-1493397212122-2b85dda8106b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80" 
-                  alt="Oil rig and energy facility" 
+                  src="https://images.unsplash.com/photo-1603767139607-5392898255c7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80" 
+                  alt="Oil pouring from above" 
                   className="w-full h-auto object-cover relative rounded-lg"
                 />
               </div>
@@ -94,15 +94,15 @@ const AboutSection = () => {
               <div className="relative w-32 h-32 mx-auto mb-4">
                 <div className="absolute inset-0 rounded-full bg-unicorn-gold/20 animate-pulse-glow"></div>
                 <img 
-                  src="/lovable-uploads/a10abe11-3377-45bf-a732-8d2972836f41.png"
+                  src="/lovable-uploads/a10abe11-3377-45bf-a732-8d2972836f41.png" 
                   alt="CEO" 
                   className="w-full h-full object-cover rounded-full border-2 border-unicorn-gold relative"
                 />
               </div>
-              <h3 className="text-xl font-bold text-unicorn-gold text-center">Michael Anderson</h3>
+              <h3 className="text-xl font-bold text-unicorn-gold text-center">Callie Mcdowell</h3>
               <p className="text-white text-center mb-2">CEO & Founder</p>
               <p className="text-gray-300 text-center text-sm">
-                With over 15 years of experience in energy markets, Michael leads our strategic vision and investment strategies.
+                With over 15 years of experience in energy markets, Callie leads our strategic vision and investment strategies.
               </p>
             </div>
             
@@ -111,12 +111,12 @@ const AboutSection = () => {
               <div className="relative w-32 h-32 mx-auto mb-4">
                 <div className="absolute inset-0 rounded-full bg-unicorn-gold/20 animate-pulse-glow" style={{ animationDelay: "0.3s" }}></div>
                 <img 
-                  src="/lovable-uploads/b8410457-4c89-43b3-89f0-3c247a2aa968.png"
+                  src="/lovable-uploads/b8410457-4c89-43b3-89f0-3c247a2aa968.png" 
                   alt="CTO" 
                   className="w-full h-full object-cover rounded-full border-2 border-unicorn-gold relative"
                 />
               </div>
-              <h3 className="text-xl font-bold text-unicorn-gold text-center">Daniel Reynolds</h3>
+              <h3 className="text-xl font-bold text-unicorn-gold text-center">Marcia Weeks</h3>
               <p className="text-white text-center mb-2">CTO</p>
               <p className="text-gray-300 text-center text-sm">
                 A tech innovator implementing cutting-edge security and blockchain solutions for our investment platform.
@@ -128,12 +128,12 @@ const AboutSection = () => {
               <div className="relative w-32 h-32 mx-auto mb-4">
                 <div className="absolute inset-0 rounded-full bg-unicorn-gold/20 animate-pulse-glow" style={{ animationDelay: "0.6s" }}></div>
                 <img 
-                  src="/lovable-uploads/8ecaf4a4-121a-4581-ab3d-ee5c7bf6f78b.png"
+                  src="/lovable-uploads/8ecaf4a4-121a-4581-ab3d-ee5c7bf6f78b.png" 
                   alt="Investment Manager" 
                   className="w-full h-full object-cover rounded-full border-2 border-unicorn-gold relative"
                 />
               </div>
-              <h3 className="text-xl font-bold text-unicorn-gold text-center">James Wilson</h3>
+              <h3 className="text-xl font-bold text-unicorn-gold text-center">Upton Blair</h3>
               <p className="text-white text-center mb-2">Investment Manager</p>
               <p className="text-gray-300 text-center text-sm">
                 A financial expert with a proven track record of identifying high-return energy investment opportunities.
