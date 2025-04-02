@@ -418,7 +418,7 @@ const InvestmentPlans = () => {
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="item-1">
                   <AccordionTrigger className="text-left">
-                    How do I start investing with WealthHarbor?
+                    How do I start investing with UnicornEnergies?
                   </AccordionTrigger>
                   <AccordionContent className="text-gray-600">
                     To start investing, simply create an account, select your preferred investment plan, and make a deposit using your preferred payment method. Once your deposit is confirmed, your investment will be activated, and you'll start earning returns immediately.

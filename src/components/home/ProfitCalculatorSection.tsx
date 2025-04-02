@@ -1,25 +1,11 @@
-
 import { useState, ChangeEvent } from 'react';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import { Input } from '@/components/ui/input';
-import { Calculator, ArrowRight, Sparkle, TrendingUp } from 'lucide-react';
+import { Calculator } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-
-type Plan = {
-  name: string;
-  minAmount: number;
-  maxAmount: number;
-  dailyReturn: number;
-  duration: number;
-};
+import { Plan, CalculationResults } from '@/types/investment';
+import InvestmentPlanSelector from '@/components/calculator/InvestmentPlanSelector';
+import AmountInput from '@/components/calculator/AmountInput';
+import ResultsDisplay from '@/components/calculator/ResultsDisplay';
 
 const plans: Plan[] = [
   { name: "Goldfish", minAmount: 100, maxAmount: 999, dailyReturn: 1.2, duration: 15 },
@@ -31,11 +17,7 @@ const plans: Plan[] = [
 const ProfitCalculatorSection = () => {
   const [selectedPlan, setSelectedPlan] = useState<Plan>(plans[0]);
   const [amount, setAmount] = useState<number>(selectedPlan.minAmount);
-  const [results, setResults] = useState<{
-    dailyProfit: number;
-    totalProfit: number;
-    totalReturn: number;
-  } | null>(null);
+  const [results, setResults] = useState<CalculationResults>(null);
 
   const handlePlanChange = (value: string) => {
     const plan = plans.find(p => p.name === value) || plans[0];
@@ -120,53 +102,18 @@ const ProfitCalculatorSection = () => {
               </CardHeader>
               
               <CardContent className="space-y-6">
-                <div>
-                  <label className="block text-white font-medium mb-2">Select Plan</label>
-                  <Select
-                    value={selectedPlan.name}
-                    onValueChange={handlePlanChange}
-                  >
-                    <SelectTrigger className="w-full bg-white/10 border-unicorn-gold/20 text-white">
-                      <SelectValue placeholder="Select a plan" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-unicorn-darkPurple text-white border-unicorn-gold/20">
-                      {plans.map((plan) => (
-                        <SelectItem key={plan.name} value={plan.name} className="focus:bg-unicorn-purple/20 focus:text-unicorn-gold">
-                          {plan.name} (${plan.minAmount.toLocaleString()} - ${plan.maxAmount.toLocaleString()})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-sm text-unicorn-gold mt-2">
-                    {selectedPlan.dailyReturn}% daily for {selectedPlan.duration} days
-                  </p>
-                </div>
+                <InvestmentPlanSelector 
+                  plans={plans}
+                  selectedPlan={selectedPlan}
+                  onPlanChange={handlePlanChange}
+                />
                 
-                <div>
-                  <label className="block text-white font-medium mb-2">
-                    Investment Amount (${selectedPlan.minAmount.toLocaleString()} - ${selectedPlan.maxAmount.toLocaleString()})
-                  </label>
-                  <Input
-                    type="number"
-                    value={amount}
-                    onChange={handleAmountChange}
-                    min={selectedPlan.minAmount}
-                    max={selectedPlan.maxAmount}
-                    className="mb-3 bg-white/10 border-unicorn-gold/20 text-white"
-                  />
-                  <Slider
-                    value={[amount]}
-                    min={selectedPlan.minAmount}
-                    max={selectedPlan.maxAmount}
-                    step={(selectedPlan.maxAmount - selectedPlan.minAmount) / 100}
-                    onValueChange={handleSliderChange}
-                    className="mt-6"
-                  />
-                  <div className="flex justify-between text-sm mt-2 text-gray-400">
-                    <span>${selectedPlan.minAmount.toLocaleString()}</span>
-                    <span>${selectedPlan.maxAmount.toLocaleString()}</span>
-                  </div>
-                </div>
+                <AmountInput
+                  amount={amount}
+                  selectedPlan={selectedPlan}
+                  onAmountChange={handleAmountChange}
+                  onSliderChange={handleSliderChange}
+                />
                 
                 <Button 
                   onClick={calculateProfit}
@@ -186,52 +133,10 @@ const ProfitCalculatorSection = () => {
                   Profit Calculation Results
                 </h3>
                 
-                {results ? (
-                  <div className="space-y-8">
-                    <div className="relative">
-                      <div className="text-gray-300 mb-1">Daily Profit:</div>
-                      <div className="text-3xl font-bold text-unicorn-gold flex items-center">
-                        ${results.dailyProfit.toFixed(2)}
-                        <Sparkle className="ml-2 h-4 w-4 text-unicorn-gold animate-pulse" />
-                      </div>
-                    </div>
-                    
-                    <div className="relative">
-                      <div className="text-gray-300 mb-1">Total Profit ({selectedPlan.duration} days):</div>
-                      <div className="text-3xl font-bold text-unicorn-gold flex items-center">
-                        ${results.totalProfit.toFixed(2)}
-                        <Sparkle className="ml-2 h-4 w-4 text-unicorn-gold animate-pulse" />
-                      </div>
-                    </div>
-                    
-                    <div className="pt-6 border-t border-unicorn-purple/30">
-                      <div className="text-gray-300 mb-1">Total Return (Capital + Profit):</div>
-                      <div className="text-4xl font-bold text-white glow-text">
-                        ${results.totalReturn.toFixed(2)}
-                      </div>
-                    </div>
-                    
-                    <Button className="mt-8 w-full bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black font-bold group shadow-[0_0_15px_rgba(255,215,0,0.3)] transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,215,0,0.5)]">
-                      Invest Now <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="text-center py-16">
-                    <div className="text-unicorn-gold text-5xl mb-6">
-                      <Calculator className="h-16 w-16 mx-auto" />
-                    </div>
-                    <div className="max-w-sm mx-auto">
-                      <p className="text-gray-300 text-lg mb-6">
-                        Enter your investment details and click "Calculate Profit" to see your potential returns.
-                      </p>
-                      <div className="bg-unicorn-gold/10 border border-unicorn-gold/30 rounded-lg p-4 backdrop-blur-sm">
-                        <p className="text-unicorn-gold font-medium">
-                          Start calculating now to see how your wealth can grow with UnicornEnergies!
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                <ResultsDisplay 
+                  results={results}
+                  selectedPlanDuration={selectedPlan.duration}
+                />
               </CardContent>
             </Card>
             

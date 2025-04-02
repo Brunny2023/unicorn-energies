@@ -6,6 +6,19 @@ import { ArrowRight, Sparkles } from 'lucide-react';
 const HeroBanner = () => {
   return (
     <section className="relative py-20 md:py-32 overflow-hidden">
+      {/* Animated oil pouring effect */}
+      <div className="absolute top-0 left-0 w-full h-full z-0 opacity-30 pointer-events-none">
+        <video 
+          autoPlay 
+          muted 
+          loop 
+          className="w-full h-full object-cover"
+        >
+          <source src="https://cdn.pixabay.com/vimeo/179351054/paint-4708.mp4?width=640&hash=1d2f1010bb2eaed23744ac065c63a5ee50b2ded7" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+      
       {/* Glowing effect behind the content */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-unicorn-gold/10 rounded-full blur-3xl"></div>
       

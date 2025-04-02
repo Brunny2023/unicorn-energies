@@ -11,7 +11,7 @@ import TestimonialsSection from "@/components/home/TestimonialsSection";
 import CtaSection from "@/components/home/CtaSection";
 import StarsBackground from "@/components/ui/StarsBackground";
 
-// Add CSS for animations
+// Add CSS for animations with faster star movements
 const styles = `
   @keyframes twinkle {
     0% {
@@ -70,23 +70,23 @@ const styles = `
   }
   
   .animate-twinkle {
-    animation: twinkle 2s ease-in-out infinite;
+    animation: twinkle 1.5s ease-in-out infinite;
   }
   
   .animate-pulse-glow {
-    animation: pulse-glow 4s ease-in-out infinite;
+    animation: pulse-glow 3s ease-in-out infinite;
   }
   
   .animate-float {
-    animation: float 6s ease-in-out infinite;
+    animation: float 4s ease-in-out infinite;
   }
   
   .animate-fade-in {
-    animation: fadeIn 1s ease-in-out;
+    animation: fadeIn 0.8s ease-in-out;
   }
   
   .animate-slide-up {
-    animation: slideUp 0.8s ease-in-out;
+    animation: slideUp 0.6s ease-in-out;
   }
   
   .shooting-star {
@@ -98,7 +98,7 @@ const styles = `
     right: 0;
     opacity: 0.8;
     transform-origin: right;
-    animation: shooting-star 4s linear infinite;
+    animation: shooting-star 2.5s linear infinite;
   }
   
   .glow-text {
@@ -112,7 +112,7 @@ const styles = `
     border-radius: 50%;
     background-color: rgba(255, 215, 0, 0.6);
     box-shadow: 0 0 10px 2px rgba(255, 215, 0, 0.4);
-    animation: float 3s ease-in-out infinite;
+    animation: float 2s ease-in-out infinite;
     top: 50%;
     left: 50%;
   }
