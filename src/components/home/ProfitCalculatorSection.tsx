@@ -1,6 +1,7 @@
+
 import { useState, ChangeEvent } from 'react';
 import { Button } from '@/components/ui/button';
-import { Calculator } from 'lucide-react';
+import { Calculator, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Plan, CalculationResults } from '@/types/investment';
 import InvestmentPlanSelector from '@/components/calculator/InvestmentPlanSelector';
