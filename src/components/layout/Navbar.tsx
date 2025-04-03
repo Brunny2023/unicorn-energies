@@ -17,7 +17,7 @@ import {
 const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) => (
   <Link 
     to={to} 
-    className="text-white hover:text-unicorn-gold transition-colors px-3 py-2"
+    className="text-white hover:text-unicorn-gold transition-colors px-3 py-2 font-medium"
   >
     {children}
   </Link>
@@ -57,12 +57,12 @@ const Navbar = () => {
             <NavLink to="/">Home</NavLink>
             <NavLink to="/about">About Us</NavLink>
             <div className="relative group">
-              <button className="text-white hover:text-unicorn-gold transition-colors px-3 py-2 flex items-center">
+              <button className="text-white hover:text-unicorn-gold transition-colors px-3 py-2 flex items-center font-medium">
                 Investments <ChevronDown className="ml-1 h-4 w-4" />
               </button>
               <div className="absolute left-0 mt-2 w-48 bg-unicorn-darkPurple/90 backdrop-blur-lg border border-unicorn-gold/20 shadow-lg rounded-md hidden group-hover:block">
-                <Link to="/investment-plans" className="block px-4 py-2 text-white hover:bg-unicorn-purple/30 hover:text-unicorn-gold">Investment Plans</Link>
-                <Link to="/calculator" className="block px-4 py-2 text-white hover:bg-unicorn-purple/30 hover:text-unicorn-gold">Profit Calculator</Link>
+                <Link to="/investment-plans" className="block px-4 py-2 text-white hover:bg-unicorn-purple/30 hover:text-unicorn-gold font-medium">Investment Plans</Link>
+                <Link to="/calculator" className="block px-4 py-2 text-white hover:bg-unicorn-purple/30 hover:text-unicorn-gold font-medium">Profit Calculator</Link>
               </div>
             </div>
             <NavLink to="/how-it-works">How It Works</NavLink>
@@ -109,12 +109,12 @@ const Navbar = () => {
             ) : (
               <>
                 <Link to="/login">
-                  <Button variant="outline" className="border-unicorn-gold text-unicorn-gold hover:bg-unicorn-gold/20">
+                  <Button variant="outline" className="border-unicorn-gold text-unicorn-gold hover:bg-unicorn-gold/20 font-bold">
                     Login
                   </Button>
                 </Link>
                 <Link to="/register">
-                  <Button className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black">
+                  <Button className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black font-bold">
                     Register
                   </Button>
                 </Link>
@@ -138,24 +138,24 @@ const Navbar = () => {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <nav className="md:hidden pt-4 pb-3 space-y-1">
-            <Link to="/" className="block py-2 px-4 text-white hover:bg-unicorn-purple/30 hover:text-unicorn-gold rounded-md">Home</Link>
-            <Link to="/about" className="block py-2 px-4 text-white hover:bg-unicorn-purple/30 hover:text-unicorn-gold rounded-md">About Us</Link>
-            <Link to="/investment-plans" className="block py-2 px-4 text-white hover:bg-unicorn-purple/30 hover:text-unicorn-gold rounded-md">Investment Plans</Link>
-            <Link to="/calculator" className="block py-2 px-4 text-white hover:bg-unicorn-purple/30 hover:text-unicorn-gold rounded-md">Profit Calculator</Link>
-            <Link to="/how-it-works" className="block py-2 px-4 text-white hover:bg-unicorn-purple/30 hover:text-unicorn-gold rounded-md">How It Works</Link>
-            <Link to="/faq" className="block py-2 px-4 text-white hover:bg-unicorn-purple/30 hover:text-unicorn-gold rounded-md">FAQ</Link>
-            <Link to="/contact" className="block py-2 px-4 text-white hover:bg-unicorn-purple/30 hover:text-unicorn-gold rounded-md">Contact</Link>
+            <Link to="/" className="block py-2 px-4 text-white hover:bg-unicorn-purple/30 hover:text-unicorn-gold rounded-md font-medium">Home</Link>
+            <Link to="/about" className="block py-2 px-4 text-white hover:bg-unicorn-purple/30 hover:text-unicorn-gold rounded-md font-medium">About Us</Link>
+            <Link to="/investment-plans" className="block py-2 px-4 text-white hover:bg-unicorn-purple/30 hover:text-unicorn-gold rounded-md font-medium">Investment Plans</Link>
+            <Link to="/calculator" className="block py-2 px-4 text-white hover:bg-unicorn-purple/30 hover:text-unicorn-gold rounded-md font-medium">Profit Calculator</Link>
+            <Link to="/how-it-works" className="block py-2 px-4 text-white hover:bg-unicorn-purple/30 hover:text-unicorn-gold rounded-md font-medium">How It Works</Link>
+            <Link to="/faq" className="block py-2 px-4 text-white hover:bg-unicorn-purple/30 hover:text-unicorn-gold rounded-md font-medium">FAQ</Link>
+            <Link to="/contact" className="block py-2 px-4 text-white hover:bg-unicorn-purple/30 hover:text-unicorn-gold rounded-md font-medium">Contact</Link>
             
             {user ? (
               <div className="pt-2 grid grid-cols-2 gap-2">
                 <Link to={isAdmin ? "/admin/dashboard" : "/dashboard"} className="col-span-1">
-                  <Button variant="outline" className="w-full border-unicorn-gold text-unicorn-gold">
+                  <Button variant="outline" className="w-full border-unicorn-gold text-unicorn-gold font-medium">
                     {isAdmin ? "Admin Panel" : "Dashboard"}
                   </Button>
                 </Link>
                 <Button 
                   onClick={() => signOut()} 
-                  className="w-full bg-unicorn-gold text-unicorn-black col-span-1"
+                  className="w-full bg-unicorn-gold text-unicorn-black col-span-1 font-medium"
                 >
                   Logout
                 </Button>
@@ -163,10 +163,10 @@ const Navbar = () => {
             ) : (
               <div className="pt-2 grid grid-cols-2 gap-2">
                 <Link to="/login" className="col-span-1">
-                  <Button variant="outline" className="w-full border-unicorn-gold text-unicorn-gold">Login</Button>
+                  <Button variant="outline" className="w-full border-unicorn-gold text-unicorn-gold font-bold">Login</Button>
                 </Link>
                 <Link to="/register" className="col-span-1">
-                  <Button className="w-full bg-unicorn-gold text-unicorn-black">Register</Button>
+                  <Button className="w-full bg-unicorn-gold text-unicorn-black font-bold">Register</Button>
                 </Link>
               </div>
             )}

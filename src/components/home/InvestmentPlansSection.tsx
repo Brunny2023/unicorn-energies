@@ -101,16 +101,16 @@ const InvestmentPlansSection = () => {
               <CardContent className="relative pt-4">
                 <div className="space-y-4 mb-6">
                   <div className="flex justify-between items-center py-2 px-1 border-b border-unicorn-purple/30">
-                    <span className="text-gray-300">Daily Return:</span>
-                    <span className="font-semibold text-unicorn-gold">{plan.dailyReturn}%</span>
+                    <span className="text-gray-200 font-medium">Daily Return:</span>
+                    <span className="font-bold text-lg text-unicorn-gold">{plan.dailyReturn}%</span>
                   </div>
                   <div className="flex justify-between items-center py-2 px-1 border-b border-unicorn-purple/30">
-                    <span className="text-gray-300">Duration:</span>
-                    <span className="font-semibold text-unicorn-gold">{plan.duration} days</span>
+                    <span className="text-gray-200 font-medium">Duration:</span>
+                    <span className="font-bold text-lg text-unicorn-gold">{plan.duration} days</span>
                   </div>
                   <div className="flex justify-between items-center py-2 px-1">
-                    <span className="text-gray-300">Total Return:</span>
-                    <span className="font-semibold text-unicorn-gold">{plan.totalReturn}%</span>
+                    <span className="text-gray-200 font-medium">Total Return:</span>
+                    <span className="font-bold text-lg text-unicorn-gold">{plan.totalReturn}%</span>
                   </div>
                 </div>
               </CardContent>
@@ -118,10 +118,10 @@ const InvestmentPlansSection = () => {
               <CardFooter className="relative pt-0">
                 <Link to="/investment-plans" className="w-full">
                   <Button 
-                    className={`w-full group ${
+                    className={`w-full group text-base font-bold ${
                       plan.featured 
                         ? 'bg-unicorn-gold hover:bg-unicorn-gold/90 text-unicorn-black' 
-                        : 'border border-unicorn-gold text-unicorn-gold hover:bg-unicorn-gold hover:bg-opacity-10'
+                        : 'border border-unicorn-gold text-unicorn-gold hover:bg-unicorn-gold/20'
                     }`}
                   >
                     Invest Now
@@ -135,7 +135,7 @@ const InvestmentPlansSection = () => {
         
         <div className="mt-12 text-center">
           <Link to="/investment-plans">
-            <Button variant="outline" className="border-unicorn-gold text-unicorn-gold hover:bg-unicorn-gold/20 group">
+            <Button variant="outline" className="border-unicorn-gold text-unicorn-gold hover:bg-unicorn-gold/20 group font-bold">
               View All Investment Plans <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Button>
           </Link>

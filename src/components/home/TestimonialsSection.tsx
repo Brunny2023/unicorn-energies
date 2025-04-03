@@ -74,15 +74,15 @@ const TestimonialsSection = () => {
   );
 
   return (
-    <section className="section-padding bg-investment-gray">
+    <section className="section-padding bg-gray-100">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="heading-lg text-investment-navy mb-4 relative inline-block">
+          <h2 className="heading-lg text-unicorn-darkPurple mb-4 relative inline-block font-bold">
             <span className="bg-unicorn-gold h-1 w-24 absolute -top-4 left-1/2 transform -translate-x-1/2"></span>
             What Our Investors Say
             <span className="bg-unicorn-gold h-1 w-24 absolute -bottom-4 left-1/2 transform -translate-x-1/2"></span>
           </h2>
-          <p className="text-gray-600 text-lg mt-8">
+          <p className="text-gray-800 text-lg mt-8">
             Don't just take our word for it. Hear from our satisfied investors who have experienced the benefits of investing with UnicornEnergies.
           </p>
         </div>
@@ -98,7 +98,7 @@ const TestimonialsSection = () => {
                     className="w-16 h-16 rounded-full mr-4 object-cover ring-2 ring-unicorn-gold"
                   />
                   <div>
-                    <h4 className="font-bold text-lg text-investment-navy">{testimonial.name}</h4>
+                    <h4 className="font-bold text-lg text-unicorn-darkPurple">{testimonial.name}</h4>
                     <p className="text-gray-600 text-sm">{testimonial.position}, {testimonial.location}</p>
                     <div className="flex mt-1">
                       {[...Array(testimonial.rating)].map((_, i) => (
@@ -111,7 +111,7 @@ const TestimonialsSection = () => {
                   </div>
                 </div>
                 
-                <blockquote className="italic text-gray-700 border-l-4 border-unicorn-gold pl-4">
+                <blockquote className="italic text-gray-800 border-l-4 border-unicorn-gold pl-4">
                   "{testimonial.content}"
                 </blockquote>
               </div>

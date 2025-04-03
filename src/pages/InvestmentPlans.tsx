@@ -150,8 +150,8 @@ const InvestmentPlans = () => {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-3 mb-8 text-center">
-              <h2 className="heading-lg text-investment-navy mb-4">Find the Perfect Plan for Your Financial Goals</h2>
-              <p className="text-gray-600 max-w-3xl mx-auto">
+              <h2 className="heading-lg text-unicorn-darkPurple mb-4 font-bold">Find the Perfect Plan for Your Financial Goals</h2>
+              <p className="text-gray-800 max-w-3xl mx-auto text-lg">
                 Our investment plans are designed to provide consistent returns from the oil and gas market. Each plan offers a balance of security, liquidity, and profit potential tailored to different investment capacities.
               </p>
             </div>
@@ -168,10 +168,10 @@ const InvestmentPlans = () => {
       </section>
       
       {/* Calculator Section */}
-      <section id="calculator" className="py-16 bg-investment-gray">
+      <section id="calculator" className="py-16 bg-gray-100">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <h2 className="heading-lg text-investment-navy mb-6 text-center">
+            <h2 className="heading-lg text-unicorn-darkPurple mb-6 text-center font-bold">
               Investment Calculator
             </h2>
             
@@ -192,7 +192,7 @@ const InvestmentPlans = () => {
       </section>
       
       {/* CTA Section */}
-      <section className="py-16 bg-investment-navy text-white">
+      <section className="py-16 bg-unicorn-darkPurple text-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="heading-md mb-6">
@@ -203,12 +203,12 @@ const InvestmentPlans = () => {
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Link to="/register">
-                <Button className="bg-investment-gold hover:bg-investment-lightGold text-investment-navy font-bold">
+                <Button className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black font-bold text-lg">
                   Create Your Account <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
               <Link to="/contact">
-                <Button variant="outline" className="border-white text-white hover:bg-white/10">
+                <Button variant="outline" className="border-white text-white hover:bg-white/10 text-lg">
                   Contact Our Team
                 </Button>
               </Link>
