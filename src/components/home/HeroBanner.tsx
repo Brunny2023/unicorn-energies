@@ -12,7 +12,9 @@ const HeroBanner = () => {
           autoPlay 
           muted 
           loop 
+          playsInline
           className="w-full h-full object-cover"
+          poster="https://assets.mixkit.co/videos/preview/mixkit-dripping-dark-oil-612-large.mp4?v=2"
         >
           <source src="https://assets.mixkit.co/videos/preview/mixkit-dripping-dark-oil-612-large.mp4" type="video/mp4" />
           Your browser does not support the video tag.
