@@ -2,19 +2,32 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 
 const HeroBanner = () => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    // Ensure video plays properly on mount
+    if (videoRef.current) {
+      videoRef.current.play().catch(error => {
+        console.error("Video playback failed:", error);
+      });
+    }
+  }, []);
+
   return (
     <section className="relative py-20 md:py-32 overflow-hidden">
       {/* Animated oil pouring effect */}
       <div className="absolute top-0 left-0 w-full h-full z-0 opacity-30 pointer-events-none">
         <video 
+          ref={videoRef}
           autoPlay 
           muted 
           loop 
           playsInline
           className="w-full h-full object-cover"
-          poster="https://assets.mixkit.co/videos/preview/mixkit-dripping-dark-oil-612-large.jpg"
+          poster="https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&w=1200&q=80"
         >
           <source src="https://assets.mixkit.co/videos/preview/mixkit-dripping-dark-oil-612-large.mp4" type="video/mp4" />
           Your browser does not support the video tag.
