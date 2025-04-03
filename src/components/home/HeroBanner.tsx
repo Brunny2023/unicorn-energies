@@ -14,7 +14,7 @@ const HeroBanner = () => {
           loop 
           className="w-full h-full object-cover"
         >
-          <source src="https://cdn.pixabay.com/vimeo/179351054/paint-4708.mp4?width=640&hash=1d2f1010bb2eaed23744ac065c63a5ee50b2ded7" type="video/mp4" />
+          <source src="https://assets.mixkit.co/videos/preview/mixkit-dripping-dark-oil-612-large.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
       </div>

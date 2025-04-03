@@ -40,7 +40,7 @@ const WhyChooseUsSection = () => {
       <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-10"></div>
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="heading-lg mb-4">Why Choose WealthHarbor</h2>
+          <h2 className="heading-lg mb-4">Why Choose UnicornEnergies</h2>
           <p className="text-gray-200">
             We combine industry expertise, cutting-edge technology, and exceptional customer service to provide a superior investment experience.
           </p>

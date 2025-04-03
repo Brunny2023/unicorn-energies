@@ -70,15 +70,15 @@ const styles = `
   }
   
   .animate-twinkle {
-    animation: twinkle 1.5s ease-in-out infinite;
+    animation: twinkle 1s ease-in-out infinite;
   }
   
   .animate-pulse-glow {
-    animation: pulse-glow 3s ease-in-out infinite;
+    animation: pulse-glow 2s ease-in-out infinite;
   }
   
   .animate-float {
-    animation: float 4s ease-in-out infinite;
+    animation: float 3s ease-in-out infinite;
   }
   
   .animate-fade-in {
@@ -98,7 +98,7 @@ const styles = `
     right: 0;
     opacity: 0.8;
     transform-origin: right;
-    animation: shooting-star 2.5s linear infinite;
+    animation: shooting-star 1.5s linear infinite;
   }
   
   .glow-text {
@@ -112,19 +112,19 @@ const styles = `
     border-radius: 50%;
     background-color: rgba(255, 215, 0, 0.6);
     box-shadow: 0 0 10px 2px rgba(255, 215, 0, 0.4);
-    animation: float 2s ease-in-out infinite;
+    animation: float 1.5s ease-in-out infinite;
     top: 50%;
     left: 50%;
   }
   
-  .stars-container .particle:nth-child(1) { top: 20%; left: 10%; }
-  .stars-container .particle:nth-child(2) { top: 40%; left: 25%; }
-  .stars-container .particle:nth-child(3) { top: 70%; left: 35%; }
-  .stars-container .particle:nth-child(4) { top: 30%; left: 65%; }
-  .stars-container .particle:nth-child(5) { top: 65%; left: 75%; }
-  .stars-container .particle:nth-child(6) { top: 15%; left: 85%; }
-  .stars-container .particle:nth-child(7) { top: 50%; left: 90%; }
-  .stars-container .particle:nth-child(8) { top: 80%; left: 15%; }
+  .stars-container .particle:nth-child(1) { top: 20%; left: 10%; animation-duration: 1s; }
+  .stars-container .particle:nth-child(2) { top: 40%; left: 25%; animation-duration: 1.2s; }
+  .stars-container .particle:nth-child(3) { top: 70%; left: 35%; animation-duration: 1.3s; }
+  .stars-container .particle:nth-child(4) { top: 30%; left: 65%; animation-duration: 1.5s; }
+  .stars-container .particle:nth-child(5) { top: 65%; left: 75%; animation-duration: 1.7s; }
+  .stars-container .particle:nth-child(6) { top: 15%; left: 85%; animation-duration: 1.8s; }
+  .stars-container .particle:nth-child(7) { top: 50%; left: 90%; animation-duration: 1.4s; }
+  .stars-container .particle:nth-child(8) { top: 80%; left: 15%; animation-duration: 1.6s; }
 `;
 
 const Index = () => {

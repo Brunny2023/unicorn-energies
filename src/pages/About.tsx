@@ -14,7 +14,7 @@ const About = () => {
       <section className="hero-gradient text-white py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="heading-xl mb-6">About WealthHarbor</h1>
+            <h1 className="heading-xl mb-6">About UnicornEnergies</h1>
             <p className="text-xl text-gray-200">
               Your trusted partner in oil and gas market investments, providing reliable high-income sources while minimizing risks.
             </p>
@@ -31,10 +31,14 @@ const About = () => {
                 Our Background and Experience
               </h2>
               <p className="text-gray-700 mb-4">
-                Founded in 2017, WealthHarbor was established with a clear vision: to make profitable oil and gas investments accessible to individual investors while maintaining the highest standards of security and transparency.
+                We are an international Oil and Gas Investment Company financial company in activities which are related 
+                to trading in the oil and gas markets globally, and performed by qualified professionals.
               </p>
               <p className="text-gray-700 mb-4">
-                Our founding team brings together over 50 years of combined experience in the energy sector, financial markets, and investment management. This deep industry knowledge allows us to identify opportunities that others might miss and to navigate market volatility with confidence.
+                Our goal is to provide our investors with a reliable source of high income, while minimizing any possible risks 
+                and offering high-quality services, allowing us to automate and simplify the relations between the investors and 
+                the trustees. We work towards increasing your profit margin by profitable investments. We look forward to you 
+                being part of our satisfied community.
               </p>
               <p className="text-gray-700">
                 Today, we manage over $250 million in assets for more than 15,000 investors worldwide, delivering consistent returns regardless of broader market conditions.
@@ -130,7 +134,7 @@ const About = () => {
               Our Industry Expertise
             </h2>
             <p className="text-gray-600">
-              WealthHarbor specializes in the energy sector, with a particular focus on oil and gas investments. Our team's deep industry knowledge and market insights give us a competitive edge.
+              UnicornEnergies specializes in the energy sector, with a particular focus on oil and gas investments. Our team's deep industry knowledge and market insights give us a competitive edge.
             </p>
           </div>
           
@@ -197,16 +201,16 @@ const About = () => {
               Ready to Start Your Investment Journey?
             </h2>
             <p className="text-gray-300 mb-8">
-              Join thousands of investors who trust WealthHarbor with their financial future. Our investment plans offer reliable returns with minimal risk.
+              Join thousands of investors who trust UnicornEnergies with their financial future. Our investment plans offer reliable returns with minimal risk.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Link to="/investment-plans">
-                <Button className="bg-investment-gold hover:bg-investment-lightGold text-investment-navy font-bold">
+                <Button className="bg-unicorn-gold hover:bg-unicorn-darkGold text-investment-navy font-bold text-lg px-8 py-6">
                   View Investment Plans
                 </Button>
               </Link>
               <Link to="/contact">
-                <Button variant="outline" className="border-white text-white hover:bg-white/10">
+                <Button variant="outline" className="border-white text-white hover:bg-white/10 text-lg px-8 py-6">
                   Contact Our Team
                 </Button>
               </Link>

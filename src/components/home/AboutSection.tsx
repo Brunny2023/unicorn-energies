@@ -12,12 +12,17 @@ const AboutSection = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
           <div className="order-2 lg:order-1">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-              Your Trusted Partner in <span className="text-unicorn-gold">Energy Market Investments</span>
+              <span className="text-unicorn-gold">UnicornEnergies:</span> Your Energy Investment Partner
             </h2>
             <p className="text-gray-200 mb-6">
-              At UnicornEnergies, we specialize in connecting investors with lucrative opportunities in the energy sector. 
-              Our team of industry experts meticulously evaluates each investment opportunity to ensure optimal returns while 
-              maintaining rigorous risk management protocols.
+              We are an international Oil and Gas Investment Company financial company in activities which are related 
+              to trading in the oil and gas markets globally, and performed by qualified professionals.
+            </p>
+            <p className="text-gray-200 mb-6">
+              Our goal is to provide our investors with a reliable source of high income, while minimizing any possible risks 
+              and offering high-quality services, allowing us to automate and simplify the relations between the investors and 
+              the trustees. We work towards increasing your profit margin by profitable investments. We look forward to you 
+              being part of our satisfied community.
             </p>
             
             <div className="space-y-6 mb-8">
@@ -53,7 +58,7 @@ const AboutSection = () => {
             </div>
             
             <Link to="/about">
-              <Button className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black group">
+              <Button className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black font-bold group text-lg px-8 py-6">
                 Learn More About Us <ChevronRight className="ml-1 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
