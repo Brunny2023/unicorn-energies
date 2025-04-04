@@ -28,10 +28,10 @@ const PlanCard = ({ plan, onCalculateClick }: PlanCardProps) => {
         plan.highlighted ? 'border-2 border-investment-gold' : 'border border-gray-200'
       }`}
     >
-      <div className={`p-6 text-white ${plan.highlighted ? 'bg-investment-gold text-investment-navy' : 'bg-investment-navy'}`}>
-        <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-        <div className="text-3xl font-bold mb-2 text-white">{plan.range}</div>
-        <p className={`font-medium ${plan.highlighted ? 'text-investment-navy/90' : 'text-white'}`}>
+      <div className={`p-6 ${plan.highlighted ? 'bg-unicorn-gold' : 'bg-unicorn-darkPurple'}`}>
+        <h3 className="text-2xl font-bold mb-2 text-unicorn-black">{plan.name}</h3>
+        <div className={`text-3xl font-bold mb-2 ${plan.highlighted ? 'text-unicorn-black' : 'text-unicorn-gold'}`}>{plan.range}</div>
+        <p className={`font-medium ${plan.highlighted ? 'text-unicorn-black' : 'text-white'}`}>
           {plan.dailyReturn}% daily for {plan.duration} days
         </p>
       </div>
@@ -40,36 +40,36 @@ const PlanCard = ({ plan, onCalculateClick }: PlanCardProps) => {
         <div className="space-y-4 mb-6">
           <div className="flex justify-between items-center border-b border-gray-200 pb-2">
             <span className="text-gray-700 font-medium">Minimum:</span>
-            <span className="font-bold text-investment-navy">${plan.minAmount.toLocaleString()}</span>
+            <span className="font-bold text-unicorn-darkPurple">${plan.minAmount.toLocaleString()}</span>
           </div>
           
           <div className="flex justify-between items-center border-b border-gray-200 pb-2">
             <span className="text-gray-700 font-medium">Maximum:</span>
-            <span className="font-bold text-investment-navy">${plan.maxAmount === 1000000 ? "50,000+" : plan.maxAmount.toLocaleString()}</span>
+            <span className="font-bold text-unicorn-darkPurple">${plan.maxAmount === 1000000 ? "50,000+" : plan.maxAmount.toLocaleString()}</span>
           </div>
           
           <div className="flex justify-between items-center border-b border-gray-200 pb-2">
             <span className="text-gray-700 font-medium">Daily Profit:</span>
-            <span className="font-bold text-investment-navy">{plan.dailyReturn}%</span>
+            <span className="font-bold text-unicorn-darkPurple">{plan.dailyReturn}%</span>
           </div>
           
           <div className="flex justify-between items-center border-b border-gray-200 pb-2">
             <span className="text-gray-700 font-medium">Duration:</span>
-            <span className="font-bold text-investment-navy">{plan.duration} days</span>
+            <span className="font-bold text-unicorn-darkPurple">{plan.duration} days</span>
           </div>
           
           <div className="flex justify-between items-center border-b border-gray-200 pb-2">
             <span className="text-gray-700 font-medium">Total Return:</span>
-            <span className="font-bold text-lg text-investment-navy">{plan.totalReturn}%</span>
+            <span className="font-bold text-lg text-unicorn-darkPurple">{plan.totalReturn}%</span>
           </div>
         </div>
         
         <div className="space-y-2 mb-6">
-          <h4 className="font-bold text-investment-navy mb-3">Features:</h4>
+          <h4 className="font-bold text-unicorn-darkPurple mb-3">Features:</h4>
           <ul className="space-y-2">
             {plan.features.map((feature, index) => (
               <li key={index} className="flex items-center">
-                <CheckCircle2 className="h-5 w-5 text-investment-gold mr-2 shrink-0" />
+                <CheckCircle2 className="h-5 w-5 text-unicorn-gold mr-2 shrink-0" />
                 <span className="text-gray-700">{feature}</span>
               </li>
             ))}
@@ -80,15 +80,15 @@ const PlanCard = ({ plan, onCalculateClick }: PlanCardProps) => {
           <Link to="/register" className="w-full">
             <Button className={`w-full font-bold ${
               plan.highlighted 
-                ? 'bg-investment-gold hover:bg-investment-lightGold text-investment-navy' 
-                : 'bg-investment-navy hover:bg-investment-lightNavy text-white'
+                ? 'bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black' 
+                : 'bg-unicorn-darkPurple hover:bg-unicorn-purple text-white'
             }`}>
               Invest Now
             </Button>
           </Link>
           <Button 
             variant="outline"
-            className="w-full border-investment-navy text-investment-navy font-bold hover:bg-investment-navy/5"
+            className="w-full border-unicorn-darkPurple text-unicorn-darkPurple font-bold hover:bg-unicorn-darkPurple/5"
             onClick={() => onCalculateClick(plan)}
           >
             Calculate

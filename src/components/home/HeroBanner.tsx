@@ -8,11 +8,20 @@ const HeroBanner = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    // Ensure video plays properly on mount
+    // Ensure video plays properly on mount with better error handling
     if (videoRef.current) {
-      videoRef.current.play().catch(error => {
-        console.error("Video playback failed:", error);
-      });
+      const playPromise = videoRef.current.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.error("Video playback failed:", error);
+          // Try to reload the video on error
+          if (videoRef.current) {
+            videoRef.current.load();
+            videoRef.current.play().catch(e => console.error("Second attempt failed:", e));
+          }
+        });
+      }
     }
   }, []);
 
@@ -28,6 +37,7 @@ const HeroBanner = () => {
           playsInline
           className="w-full h-full object-cover"
           poster="https://images.unsplash.com/photo-1566808062778-6e65c18c34c5?auto=format&fit=crop&w=1200&q=80"
+          preload="auto"
         >
           <source src="https://assets.mixkit.co/videos/preview/mixkit-dripping-dark-oil-612-large.mp4" type="video/mp4" />
           Your browser does not support the video tag.
