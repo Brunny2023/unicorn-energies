@@ -50,15 +50,15 @@ const HeroBanner = () => {
             playsInline
             preload="auto"
             className="w-full h-full object-cover"
+            poster="https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?auto=format&fit=crop&w=1200&q=80"
           >
-            <source src="/lovable-uploads/0ca3349f-6e51-4a77-b64d-4f4f63cb82d9.png" type="image/png" />
             <source src="https://assets.mixkit.co/videos/preview/mixkit-dripping-dark-oil-612-large.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         ) : (
           <div className="w-full h-full bg-black">
             <img
-              src="/lovable-uploads/0ca3349f-6e51-4a77-b64d-4f4f63cb82d9.png"
+              src="https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?auto=format&fit=crop&w=1200&q=80"
               alt="Oil pouring"
               className="w-full h-full object-cover"
             />
@@ -107,7 +107,7 @@ const HeroBanner = () => {
               <div className="text-gray-200">Satisfied Investors</div>
             </div>
             <div className="text-center">
-              <div className="font-bold text-4xl text-unicorn-gold animate-pulse-glow" style={{ animationDelay: "0.4s" }}>6+ Years</div>
+              <div className="font-bold text-4xl text-unicorn-gold animate-pulse-glow" style={{ animationDelay: "0.4s" }}>20+ Years</div>
               <div className="text-gray-200">Industry Experience</div>
             </div>
           </div>
