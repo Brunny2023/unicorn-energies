@@ -27,7 +27,7 @@ const HeroBanner = () => {
           loop 
           playsInline
           className="w-full h-full object-cover"
-          poster="https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&w=1200&q=80"
+          poster="https://images.unsplash.com/photo-1566808062778-6e65c18c34c5?auto=format&fit=crop&w=1200&q=80"
         >
           <source src="https://assets.mixkit.co/videos/preview/mixkit-dripping-dark-oil-612-large.mp4" type="video/mp4" />
           Your browser does not support the video tag.

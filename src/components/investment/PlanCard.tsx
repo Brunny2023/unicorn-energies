@@ -28,10 +28,10 @@ const PlanCard = ({ plan, onCalculateClick }: PlanCardProps) => {
         plan.highlighted ? 'border-2 border-investment-gold' : 'border border-gray-200'
       }`}
     >
-      <div className={`p-6 ${plan.highlighted ? 'bg-investment-gold text-investment-navy' : 'bg-investment-navy text-white'}`}>
+      <div className={`p-6 text-white ${plan.highlighted ? 'bg-investment-gold text-investment-navy' : 'bg-investment-navy'}`}>
         <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-        <div className="text-3xl font-bold mb-2">{plan.range}</div>
-        <p className={`${plan.highlighted ? 'text-investment-navy/90 font-medium' : 'text-white/90 font-medium'}`}>
+        <div className="text-3xl font-bold mb-2 text-white">{plan.range}</div>
+        <p className={`font-medium ${plan.highlighted ? 'text-investment-navy/90' : 'text-white'}`}>
           {plan.dailyReturn}% daily for {plan.duration} days
         </p>
       </div>
