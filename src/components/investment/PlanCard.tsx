@@ -29,8 +29,12 @@ const PlanCard = ({ plan, onCalculateClick }: PlanCardProps) => {
       }`}
     >
       <div className={`p-6 ${plan.highlighted ? 'bg-unicorn-gold' : 'bg-unicorn-darkPurple'}`}>
-        <h3 className="text-2xl font-bold mb-2 text-unicorn-black">{plan.name}</h3>
-        <div className={`text-3xl font-bold mb-2 ${plan.highlighted ? 'text-unicorn-black' : 'text-unicorn-gold'}`}>{plan.range}</div>
+        <h3 className={`text-2xl font-bold mb-2 ${plan.highlighted ? 'text-unicorn-black' : 'text-unicorn-gold'}`}>
+          {plan.name}
+        </h3>
+        <div className={`text-3xl font-bold mb-2 ${plan.highlighted ? 'text-unicorn-black' : 'text-unicorn-gold'}`}>
+          {plan.range}
+        </div>
         <p className={`font-medium ${plan.highlighted ? 'text-unicorn-black' : 'text-white'}`}>
           {plan.dailyReturn}% daily for {plan.duration} days
         </p>

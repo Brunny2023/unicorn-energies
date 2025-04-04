@@ -2,26 +2,38 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const HeroBanner = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoError, setVideoError] = useState(false);
 
   useEffect(() => {
-    // Ensure video plays properly on mount with better error handling
+    // Ensure video plays properly and handle failures
     if (videoRef.current) {
-      const playPromise = videoRef.current.play();
-      
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
+      const playVideo = async () => {
+        try {
+          await videoRef.current?.play();
+        } catch (error) {
           console.error("Video playback failed:", error);
-          // Try to reload the video on error
-          if (videoRef.current) {
-            videoRef.current.load();
-            videoRef.current.play().catch(e => console.error("Second attempt failed:", e));
-          }
-        });
-      }
+          setVideoError(true);
+        }
+      };
+      
+      playVideo();
+      
+      // Set up an event listener to detect video loading errors
+      const handleError = () => {
+        console.error("Video failed to load");
+        setVideoError(true);
+      };
+      
+      videoRef.current.addEventListener('error', handleError);
+      
+      // Cleanup
+      return () => {
+        videoRef.current?.removeEventListener('error', handleError);
+      };
     }
   }, []);
 
@@ -29,19 +41,29 @@ const HeroBanner = () => {
     <section className="relative py-20 md:py-32 overflow-hidden">
       {/* Animated oil pouring effect */}
       <div className="absolute top-0 left-0 w-full h-full z-0 opacity-30 pointer-events-none">
-        <video 
-          ref={videoRef}
-          autoPlay 
-          muted 
-          loop 
-          playsInline
-          className="w-full h-full object-cover"
-          poster="https://images.unsplash.com/photo-1566808062778-6e65c18c34c5?auto=format&fit=crop&w=1200&q=80"
-          preload="auto"
-        >
-          <source src="https://assets.mixkit.co/videos/preview/mixkit-dripping-dark-oil-612-large.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+        {!videoError ? (
+          <video 
+            ref={videoRef}
+            autoPlay 
+            muted 
+            loop 
+            playsInline
+            preload="auto"
+            className="w-full h-full object-cover"
+          >
+            <source src="/lovable-uploads/0ca3349f-6e51-4a77-b64d-4f4f63cb82d9.png" type="image/png" />
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-dripping-dark-oil-612-large.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        ) : (
+          <div className="w-full h-full bg-black">
+            <img
+              src="/lovable-uploads/0ca3349f-6e51-4a77-b64d-4f4f63cb82d9.png"
+              alt="Oil pouring"
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
       </div>
       
       {/* Glowing effect behind the content */}
