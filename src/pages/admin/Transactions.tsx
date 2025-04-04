@@ -71,7 +71,7 @@ const AdminTransactions = () => {
         .from("transactions")
         .select(`
           *,
-          user:user_id (
+          user:profiles!transactions_user_id_fkey(
             email,
             full_name
           )
@@ -80,8 +80,22 @@ const AdminTransactions = () => {
 
       if (error) throw error;
       
-      setTransactions(data as Transaction[]);
-      setFilteredTransactions(data as Transaction[]);
+      // Ensure we have a valid user object for each transaction
+      const processedData = data?.map(tx => {
+        if (!tx.user || typeof tx.user === 'string' || 'error' in tx.user) {
+          return {
+            ...tx,
+            user: {
+              email: 'Unknown',
+              full_name: null
+            }
+          };
+        }
+        return tx;
+      }) as Transaction[];
+      
+      setTransactions(processedData);
+      setFilteredTransactions(processedData);
     } catch (error) {
       console.error("Error fetching transactions:", error);
       toast({

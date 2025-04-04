@@ -25,7 +25,7 @@ const PlanCard = ({ plan, onCalculateClick }: PlanCardProps) => {
   return (
     <div 
       className={`rounded-lg overflow-hidden shadow-lg transition-transform hover:translate-y-[-5px] ${
-        plan.highlighted ? 'border-2 border-investment-gold' : 'border border-gray-200'
+        plan.highlighted ? 'border-2 border-unicorn-gold' : 'border border-gray-200'
       }`}
     >
       <div className={`p-6 ${plan.highlighted ? 'bg-unicorn-gold' : 'bg-unicorn-darkPurple'}`}>
