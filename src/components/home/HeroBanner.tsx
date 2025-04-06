@@ -50,7 +50,7 @@ const HeroBanner = () => {
             playsInline
             preload="auto"
             className="w-full h-full object-cover"
-            poster="https://images.unsplash.com/photo-1586953208448-b95a79798f07?auto=format&fit=crop&w=1200&q=80"
+            poster="/lovable-uploads/dd9f21c4-5efd-4b78-afb7-e40eed48b069.png"
           >
             <source src="https://assets.mixkit.co/videos/preview/mixkit-dripping-dark-oil-612-large.mp4" type="video/mp4" />
             Your browser does not support the video tag.
@@ -58,8 +58,8 @@ const HeroBanner = () => {
         ) : (
           <div className="w-full h-full bg-black">
             <img
-              src="https://images.unsplash.com/photo-1586953208448-b95a79798f07?auto=format&fit=crop&w=1200&q=80"
-              alt="Oil rig platform"
+              src="/lovable-uploads/dd9f21c4-5efd-4b78-afb7-e40eed48b069.png"
+              alt="Oil refinery at night"
               className="w-full h-full object-cover"
             />
           </div>
