@@ -11,7 +11,7 @@ import TestimonialsSection from "@/components/home/TestimonialsSection";
 import CtaSection from "@/components/home/CtaSection";
 import StarsBackground from "@/components/ui/StarsBackground";
 
-// Add CSS for animations with faster star movements
+// Add CSS for animations with faster star movements - using pure CSS without external resources
 const styles = `
   @keyframes twinkle {
     0% {

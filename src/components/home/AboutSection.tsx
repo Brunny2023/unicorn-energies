@@ -73,7 +73,13 @@ const AboutSection = () => {
                 <img 
                   src="https://images.unsplash.com/photo-1603767139607-5392898255c7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80" 
                   alt="Oil pouring from above" 
-                  className="w-full h-auto object-cover relative rounded-lg"
+                  className="w-full h-auto relative rounded-lg"
+                  onError={(e) => {
+                    // Fallback if main image fails to load
+                    const target = e.target as HTMLImageElement;
+                    target.onerror = null; // Prevent infinite loop
+                    target.src = "https://images.unsplash.com/photo-1536924430914-91f9e2041b83?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80"; // Oil rig fallback
+                  }}
                 />
               </div>
               <div className="absolute -bottom-6 -right-6 bg-unicorn-darkPurple p-6 rounded-lg border-t-4 border-unicorn-gold shadow-xl">
