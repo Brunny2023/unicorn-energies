@@ -1,3 +1,4 @@
+
 /**
  * This utility filters out browser extension errors and other unwanted messages from the console
  * to keep it clean and focused on our application's actual issues.
@@ -20,7 +21,9 @@ export const setupConsoleFilters = () => {
           (args[0].includes('chrome-extension://') || 
            args[0].includes('extension') ||
            args[0].includes('Denying load of chrome-extension') ||
-           args[0].includes('web_accessible_resources'))) ||
+           args[0].includes('web_accessible_resources') ||
+           args[0].includes('Unchecked runtime.lastError') ||
+           args[0].includes('Could not establish connection. Receiving end does not exist'))) ||
         // 404 for grid-pattern.svg
         (typeof args[0] === 'string' && args[0].includes('grid-pattern.svg')) ||
         // Unchecked runtime.lastError
@@ -46,7 +49,9 @@ export const setupConsoleFilters = () => {
         (args[0].includes('extension') || 
          args[0].includes('time: ƒ getTime'))) ||
       // Filter out content.js and other extension-related logs
-      (typeof args[0] === 'string' && args[0].includes('content.js')) ||
+      (typeof args[0] === 'string' && 
+        (args[0].includes('content.js') || 
+         args[0].includes('content.7f229555.js'))) ||
       // Filter out extension logs that only contain false or undefined
       (args.length === 1 && (args[0] === false || args[0] === undefined))
     ) {
@@ -63,7 +68,8 @@ export const setupConsoleFilters = () => {
       typeof args[0] === 'string' && 
       (args[0].includes('extension') || 
        args[0].includes('Denying load') ||
-       args[0].includes('Unknown message type'))
+       args[0].includes('Unknown message type') ||
+       args[0].includes('grid-pattern.svg'))
     ) {
       return;
     }

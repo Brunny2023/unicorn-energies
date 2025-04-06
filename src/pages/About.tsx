@@ -47,12 +47,12 @@ const About = () => {
             
             <div className="relative">
               <img 
-                src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80" 
+                src="/lovable-uploads/f4f91622-13bf-4354-8acc-5ff04e87d83a.png" 
                 alt="Modern office building" 
-                className="rounded-lg shadow-xl"
+                className="rounded-lg shadow-xl w-full max-w-lg mx-auto"
               />
               <div className="absolute -bottom-6 -right-6 bg-white p-6 rounded-lg shadow-lg border-t-4 border-investment-gold">
-                <div className="text-investment-navy font-bold text-2xl">6+ Years</div>
+                <div className="text-investment-navy font-bold text-2xl">20+ Years</div>
                 <div className="text-gray-600">Industry Leadership</div>
               </div>
             </div>
@@ -166,11 +166,11 @@ const About = () => {
         </div>
       </section>
       
-      {/* Team Section Placeholder */}
+      {/* Team Section with Updated Images and Info */}
       <section className="py-16 bg-investment-gray">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <h2 className="heading-lg text-investment-navy mb-4">
+            <h2 className="heading-lg text-investment-navy font-bold mb-4 bg-white/50 py-2 px-4 rounded-md inline-block shadow-sm">
               Our Leadership Team
             </h2>
             <p className="text-gray-600">
@@ -179,16 +179,49 @@ const About = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map((index) => (
-              <div key={index} className="bg-white rounded-lg overflow-hidden shadow-md card-hover">
-                <div className="h-48 bg-investment-navy"></div>
-                <div className="p-5">
-                  <h3 className="font-bold text-lg text-investment-navy">Team Member {index}</h3>
-                  <p className="text-investment-gold font-medium">Position</p>
-                  <p className="text-gray-600 mt-2">Brief description of the team member's background and expertise.</p>
-                </div>
+            <div className="bg-white rounded-lg overflow-hidden shadow-md card-hover">
+              <div className="h-48 bg-investment-navy overflow-hidden">
+                <img src="/lovable-uploads/cfe4dab9-39dc-47d2-93a8-cae4a0722be8.png" alt="Colette Mccarty" className="w-full h-full object-cover" />
               </div>
-            ))}
+              <div className="p-5">
+                <h3 className="font-bold text-lg text-investment-navy">Colette Mccarty</h3>
+                <p className="text-investment-gold font-medium">UX Expert</p>
+                <p className="text-gray-600 mt-2">Leading our digital experience initiatives with over 12 years in designing intuitive financial platforms for global clients.</p>
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-lg overflow-hidden shadow-md card-hover">
+              <div className="h-48 bg-investment-navy overflow-hidden">
+                <img src="/lovable-uploads/904676b3-ac90-4739-8e50-d7490eea25ae.png" alt="Alden Odom" className="w-full h-full object-cover" />
+              </div>
+              <div className="p-5">
+                <h3 className="font-bold text-lg text-investment-navy">Alden Odom</h3>
+                <p className="text-investment-gold font-medium">SEO Expert</p>
+                <p className="text-gray-600 mt-2">Driving our digital visibility with 15+ years of experience optimizing financial services platforms in competitive markets.</p>
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-lg overflow-hidden shadow-md card-hover">
+              <div className="h-48 bg-investment-navy overflow-hidden">
+                <img src="/lovable-uploads/b42296e6-5ed6-4a14-9d5e-74118ab4558b.png" alt="Sage Bray" className="w-full h-full object-cover" />
+              </div>
+              <div className="p-5">
+                <h3 className="font-bold text-lg text-investment-navy">Sage Bray</h3>
+                <p className="text-investment-gold font-medium">Marketing Head</p>
+                <p className="text-gray-600 mt-2">With 20+ years in energy sector marketing, Sage has successfully positioned multiple energy investment firms as market leaders.</p>
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-lg overflow-hidden shadow-md card-hover">
+              <div className="h-48 bg-investment-navy overflow-hidden">
+                <img src="/lovable-uploads/6ed26c8b-953b-4c36-8b65-b9a2483ebbd4.png" alt="Cyrus Briggs" className="w-full h-full object-cover" />
+              </div>
+              <div className="p-5">
+                <h3 className="font-bold text-lg text-investment-navy">Cyrus Briggs</h3>
+                <p className="text-investment-gold font-medium">Developer</p>
+                <p className="text-gray-600 mt-2">Leading our tech initiatives with innovative blockchain solutions for secure and transparent investment tracking and transactions.</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>

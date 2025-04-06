@@ -36,9 +36,13 @@ const featuresData = [
 
 const WhyChooseUsSection = () => {
   return (
-    <section className="section-padding hero-gradient text-white relative">
-      {/* Removed the grid-pattern.svg reference and using only a gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-unicorn-darkPurple/30 to-unicorn-purple/20 opacity-20"></div>
+    <section className="section-padding bg-gradient-to-br from-[#1A2930] via-[#2A3C44] to-[#1E272C] text-white relative">
+      {/* Oil-themed subtle background effect */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-[#D4AD3A]/20 to-transparent"></div>
+        <div className="absolute bottom-0 right-0 w-full h-20 bg-gradient-to-t from-[#D4AD3A]/20 to-transparent"></div>
+      </div>
+      
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="heading-lg mb-4">Why Choose UnicornEnergies</h2>
@@ -51,10 +55,10 @@ const WhyChooseUsSection = () => {
           {featuresData.map((feature, index) => (
             <div 
               key={index} 
-              className="bg-investment-lightNavy bg-opacity-50 backdrop-blur-sm rounded-lg p-6 border border-white border-opacity-10 hover:transform hover:scale-105 transition-transform"
+              className="bg-[#212F36]/80 backdrop-blur-sm rounded-lg p-6 border border-[#D4AD3A]/30 hover:transform hover:scale-105 transition-transform shadow-lg"
             >
-              <div className="bg-investment-gold rounded-full p-3 inline-block mb-4">
-                <feature.icon className="h-6 w-6 text-investment-navy" />
+              <div className="bg-[#D4AD3A] rounded-full p-3 inline-block mb-4">
+                <feature.icon className="h-6 w-6 text-[#1A2930]" />
               </div>
               <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
               <p className="text-gray-300">{feature.description}</p>
