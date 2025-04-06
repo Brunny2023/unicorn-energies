@@ -65,20 +65,20 @@ const AboutSection = () => {
           </div>
           
           <div className="order-1 lg:order-2">
-            <div className="relative">
+            <div className="relative max-w-md mx-auto lg:max-w-full">
               <div className="relative rounded-lg overflow-hidden shadow-2xl border border-unicorn-gold/30">
                 {/* Fancy border effect */}
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-unicorn-gold to-unicorn-purple rounded-lg blur-sm"></div>
                 
                 <img 
-                  src="/lovable-uploads/dd9f21c4-5efd-4b78-afb7-e40eed48b069.png" 
-                  alt="Oil refinery at night" 
+                  src="/lovable-uploads/f4f91622-13bf-4354-8acc-5ff04e87d83a.png" 
+                  alt="Financial calculator and market data" 
                   className="w-full h-auto relative rounded-lg"
                   onError={(e) => {
                     // Fallback if main image fails to load
                     const target = e.target as HTMLImageElement;
                     target.onerror = null; // Prevent infinite loop
-                    target.src = "https://images.unsplash.com/photo-1536924430914-91f9e2041b83?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80"; // Oil rig fallback
+                    target.src = "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80"; // Business calculator fallback
                   }}
                 />
               </div>

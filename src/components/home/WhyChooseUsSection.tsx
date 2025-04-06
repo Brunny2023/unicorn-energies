@@ -37,8 +37,8 @@ const featuresData = [
 const WhyChooseUsSection = () => {
   return (
     <section className="section-padding hero-gradient text-white relative">
-      {/* Replaced the grid-pattern.svg reference with a gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-unicorn-darkPurple/20 to-unicorn-purple/10 opacity-10"></div>
+      {/* Removed the grid-pattern.svg reference and using only a gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-unicorn-darkPurple/30 to-unicorn-purple/20 opacity-20"></div>
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="heading-lg mb-4">Why Choose UnicornEnergies</h2>
