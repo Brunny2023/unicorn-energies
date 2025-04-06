@@ -2,70 +2,10 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
 
 const HeroBanner = () => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [videoError, setVideoError] = useState(false);
-
-  useEffect(() => {
-    // Ensure video plays properly and handle failures
-    if (videoRef.current) {
-      const playVideo = async () => {
-        try {
-          await videoRef.current?.play();
-        } catch (error) {
-          console.error("Video playback failed:", error);
-          setVideoError(true);
-        }
-      };
-      
-      playVideo();
-      
-      // Set up an event listener to detect video loading errors
-      const handleError = () => {
-        console.error("Video failed to load");
-        setVideoError(true);
-      };
-      
-      videoRef.current.addEventListener('error', handleError);
-      
-      // Cleanup
-      return () => {
-        videoRef.current?.removeEventListener('error', handleError);
-      };
-    }
-  }, []);
-
   return (
-    <section className="relative py-20 md:py-32 overflow-hidden">
-      {/* Animated oil pouring effect */}
-      <div className="absolute top-0 left-0 w-full h-full z-0 opacity-30 pointer-events-none">
-        {!videoError ? (
-          <video 
-            ref={videoRef}
-            autoPlay 
-            muted 
-            loop 
-            playsInline
-            preload="auto"
-            className="w-full h-full object-cover"
-            poster="/lovable-uploads/dd9f21c4-5efd-4b78-afb7-e40eed48b069.png"
-          >
-            <source src="https://assets.mixkit.co/videos/preview/mixkit-dripping-dark-oil-612-large.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        ) : (
-          <div className="w-full h-full bg-black">
-            <img
-              src="/lovable-uploads/dd9f21c4-5efd-4b78-afb7-e40eed48b069.png"
-              alt="Oil refinery at night"
-              className="w-full h-full object-cover"
-            />
-          </div>
-        )}
-      </div>
-      
+    <section className="relative py-20 md:py-32 overflow-hidden hero-gradient">
       {/* Glowing effect behind the content */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-unicorn-gold/10 rounded-full blur-3xl"></div>
       

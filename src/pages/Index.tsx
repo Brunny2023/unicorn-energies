@@ -1,4 +1,3 @@
-
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import HeroBanner from "@/components/home/HeroBanner";
@@ -11,6 +10,7 @@ import TestimonialsSection from "@/components/home/TestimonialsSection";
 import CtaSection from "@/components/home/CtaSection";
 import StarsBackground from "@/components/ui/StarsBackground";
 import { useEffect } from "react";
+import { setupConsoleFilters } from "@/utils/consoleErrorFilter";
 
 // Add CSS for animations with faster star movements - using pure CSS without external resources
 const styles = `
@@ -131,40 +131,11 @@ const styles = `
 const Index = () => {
   // Suppress Chrome extension errors in console that we can't control
   useEffect(() => {
-    // Override console.error to filter out browser extension errors
-    const originalConsoleError = console.error;
-    console.error = (...args) => {
-      // Filter out chrome extension errors
-      if (
-        args[0] && 
-        typeof args[0] === 'string' && 
-        (args[0].includes('chrome-extension://') || 
-         args[0].includes('extension'))
-      ) {
-        return;
-      }
-      originalConsoleError(...args);
-    };
-
-    // Override console.log to filter out extension logs
-    const originalConsoleLog = console.log;
-    console.log = (...args) => {
-      // Filter out chrome extension and content.js related console logs
-      if (
-        args[0] === false || 
-        args[0] === undefined || 
-        (typeof args[0] === 'string' && args[0].includes('extension'))
-      ) {
-        return;
-      }
-      originalConsoleLog(...args);
-    };
-
-    return () => {
-      // Restore original console methods when component unmounts
-      console.error = originalConsoleError;
-      console.log = originalConsoleLog;
-    };
+    // Use our console filter utility
+    const cleanupConsoleFilters = setupConsoleFilters();
+    
+    // Cleanup when component unmounts
+    return cleanupConsoleFilters;
   }, []);
 
   return (

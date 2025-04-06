@@ -71,8 +71,8 @@ const AboutSection = () => {
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-unicorn-gold to-unicorn-purple rounded-lg blur-sm"></div>
                 
                 <img 
-                  src="/lovable-uploads/d68751ec-2ab5-4612-ae0a-f70ad249b94f.png" 
-                  alt="Oil worker adjusting valves" 
+                  src="/lovable-uploads/dd9f21c4-5efd-4b78-afb7-e40eed48b069.png" 
+                  alt="Oil refinery at night" 
                   className="w-full h-auto relative rounded-lg"
                   onError={(e) => {
                     // Fallback if main image fails to load
