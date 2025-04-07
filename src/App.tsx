@@ -18,9 +18,14 @@ import ResetPassword from "./pages/auth/ResetPassword";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Investments from "./pages/dashboard/Investments";
 import Withdraw from "./pages/dashboard/Withdraw";
+import TicketsIndex from "./pages/dashboard/tickets/TicketsIndex";
+import NewTicket from "./pages/dashboard/tickets/NewTicket";
+import TicketView from "./pages/dashboard/tickets/TicketView";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminUsers from "./pages/admin/Users";
 import AdminTransactions from "./pages/admin/Transactions";
+import AdminTickets from "./pages/admin/Tickets";
+import AdminTicketDetails from "./pages/admin/TicketDetails";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AdminRoute from "./components/auth/AdminRoute";
@@ -52,11 +57,16 @@ const App = () => (
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/dashboard/investments" element={<ProtectedRoute><Investments /></ProtectedRoute>} />
           <Route path="/dashboard/withdraw" element={<ProtectedRoute><Withdraw /></ProtectedRoute>} />
+          <Route path="/dashboard/tickets" element={<ProtectedRoute><TicketsIndex /></ProtectedRoute>} />
+          <Route path="/dashboard/tickets/new" element={<ProtectedRoute><NewTicket /></ProtectedRoute>} />
+          <Route path="/dashboard/tickets/:id" element={<ProtectedRoute><TicketView /></ProtectedRoute>} />
           
           {/* Protected admin routes */}
           <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
           <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
           <Route path="/admin/transactions" element={<AdminRoute><AdminTransactions /></AdminRoute>} />
+          <Route path="/admin/tickets" element={<AdminRoute><AdminTickets /></AdminRoute>} />
+          <Route path="/admin/tickets/:id" element={<AdminRoute><AdminTicketDetails /></AdminRoute>} />
           
           {/* Catch-all route */}
           <Route path="*" element={<NotFound />} />

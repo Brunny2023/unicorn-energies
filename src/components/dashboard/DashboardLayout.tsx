@@ -1,300 +1,199 @@
 
-import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import {
-  Home,
-  CreditCard,
-  BarChart3,
-  Settings,
-  User,
-  LogOut,
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
+import { 
+  Home, 
+  LineChart, 
+  CreditCard, 
+  Users, 
+  History, 
+  BarChart3, 
+  LogOut, 
+  ChevronDown, 
+  ChevronRight,
   Menu,
   X,
-  Users,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
+  MessageSquareText
+} from 'lucide-react';
 
-interface NavLinkProps {
-  href: string;
+interface NavItemProps {
   icon: React.ReactNode;
   label: string;
-  active?: boolean;
-  onClick?: () => void;
+  to: string;
+  isActive: boolean;
+  adminOnly?: boolean;
+  isAdmin: boolean;
 }
 
-const NavLink: React.FC<NavLinkProps> = ({ href, icon, label, active, onClick }) => (
-  <Link
-    to={href}
-    onClick={onClick}
-    className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
-      active ? "bg-unicorn-gold text-unicorn-black" : "text-gray-300 hover:bg-unicorn-gold/20"
-    }`}
-  >
-    {icon}
-    {label}
-  </Link>
-);
+const NavItem = ({ icon, label, to, isActive, adminOnly = false, isAdmin }: NavItemProps) => {
+  if (adminOnly && !isAdmin) return null;
+  
+  return (
+    <Link to={to}>
+      <div 
+        className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+          isActive 
+            ? 'bg-unicorn-gold/20 text-unicorn-gold' 
+            : 'text-gray-300 hover:bg-unicorn-purple/20 hover:text-unicorn-gold'
+        }`}
+      >
+        {icon}
+        <span className="font-medium">{label}</span>
+        {isActive && (
+          <div className="ml-auto">
+            <ChevronRight className="h-5 w-5" />
+          </div>
+        )}
+      </div>
+    </Link>
+  );
+};
 
-interface DashboardLayoutProps {
-  children: React.ReactNode;
-  isAdmin?: boolean;
-}
-
-const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, isAdmin = false }) => {
-  const { signOut, user } = useAuth();
+const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
-  const [showMobileNav, setShowMobileNav] = useState(false);
-
-  const toggleMobileNav = () => {
-    setShowMobileNav(!showMobileNav);
-  };
-
-  const closeMobileNav = () => {
-    setShowMobileNav(false);
-  };
-
-  const handleSignOut = () => {
-    signOut();
+  const navigate = useNavigate();
+  const { user, signOut, isAdmin } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+  
+  const isActive = (path: string) => {
+    if (path === '/dashboard' || path === '/admin/dashboard') {
+      return location.pathname === path;
+    }
+    return location.pathname.startsWith(path);
   };
 
   return (
-    <div className="min-h-screen bg-unicorn-darkPurple/90 flex">
-      {/* Desktop sidebar */}
-      <aside className="hidden md:flex w-64 flex-col border-r bg-unicorn-darkPurple/90 border-unicorn-gold/30">
-        <div className="flex h-16 items-center border-b border-unicorn-gold/30 px-6">
-          <Link to="/" className="flex items-center gap-2">
-            <img
-              src="/lovable-uploads/81643525-55e2-47f0-994e-cc903455b959.png"
-              alt="UnicornEnergies Logo"
-              className="h-8 w-8"
-            />
-            <span className="text-lg font-semibold text-white">
-              <span className="text-unicorn-gold">Unicorn</span>Energies
-            </span>
-          </Link>
-        </div>
-        <ScrollArea className="flex-1 p-4">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <h4 className="text-sm font-semibold text-gray-500 uppercase">General</h4>
-              <div className="space-y-1">
-                {isAdmin ? (
+    <div className="min-h-screen bg-gradient-to-b from-unicorn-black to-unicorn-darkPurple">
+      <Navbar />
+      
+      <div className="container mx-auto px-4 pt-8 pb-16">
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Mobile Menu Toggle */}
+          <div className="md:hidden flex justify-between items-center mb-4">
+            <h1 className="text-xl font-bold text-white">Dashboard</h1>
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="text-white"
+            >
+              {mobileMenuOpen ? <X /> : <Menu />}
+            </Button>
+          </div>
+          
+          {/* Sidebar Navigation */}
+          <div className={`md:w-64 flex-shrink-0 ${mobileMenuOpen ? 'block' : 'hidden md:block'}`}>
+            <div className="bg-unicorn-darkPurple/80 backdrop-blur-lg rounded-xl border border-unicorn-gold/20 p-4 sticky top-24">
+              {/* User Section */}
+              <div className="pb-4 mb-4 border-b border-unicorn-gold/20">
+                <div className="flex items-center space-x-3">
+                  <div className="h-10 w-10 rounded-full bg-unicorn-gold/80 flex items-center justify-center text-unicorn-black font-bold">
+                    {user?.email?.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="overflow-hidden">
+                    <div className="text-white font-medium truncate">{user?.email}</div>
+                    <div className="text-xs text-gray-400">{isAdmin ? 'Administrator' : 'Investor'}</div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Nav Links */}
+              <nav className="space-y-1">
+                <NavItem 
+                  icon={<Home className="h-5 w-5" />} 
+                  label="Dashboard" 
+                  to={isAdmin ? "/admin/dashboard" : "/dashboard"} 
+                  isActive={isActive(isAdmin ? "/admin/dashboard" : "/dashboard")}
+                  isAdmin={isAdmin}
+                />
+                
+                {!isAdmin && (
                   <>
-                    <NavLink
-                      href="/admin/dashboard"
-                      icon={<Home size={16} />}
-                      label="Dashboard"
-                      active={location.pathname === "/admin/dashboard"}
+                    <NavItem 
+                      icon={<LineChart className="h-5 w-5" />} 
+                      label="Investments" 
+                      to="/dashboard/investments" 
+                      isActive={isActive("/dashboard/investments")}
+                      isAdmin={isAdmin}
                     />
-                    <NavLink
-                      href="/admin/users"
-                      icon={<Users size={16} />}
-                      label="Users"
-                      active={location.pathname === "/admin/users"}
+                    <NavItem 
+                      icon={<CreditCard className="h-5 w-5" />} 
+                      label="Withdraw" 
+                      to="/dashboard/withdraw" 
+                      isActive={isActive("/dashboard/withdraw")}
+                      isAdmin={isAdmin}
                     />
-                    <NavLink
-                      href="/admin/transactions"
-                      icon={<CreditCard size={16} />}
-                      label="Transactions"
-                      active={location.pathname === "/admin/transactions"}
-                    />
-                  </>
-                ) : (
-                  <>
-                    <NavLink
-                      href="/dashboard"
-                      icon={<Home size={16} />}
-                      label="Dashboard"
-                      active={location.pathname === "/dashboard"}
-                    />
-                    <NavLink
-                      href="/dashboard/transactions"
-                      icon={<CreditCard size={16} />}
-                      label="Transactions"
-                      active={location.pathname === "/dashboard/transactions"}
-                    />
-                    <NavLink
-                      href="/dashboard/investments"
-                      icon={<BarChart3 size={16} />}
-                      label="Investments"
-                      active={location.pathname === "/dashboard/investments"}
+                    <NavItem 
+                      icon={<MessageSquareText className="h-5 w-5" />} 
+                      label="Support Tickets" 
+                      to="/dashboard/tickets" 
+                      isActive={isActive("/dashboard/tickets")}
+                      isAdmin={isAdmin}
                     />
                   </>
                 )}
-              </div>
-            </div>
-            <Separator className="border-unicorn-gold/30" />
-            <div className="space-y-2">
-              <h4 className="text-sm font-semibold text-gray-500 uppercase">Account</h4>
-              <div className="space-y-1">
-                <NavLink
-                  href={isAdmin ? "/admin/profile" : "/dashboard/profile"}
-                  icon={<User size={16} />}
-                  label="Profile"
-                  active={location.pathname === (isAdmin ? "/admin/profile" : "/dashboard/profile")}
-                />
-                <NavLink
-                  href={isAdmin ? "/admin/settings" : "/dashboard/settings"}
-                  icon={<Settings size={16} />}
-                  label="Settings"
-                  active={location.pathname === (isAdmin ? "/admin/settings" : "/dashboard/settings")}
-                />
-                <Button
-                  variant="ghost"
-                  onClick={handleSignOut}
-                  className="w-full justify-start text-gray-300 hover:bg-unicorn-gold/20 hover:text-unicorn-gold"
+                
+                {isAdmin && (
+                  <>
+                    <NavItem 
+                      icon={<Users className="h-5 w-5" />} 
+                      label="Users" 
+                      to="/admin/users" 
+                      isActive={isActive("/admin/users")}
+                      adminOnly
+                      isAdmin={isAdmin}
+                    />
+                    <NavItem 
+                      icon={<History className="h-5 w-5" />} 
+                      label="Transactions" 
+                      to="/admin/transactions" 
+                      isActive={isActive("/admin/transactions")}
+                      adminOnly
+                      isAdmin={isAdmin}
+                    />
+                    <NavItem 
+                      icon={<MessageSquareText className="h-5 w-5" />} 
+                      label="Support Tickets" 
+                      to="/admin/tickets" 
+                      isActive={isActive("/admin/tickets")}
+                      adminOnly
+                      isAdmin={isAdmin}
+                    />
+                  </>
+                )}
+              </nav>
+              
+              {/* Logout Button */}
+              <div className="pt-4 mt-4 border-t border-unicorn-gold/20">
+                <Button 
+                  variant="ghost" 
+                  className="w-full justify-start text-gray-400 hover:text-white hover:bg-unicorn-purple/20"
+                  onClick={() => signOut()}
                 >
-                  <LogOut size={16} className="mr-3" />
+                  <LogOut className="h-5 w-5 mr-3" />
                   Sign Out
                 </Button>
               </div>
             </div>
           </div>
-        </ScrollArea>
-      </aside>
-
-      {/* Mobile sidebar */}
-      {showMobileNav && (
-        <div className="fixed inset-0 z-50 md:hidden">
-          <div className="fixed inset-0 bg-black/70" onClick={closeMobileNav} />
-          <div className="fixed top-0 bottom-0 left-0 w-72 bg-unicorn-darkPurple/95 p-6 shadow-xl">
-            <div className="flex items-center justify-between mb-8">
-              <Link to="/" className="flex items-center gap-2" onClick={closeMobileNav}>
-                <img
-                  src="/lovable-uploads/81643525-55e2-47f0-994e-cc903455b959.png"
-                  alt="UnicornEnergies Logo"
-                  className="h-8 w-8"
-                />
-                <span className="text-lg font-semibold text-white">
-                  <span className="text-unicorn-gold">Unicorn</span>Energies
-                </span>
-              </Link>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={closeMobileNav}
-                className="text-white hover:bg-unicorn-gold/20"
-              >
-                <X size={18} />
-              </Button>
-            </div>
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <h4 className="text-sm font-semibold text-gray-500 uppercase">General</h4>
-                <div className="space-y-1">
-                  {isAdmin ? (
-                    <>
-                      <NavLink
-                        href="/admin/dashboard"
-                        icon={<Home size={16} />}
-                        label="Dashboard"
-                        active={location.pathname === "/admin/dashboard"}
-                        onClick={closeMobileNav}
-                      />
-                      <NavLink
-                        href="/admin/users"
-                        icon={<Users size={16} />}
-                        label="Users"
-                        active={location.pathname === "/admin/users"}
-                        onClick={closeMobileNav}
-                      />
-                      <NavLink
-                        href="/admin/transactions"
-                        icon={<CreditCard size={16} />}
-                        label="Transactions"
-                        active={location.pathname === "/admin/transactions"}
-                        onClick={closeMobileNav}
-                      />
-                    </>
-                  ) : (
-                    <>
-                      <NavLink
-                        href="/dashboard"
-                        icon={<Home size={16} />}
-                        label="Dashboard"
-                        active={location.pathname === "/dashboard"}
-                        onClick={closeMobileNav}
-                      />
-                      <NavLink
-                        href="/dashboard/transactions"
-                        icon={<CreditCard size={16} />}
-                        label="Transactions"
-                        active={location.pathname === "/dashboard/transactions"}
-                        onClick={closeMobileNav}
-                      />
-                      <NavLink
-                        href="/dashboard/investments"
-                        icon={<BarChart3 size={16} />}
-                        label="Investments"
-                        active={location.pathname === "/dashboard/investments"}
-                        onClick={closeMobileNav}
-                      />
-                    </>
-                  )}
-                </div>
-              </div>
-              <Separator className="border-unicorn-gold/30" />
-              <div className="space-y-2">
-                <h4 className="text-sm font-semibold text-gray-500 uppercase">Account</h4>
-                <div className="space-y-1">
-                  <NavLink
-                    href={isAdmin ? "/admin/profile" : "/dashboard/profile"}
-                    icon={<User size={16} />}
-                    label="Profile"
-                    active={location.pathname === (isAdmin ? "/admin/profile" : "/dashboard/profile")}
-                    onClick={closeMobileNav}
-                  />
-                  <NavLink
-                    href={isAdmin ? "/admin/settings" : "/dashboard/settings"}
-                    icon={<Settings size={16} />}
-                    label="Settings"
-                    active={location.pathname === (isAdmin ? "/admin/settings" : "/dashboard/settings")}
-                    onClick={closeMobileNav}
-                  />
-                  <Button
-                    variant="ghost"
-                    onClick={handleSignOut}
-                    className="w-full justify-start text-gray-300 hover:bg-unicorn-gold/20 hover:text-unicorn-gold"
-                  >
-                    <LogOut size={16} className="mr-3" />
-                    Sign Out
-                  </Button>
-                </div>
-              </div>
-            </div>
+          
+          {/* Main Content */}
+          <div className="flex-1">
+            {children}
           </div>
         </div>
-      )}
-
-      {/* Main content */}
-      <div className="flex-1 flex flex-col">
-        <header className="h-16 flex items-center border-b border-unicorn-gold/30 px-6">
-          <Button
-            variant="ghost"
-            className="md:hidden text-white hover:bg-unicorn-gold/20 mr-2"
-            onClick={toggleMobileNav}
-          >
-            <Menu size={20} />
-          </Button>
-          <div className="flex-1">
-            <h1 className="text-xl font-semibold text-white">
-              {isAdmin ? "Admin Dashboard" : "Dashboard"}
-            </h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="hidden sm:block">
-              <p className="text-sm text-gray-300">Welcome, {user?.email}</p>
-            </div>
-            <div className="h-8 w-8 rounded-full bg-unicorn-gold/80 flex items-center justify-center text-unicorn-black font-bold">
-              {user?.email?.charAt(0).toUpperCase()}
-            </div>
-          </div>
-        </header>
-        <main className="flex-1 overflow-auto p-6">{children}</main>
       </div>
+      
+      <Footer />
     </div>
   );
 };
