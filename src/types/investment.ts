@@ -30,7 +30,6 @@ export type Transaction = {
   created_at: string;
 };
 
-// Add missing types referenced by other components
 export type Plan = {
   name: string;
   minAmount: number;
@@ -49,9 +48,10 @@ export type WithdrawalRequest = {
   amount: number;
   fee: number;
   netAmount: number;
+  eligible?: boolean;
+  reason?: string;
 };
 
-// Add ticket types
 export type Ticket = {
   id: string;
   user_id: string;

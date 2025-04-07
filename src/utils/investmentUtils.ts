@@ -1,7 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { Investment, WalletData, Transaction, Plan, CalculationResults, WithdrawalRequest } from "@/types/investment";
-import { Tables } from "@/integrations/supabase/types";
+import { Investment, WalletData, Transaction, Plan, CalculationResults, WithdrawalRequest, Ticket } from "@/types/investment";
 
 export const getUserInvestments = async (userId: string): Promise<Investment[]> => {
   try {
@@ -68,7 +67,7 @@ export const fetchTransactions = async (userId: string): Promise<Transaction[]> 
   }
 };
 
-// Add missing utility functions
+// Investment calculation functions
 export const calculateInvestment = (amount: number, plan: Plan): CalculationResults => {
   if (amount <= 0) return null;
   
@@ -100,10 +99,10 @@ export const createInvestment = async (
     
     // Start a transaction
     // 1. Decrement wallet balance
-    const { error: walletError } = await supabase
-      .from('wallets')
-      .update({ balance: supabase.rpc('decrement_balance', { amount }) })
-      .eq('user_id', userId);
+    const { error: walletError } = await supabase.rpc('decrement_balance', { 
+      user_id: userId,
+      amount_to_subtract: amount 
+    });
       
     if (walletError) throw walletError;
     
@@ -162,8 +161,24 @@ export const calculateWithdrawal = (
   walletData: WalletData,
   requestedAmount: number
 ): WithdrawalRequest | null => {
-  if (!walletData || requestedAmount <= 0 || requestedAmount > walletData.accrued_profits) {
-    return null;
+  if (!walletData || requestedAmount <= 0) {
+    return {
+      amount: requestedAmount,
+      fee: 0,
+      netAmount: 0,
+      eligible: false,
+      reason: "Invalid amount or wallet data"
+    };
+  }
+  
+  if (requestedAmount > walletData.accrued_profits) {
+    return {
+      amount: requestedAmount,
+      fee: 0,
+      netAmount: 0,
+      eligible: false,
+      reason: "Requested amount exceeds available profits"
+    };
   }
   
   const fee = (requestedAmount * walletData.withdrawal_fee_percentage) / 100;
@@ -172,7 +187,8 @@ export const calculateWithdrawal = (
   return {
     amount: requestedAmount,
     fee,
-    netAmount
+    netAmount,
+    eligible: true
   };
 };
 
@@ -181,18 +197,26 @@ export const processWithdrawal = async (
   withdrawal: WithdrawalRequest
 ): Promise<boolean> => {
   try {
-    // 1. Update wallet
-    const { error: walletError } = await supabase
-      .from('wallets')
-      .update({
-        accrued_profits: supabase.rpc('decrement_balance', { amount: withdrawal.amount }),
-        balance: supabase.rpc('increment_balance', { amount: withdrawal.netAmount })
-      })
-      .eq('user_id', userId);
-      
-    if (walletError) throw walletError;
+    if (!withdrawal.eligible) return false;
     
-    // 2. Create transaction record
+    // 1. Update wallet - decrement accrued profits
+    const { error: walletError1 } = await supabase.rpc('decrement_balance', { 
+      user_id: userId,
+      amount_to_subtract: withdrawal.amount,
+      column_name: 'accrued_profits'
+    });
+      
+    if (walletError1) throw walletError1;
+    
+    // 2. Update wallet - increment balance
+    const { error: walletError2 } = await supabase.rpc('increment_balance', { 
+      user_id: userId,
+      amount_to_add: withdrawal.netAmount
+    });
+      
+    if (walletError2) throw walletError2;
+    
+    // 3. Create transaction record
     const { error: transactionError } = await supabase
       .from('transactions')
       .insert({
@@ -211,7 +235,7 @@ export const processWithdrawal = async (
   }
 };
 
-// Add ticket-related functions
+// Ticket-related functions
 export const createTicket = async (
   userId: string,
   subject: string,
@@ -237,7 +261,7 @@ export const createTicket = async (
   }
 };
 
-export const getUserTickets = async (userId: string) => {
+export const getUserTickets = async (userId: string): Promise<Ticket[]> => {
   try {
     const { data, error } = await supabase
       .from('tickets')
@@ -246,14 +270,14 @@ export const getUserTickets = async (userId: string) => {
       .order('created_at', { ascending: false });
       
     if (error) throw error;
-    return data;
+    return data as Ticket[];
   } catch (error) {
     console.error("Error fetching tickets:", error);
     return [];
   }
 };
 
-export const getTicketDetails = async (ticketId: string) => {
+export const getTicketDetails = async (ticketId: string): Promise<Ticket | null> => {
   try {
     const { data, error } = await supabase
       .from('tickets')
@@ -262,7 +286,7 @@ export const getTicketDetails = async (ticketId: string) => {
       .single();
       
     if (error) throw error;
-    return data;
+    return data as Ticket;
   } catch (error) {
     console.error("Error fetching ticket details:", error);
     return null;
@@ -272,7 +296,7 @@ export const getTicketDetails = async (ticketId: string) => {
 export const updateTicket = async (
   ticketId: string,
   updates: { status?: string; message?: string }
-) => {
+): Promise<boolean> => {
   try {
     const { error } = await supabase
       .from('tickets')
@@ -286,6 +310,47 @@ export const updateTicket = async (
     return true;
   } catch (error) {
     console.error("Error updating ticket:", error);
+    return false;
+  }
+};
+
+// Functions for admin 
+export const getAllTickets = async (): Promise<Ticket[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('tickets')
+      .select('*')
+      .order('created_at', { ascending: false });
+      
+    if (error) throw error;
+    return data as Ticket[];
+  } catch (error) {
+    console.error("Error fetching all tickets:", error);
+    return [];
+  }
+};
+
+export const generateAIResponse = async (
+  ticketId: string,
+  message: string
+): Promise<boolean> => {
+  try {
+    // Simulate AI response for now
+    const aiResponse = "Thank you for contacting our support team. We're looking into your issue and will get back to you soon.";
+    
+    const { error } = await supabase
+      .from('tickets')
+      .update({
+        ai_response: aiResponse,
+        ai_responded_at: new Date().toISOString(),
+        status: 'in-progress'
+      })
+      .eq('id', ticketId);
+      
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error("Error generating AI response:", error);
     return false;
   }
 };

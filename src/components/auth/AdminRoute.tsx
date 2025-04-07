@@ -1,31 +1,24 @@
 
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { ReactNode } from "react";
+import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
-const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading, isAdmin } = useAuth();
-  const navigate = useNavigate();
+interface AdminRouteProps {
+  children: ReactNode;
+}
 
-  useEffect(() => {
-    if (!loading) {
-      if (!user) {
-        navigate("/login", { replace: true });
-      } else if (!isAdmin) {
-        navigate("/dashboard", { replace: true });
-      }
-    }
-  }, [user, loading, isAdmin, navigate]);
+const AdminRoute = ({ children }: AdminRouteProps) => {
+  const { user, loading, isAdmin } = useAuth();
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-unicorn-darkPurple/90">
-        <div className="h-16 w-16 border-t-4 border-unicorn-gold border-solid rounded-full animate-spin"></div>
-      </div>
-    );
+    return <div>Loading...</div>;
   }
 
-  return (user && isAdmin) ? <>{children}</> : null;
+  if (!user || !isAdmin) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
 };
 
 export default AdminRoute;

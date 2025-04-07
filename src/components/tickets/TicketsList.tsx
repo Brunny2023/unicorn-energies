@@ -1,18 +1,16 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Ticket } from '@/components/ui/ticket';
-import { MessageSquare, Clock, AlertTriangle, CheckCircle, Plus, ChevronRight } from 'lucide-react';
+import { MessageSquare, ChevronRight, Plus } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getUserTickets } from '@/utils/investmentUtils';
-import { Ticket as TicketType } from '@/types/investment'; 
+import { Ticket } from '@/types/investment'; 
 
 const TicketsList = () => {
   const { user } = useAuth();
-  const [tickets, setTickets] = useState<TicketType[]>([]);
+  const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
