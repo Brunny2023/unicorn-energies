@@ -9,6 +9,48 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      investments: {
+        Row: {
+          amount: number
+          created_at: string
+          daily_return: number
+          duration: number
+          end_date: string
+          id: string
+          plan_id: string
+          start_date: string
+          status: string
+          total_return: number
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          daily_return: number
+          duration: number
+          end_date: string
+          id?: string
+          plan_id: string
+          start_date?: string
+          status?: string
+          total_return: number
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          daily_return?: number
+          duration?: number
+          end_date?: string
+          id?: string
+          plan_id?: string
+          start_date?: string
+          status?: string
+          total_return?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -89,25 +131,31 @@ export type Database = {
       }
       wallets: {
         Row: {
+          accrued_profits: number
           balance: number
           created_at: string
           id: string
           updated_at: string
           user_id: string
+          withdrawal_fee_percentage: number
         }
         Insert: {
+          accrued_profits?: number
           balance?: number
           created_at?: string
           id?: string
           updated_at?: string
           user_id: string
+          withdrawal_fee_percentage?: number
         }
         Update: {
+          accrued_profits?: number
           balance?: number
           created_at?: string
           id?: string
           updated_at?: string
           user_id?: string
+          withdrawal_fee_percentage?: number
         }
         Relationships: [
           {
@@ -129,6 +177,10 @@ export type Database = {
           user_id: string
         }
         Returns: boolean
+      }
+      update_investment_profits: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
     }
     Enums: {

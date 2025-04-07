@@ -16,6 +16,8 @@ import Register from "./pages/auth/Register";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
 import Dashboard from "./pages/dashboard/Dashboard";
+import Investments from "./pages/dashboard/Investments";
+import Withdraw from "./pages/dashboard/Withdraw";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminUsers from "./pages/admin/Users";
 import AdminTransactions from "./pages/admin/Transactions";
@@ -48,6 +50,8 @@ const App = () => (
           
           {/* Protected user routes */}
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/dashboard/investments" element={<ProtectedRoute><Investments /></ProtectedRoute>} />
+          <Route path="/dashboard/withdraw" element={<ProtectedRoute><Withdraw /></ProtectedRoute>} />
           
           {/* Protected admin routes */}
           <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />

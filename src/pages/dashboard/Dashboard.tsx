@@ -4,9 +4,18 @@ import { Link } from "react-router-dom";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CircleDollarSign, ArrowUpRight, ArrowDownRight, LineChart, Wallet, Clock } from "lucide-react";
+import { 
+  CircleDollarSign, 
+  ArrowUpRight, 
+  ArrowDownRight, 
+  LineChart, 
+  Wallet, 
+  Clock,
+  TrendingUp
+} from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { formatCurrency } from "@/utils/investmentUtils";
 
 interface Transaction {
   id: string;
@@ -20,6 +29,14 @@ interface Transaction {
 interface WalletData {
   id: string;
   balance: number;
+  accrued_profits: number;
+  withdrawal_fee_percentage: number;
+}
+
+interface InvestmentStats {
+  active_count: number;
+  total_invested: number;
+  total_expected_return: number;
 }
 
 const Dashboard = () => {
@@ -27,11 +44,17 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [walletData, setWalletData] = useState<WalletData | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [investmentStats, setInvestmentStats] = useState<InvestmentStats>({
+    active_count: 0,
+    total_invested: 0,
+    total_expected_return: 0
+  });
 
   useEffect(() => {
     if (user) {
       fetchWallet();
       fetchTransactions();
+      fetchInvestmentStats();
     }
   }, [user]);
 
@@ -39,7 +62,7 @@ const Dashboard = () => {
     try {
       const { data, error } = await supabase
         .from('wallets')
-        .select('id, balance')
+        .select('id, balance, accrued_profits, withdrawal_fee_percentage')
         .eq('user_id', user?.id)
         .single();
 
@@ -65,6 +88,32 @@ const Dashboard = () => {
       setTransactions(data || []);
     } catch (error) {
       console.error('Error fetching transactions:', error);
+    }
+  };
+
+  const fetchInvestmentStats = async () => {
+    try {
+      // Get active investments count
+      const { data: activeInvestments, error: activeError } = await supabase
+        .from('investments')
+        .select('amount, total_return')
+        .eq('user_id', user?.id)
+        .eq('status', 'active');
+
+      if (activeError) throw activeError;
+      
+      // Calculate statistics
+      const activeCount = activeInvestments?.length || 0;
+      const totalInvested = activeInvestments?.reduce((sum, inv) => sum + Number(inv.amount), 0) || 0;
+      const totalExpectedReturn = activeInvestments?.reduce((sum, inv) => sum + Number(inv.total_return), 0) || 0;
+      
+      setInvestmentStats({
+        active_count: activeCount,
+        total_invested: totalInvested,
+        total_expected_return: totalExpectedReturn
+      });
+    } catch (error) {
+      console.error('Error fetching investment stats:', error);
     }
   };
 
@@ -102,6 +151,8 @@ const Dashboard = () => {
         return <LineChart className="h-4 w-4 text-blue-500" />;
       case 'credit':
         return <CircleDollarSign className="h-4 w-4 text-green-500" />;
+      case 'fee':
+        return <CircleDollarSign className="h-4 w-4 text-orange-500" />;
       default:
         return <Clock className="h-4 w-4 text-gray-500" />;
     }
@@ -126,13 +177,22 @@ const Dashboard = () => {
                   </div>
                 ) : (
                   <div className="text-3xl font-bold text-white">
-                    ${walletData?.balance.toFixed(2) || '0.00'}
+                    {formatCurrency(walletData?.balance || 0)}
                   </div>
                 )}
               </div>
-              <div className="mt-4">
+              <div className="mt-2 flex text-sm text-gray-400">
+                <span>Accrued Profits: </span>
+                <span className="ml-1 text-unicorn-gold">
+                  {formatCurrency(walletData?.accrued_profits || 0)}
+                </span>
+              </div>
+              <div className="mt-4 flex space-x-3">
                 <Button asChild variant="outline" className="text-unicorn-gold border-unicorn-gold hover:bg-unicorn-gold/20">
-                  <Link to="/dashboard/deposit">Deposit Funds</Link>
+                  <Link to="/dashboard/deposit">Deposit</Link>
+                </Button>
+                <Button asChild variant="outline" className="text-unicorn-gold border-unicorn-gold hover:bg-unicorn-gold/20">
+                  <Link to="/dashboard/withdraw">Withdraw</Link>
                 </Button>
               </div>
             </CardContent>
@@ -145,12 +205,24 @@ const Dashboard = () => {
             <CardContent>
               <div className="flex items-center">
                 <LineChart className="mr-2 h-5 w-5 text-unicorn-gold" />
-                <div className="text-3xl font-bold text-white">0</div>
+                <div className="text-3xl font-bold text-white">{investmentStats.active_count}</div>
+              </div>
+              <div className="mt-2 flex text-sm text-gray-400">
+                <span>Total Invested: </span>
+                <span className="ml-1 text-unicorn-gold">
+                  {formatCurrency(investmentStats.total_invested)}
+                </span>
               </div>
               <div className="mt-4">
-                <Button asChild className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black">
-                  <Link to="/investment-plans">Explore Investment Plans</Link>
-                </Button>
+                {investmentStats.active_count > 0 ? (
+                  <Button asChild className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black">
+                    <Link to="/dashboard/investments">View Investments</Link>
+                  </Button>
+                ) : (
+                  <Button asChild className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black">
+                    <Link to="/investment-plans">Explore Plans</Link>
+                  </Button>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -161,12 +233,23 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="flex items-center">
-                <CircleDollarSign className="mr-2 h-5 w-5 text-unicorn-gold" />
-                <div className="text-3xl font-bold text-white">$0.00</div>
+                <TrendingUp className="mr-2 h-5 w-5 text-unicorn-gold" />
+                <div className="text-3xl font-bold text-white">
+                  {formatCurrency(investmentStats.total_expected_return)}
+                </div>
+              </div>
+              <div className="mt-2 flex text-sm text-gray-400">
+                <span>Expected Return: </span>
+                <span className="ml-1 text-unicorn-gold">
+                  {investmentStats.total_invested > 0 
+                    ? `${((investmentStats.total_expected_return / investmentStats.total_invested - 1) * 100).toFixed(2)}%` 
+                    : "0.00%"
+                  }
+                </span>
               </div>
               <div className="mt-4">
                 <Button asChild variant="outline" className="text-unicorn-gold border-unicorn-gold hover:bg-unicorn-gold/20">
-                  <Link to="/dashboard/withdraw">Withdraw Funds</Link>
+                  <Link to="/calculator">Profit Calculator</Link>
                 </Button>
               </div>
             </CardContent>
@@ -197,7 +280,7 @@ const Dashboard = () => {
                       </div>
                       <div className="text-right">
                         <div className="font-medium text-white">
-                          {transaction.type === 'withdrawal' ? '-' : '+'}${transaction.amount.toFixed(2)}
+                          {transaction.type === 'withdrawal' || transaction.type === 'fee' ? '-' : '+'}${transaction.amount.toFixed(2)}
                         </div>
                         <div className={`text-xs ${getTransactionStatusColor(transaction.status)}`}>
                           {transaction.status}

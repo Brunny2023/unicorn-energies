@@ -1,8 +1,13 @@
 
-import { useState, ChangeEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, ChangeEvent, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, BarChart } from 'lucide-react';
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { calculateInvestment, createInvestment } from "@/utils/investmentUtils";
+import { Plan, CalculationResults } from "@/types/investment";
 
 type InvestmentPlan = {
   id: string;
@@ -24,11 +29,51 @@ interface PlanCalculatorProps {
 }
 
 const PlanCalculator = ({ selectedPlan, plans, onSelectPlan }: PlanCalculatorProps) => {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
   const [investmentAmount, setInvestmentAmount] = useState<number>(selectedPlan ? selectedPlan.minAmount : 0);
+  const [calculationResults, setCalculationResults] = useState<CalculationResults>(null);
+  const [walletBalance, setWalletBalance] = useState<number>(0);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   
-  const dailyProfit = selectedPlan ? (investmentAmount * selectedPlan.dailyReturn) / 100 : 0;
-  const totalProfit = selectedPlan ? dailyProfit * selectedPlan.duration : 0;
-  const totalReturn = investmentAmount + totalProfit;
+  useEffect(() => {
+    if (user) {
+      fetchWalletBalance();
+    }
+  }, [user]);
+  
+  useEffect(() => {
+    if (selectedPlan) {
+      const plan: Plan = {
+        name: selectedPlan.name,
+        minAmount: selectedPlan.minAmount,
+        maxAmount: selectedPlan.maxAmount,
+        dailyReturn: selectedPlan.dailyReturn,
+        duration: selectedPlan.duration
+      };
+      
+      const results = calculateInvestment(investmentAmount, plan);
+      setCalculationResults(results);
+    } else {
+      setCalculationResults(null);
+    }
+  }, [selectedPlan, investmentAmount]);
+  
+  const fetchWalletBalance = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('wallets')
+        .select('balance')
+        .eq('user_id', user?.id)
+        .single();
+        
+      if (error) throw error;
+      setWalletBalance(data.balance);
+    } catch (error) {
+      console.error("Error fetching wallet balance:", error);
+    }
+  };
   
   const handleAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (!selectedPlan) return;
@@ -49,6 +94,62 @@ const PlanCalculator = ({ selectedPlan, plans, onSelectPlan }: PlanCalculatorPro
     if (plan) {
       onSelectPlan(plan);
       setInvestmentAmount(plan.minAmount);
+    }
+  };
+  
+  const handleInvest = async () => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    
+    if (!selectedPlan || !calculationResults) {
+      return;
+    }
+    
+    // Check if user has enough balance
+    if (investmentAmount > walletBalance) {
+      toast({
+        title: "Insufficient balance",
+        description: "Please deposit funds before investing",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    try {
+      setIsSubmitting(true);
+      
+      const planDetails: Plan = {
+        name: selectedPlan.name,
+        minAmount: selectedPlan.minAmount,
+        maxAmount: selectedPlan.maxAmount,
+        dailyReturn: selectedPlan.dailyReturn,
+        duration: selectedPlan.duration
+      };
+      
+      await createInvestment(
+        user.id,
+        selectedPlan.id,
+        investmentAmount,
+        planDetails
+      );
+      
+      toast({
+        title: "Investment Created",
+        description: `You have successfully invested $${investmentAmount} in the ${selectedPlan.name} plan`,
+      });
+      
+      navigate('/dashboard/investments');
+    } catch (error) {
+      console.error("Error creating investment:", error);
+      toast({
+        title: "Investment Failed",
+        description: "There was an error creating your investment",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -98,7 +199,7 @@ const PlanCalculator = ({ selectedPlan, plans, onSelectPlan }: PlanCalculatorPro
         </div>
         
         <div className={`bg-investment-navy text-white p-6 rounded-lg ${!selectedPlan ? 'flex items-center justify-center' : ''}`}>
-          {selectedPlan ? (
+          {selectedPlan && calculationResults ? (
             <div>
               <h3 className="text-xl font-bold mb-4 flex items-center">
                 <BarChart className="h-5 w-5 text-investment-gold mr-2" />
@@ -114,30 +215,40 @@ const PlanCalculator = ({ selectedPlan, plans, onSelectPlan }: PlanCalculatorPro
                 <div>
                   <div className="text-gray-300 text-sm">Daily Profit:</div>
                   <div className="text-2xl font-bold text-investment-gold">
-                    ${dailyProfit.toFixed(2)} <span className="text-sm font-normal">({selectedPlan.dailyReturn}%)</span>
+                    ${calculationResults.dailyProfit.toFixed(2)} <span className="text-sm font-normal">({selectedPlan.dailyReturn}%)</span>
                   </div>
                 </div>
                 
                 <div>
                   <div className="text-gray-300 text-sm">Total Profit ({selectedPlan.duration} days):</div>
                   <div className="text-2xl font-bold text-investment-gold">
-                    ${totalProfit.toFixed(2)}
+                    ${calculationResults.totalProfit.toFixed(2)}
                   </div>
                 </div>
                 
                 <div className="pt-3 border-t border-investment-lightNavy">
                   <div className="text-gray-300 text-sm">Total Return:</div>
                   <div className="text-3xl font-bold">
-                    ${totalReturn.toFixed(2)}
+                    ${calculationResults.totalReturn.toFixed(2)}
                   </div>
                 </div>
               </div>
               
-              <Link to="/register" className="block mt-6">
-                <Button className="w-full bg-investment-gold hover:bg-investment-lightGold text-investment-navy font-bold">
-                  Start Investing Now <ArrowRight className="ml-2 h-5 w-5" />
+              {user ? (
+                <Button 
+                  className="w-full mt-6 bg-investment-gold hover:bg-investment-lightGold text-investment-navy font-bold"
+                  onClick={handleInvest}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Processing..." : "Invest Now"} <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
-              </Link>
+              ) : (
+                <Link to="/register" className="block mt-6">
+                  <Button className="w-full bg-investment-gold hover:bg-investment-lightGold text-investment-navy font-bold">
+                    Register to Invest <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+              )}
             </div>
           ) : (
             <div className="text-center py-6">
