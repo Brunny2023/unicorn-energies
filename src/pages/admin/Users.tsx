@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Card, CardContent } from "@/components/ui/card";
@@ -31,6 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { AdminRoute } from "@/components/ui/AdminRoute";
 
 interface User {
   id: string;
@@ -256,234 +256,236 @@ const AdminUsers = () => {
   };
 
   return (
-    <DashboardLayout isAdmin>
-      <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <h2 className="text-3xl font-bold text-white">User Management</h2>
-          <div className="w-full sm:w-auto flex items-center gap-2">
-            <div className="relative w-full sm:w-auto">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                placeholder="Search users..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 bg-unicorn-darkPurple/50 border-unicorn-gold/30 text-white placeholder:text-gray-400"
-              />
+    <AdminRoute>
+      <DashboardLayout isAdmin>
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <h2 className="text-3xl font-bold text-white">User Management</h2>
+            <div className="w-full sm:w-auto flex items-center gap-2">
+              <div className="relative w-full sm:w-auto">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                  placeholder="Search users..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-9 bg-unicorn-darkPurple/50 border-unicorn-gold/30 text-white placeholder:text-gray-400"
+                />
+              </div>
+              <Button
+                variant="outline"
+                className="border-unicorn-gold text-unicorn-gold hover:bg-unicorn-gold/20"
+                onClick={fetchUsers}
+              >
+                Refresh
+              </Button>
             </div>
-            <Button
-              variant="outline"
-              className="border-unicorn-gold text-unicorn-gold hover:bg-unicorn-gold/20"
-              onClick={fetchUsers}
-            >
-              Refresh
-            </Button>
           </div>
+
+          <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="w-full text-gray-300">
+                  <thead className="bg-unicorn-darkPurple/50 text-gray-400 text-xs uppercase">
+                    <tr>
+                      <th className="px-4 py-3 text-left">User</th>
+                      <th className="px-4 py-3 text-left">Role</th>
+                      <th className="px-4 py-3 text-right">Balance</th>
+                      <th className="px-4 py-3 text-left">Joined</th>
+                      <th className="px-4 py-3 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-unicorn-gold/20">
+                    {loading ? (
+                      Array.from({ length: 5 }).map((_, index) => (
+                        <tr key={index} className="animate-pulse">
+                          <td className="px-4 py-4">
+                            <div className="h-4 bg-gray-700/50 rounded w-40"></div>
+                          </td>
+                          <td className="px-4 py-4">
+                            <div className="h-4 bg-gray-700/50 rounded w-16"></div>
+                          </td>
+                          <td className="px-4 py-4 text-right">
+                            <div className="h-4 bg-gray-700/50 rounded ml-auto w-20"></div>
+                          </td>
+                          <td className="px-4 py-4">
+                            <div className="h-4 bg-gray-700/50 rounded w-24"></div>
+                          </td>
+                          <td className="px-4 py-4 text-right">
+                            <div className="h-8 bg-gray-700/50 rounded w-20 ml-auto"></div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : filteredUsers.length > 0 ? (
+                      filteredUsers.map((user) => (
+                        <tr key={user.id} className="hover:bg-unicorn-darkPurple/30">
+                          <td className="px-4 py-4">
+                            <div>
+                              <div className="font-medium text-white">
+                                {user.full_name || "No Name"}
+                              </div>
+                              <div className="text-xs text-gray-400">{user.email}</div>
+                            </div>
+                          </td>
+                          <td className="px-4 py-4">
+                            <span
+                              className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                user.role === "admin"
+                                  ? "bg-purple-900/30 text-purple-400"
+                                  : "bg-blue-900/30 text-blue-400"
+                              }`}
+                            >
+                              {user.role}
+                            </span>
+                          </td>
+                          <td className="px-4 py-4 text-right">
+                            ${userWallets[user.id]?.balance.toFixed(2) || "0.00"}
+                          </td>
+                          <td className="px-4 py-4 text-xs">
+                            {formatDate(user.created_at)}
+                          </td>
+                          <td className="px-4 py-4 text-right">
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0 text-gray-300 hover:text-unicorn-gold"
+                                onClick={() => openRoleDialog(user)}
+                              >
+                                <span className="sr-only">Edit Role</span>
+                                <UserCog className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0 text-gray-300 hover:text-unicorn-gold"
+                                onClick={() => openCreditDialog(user)}
+                              >
+                                <span className="sr-only">Credit User</span>
+                                <Wallet className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={5} className="px-4 py-8 text-center text-gray-400">
+                          No users found
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-        <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-gray-300">
-                <thead className="bg-unicorn-darkPurple/50 text-gray-400 text-xs uppercase">
-                  <tr>
-                    <th className="px-4 py-3 text-left">User</th>
-                    <th className="px-4 py-3 text-left">Role</th>
-                    <th className="px-4 py-3 text-right">Balance</th>
-                    <th className="px-4 py-3 text-left">Joined</th>
-                    <th className="px-4 py-3 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-unicorn-gold/20">
-                  {loading ? (
-                    Array.from({ length: 5 }).map((_, index) => (
-                      <tr key={index} className="animate-pulse">
-                        <td className="px-4 py-4">
-                          <div className="h-4 bg-gray-700/50 rounded w-40"></div>
-                        </td>
-                        <td className="px-4 py-4">
-                          <div className="h-4 bg-gray-700/50 rounded w-16"></div>
-                        </td>
-                        <td className="px-4 py-4 text-right">
-                          <div className="h-4 bg-gray-700/50 rounded ml-auto w-20"></div>
-                        </td>
-                        <td className="px-4 py-4">
-                          <div className="h-4 bg-gray-700/50 rounded w-24"></div>
-                        </td>
-                        <td className="px-4 py-4 text-right">
-                          <div className="h-8 bg-gray-700/50 rounded w-20 ml-auto"></div>
-                        </td>
-                      </tr>
-                    ))
-                  ) : filteredUsers.length > 0 ? (
-                    filteredUsers.map((user) => (
-                      <tr key={user.id} className="hover:bg-unicorn-darkPurple/30">
-                        <td className="px-4 py-4">
-                          <div>
-                            <div className="font-medium text-white">
-                              {user.full_name || "No Name"}
-                            </div>
-                            <div className="text-xs text-gray-400">{user.email}</div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-4">
-                          <span
-                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                              user.role === "admin"
-                                ? "bg-purple-900/30 text-purple-400"
-                                : "bg-blue-900/30 text-blue-400"
-                            }`}
-                          >
-                            {user.role}
-                          </span>
-                        </td>
-                        <td className="px-4 py-4 text-right">
-                          ${userWallets[user.id]?.balance.toFixed(2) || "0.00"}
-                        </td>
-                        <td className="px-4 py-4 text-xs">
-                          {formatDate(user.created_at)}
-                        </td>
-                        <td className="px-4 py-4 text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 text-gray-300 hover:text-unicorn-gold"
-                              onClick={() => openRoleDialog(user)}
-                            >
-                              <span className="sr-only">Edit Role</span>
-                              <UserCog className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 text-gray-300 hover:text-unicorn-gold"
-                              onClick={() => openCreditDialog(user)}
-                            >
-                              <span className="sr-only">Credit User</span>
-                              <Wallet className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={5} className="px-4 py-8 text-center text-gray-400">
-                        No users found
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Role Update Dialog */}
-      <Dialog open={roleDialogOpen} onOpenChange={setRoleDialogOpen}>
-        <DialogContent className="bg-unicorn-darkPurple border-unicorn-gold/30 text-white">
-          <DialogHeader>
-            <DialogTitle>Update User Role</DialogTitle>
-            <DialogDescription className="text-gray-400">
-              Change the role for {selectedUser?.email}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-2">
-            <div className="space-y-2">
-              <Label htmlFor="role" className="text-gray-300">Role</Label>
-              <Select
-                value={selectedRole}
-                onValueChange={setSelectedRole}
-              >
-                <SelectTrigger id="role" className="bg-unicorn-darkPurple/50 border-unicorn-gold/30 text-white">
-                  <SelectValue placeholder="Select role" />
-                </SelectTrigger>
-                <SelectContent className="bg-unicorn-darkPurple border-unicorn-gold/30 text-white">
-                  <SelectItem value="user">User</SelectItem>
-                  <SelectItem value="admin">Admin</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              variant="ghost"
-              onClick={() => setRoleDialogOpen(false)}
-              className="text-gray-300 hover:text-gray-100 hover:bg-unicorn-darkPurple/50"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleRoleUpdate}
-              disabled={isUpdatingRole}
-              className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black"
-            >
-              {isUpdatingRole ? (
-                <div className="h-4 w-4 border-t-2 border-unicorn-black border-solid rounded-full animate-spin mr-2"></div>
-              ) : (
-                <Check className="h-4 w-4 mr-2" />
-              )}
-              Save
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Credit User Dialog */}
-      <Dialog open={creditDialogOpen} onOpenChange={setCreditDialogOpen}>
-        <DialogContent className="bg-unicorn-darkPurple border-unicorn-gold/30 text-white">
-          <DialogHeader>
-            <DialogTitle>Credit User Account</DialogTitle>
-            <DialogDescription className="text-gray-400">
-              Add funds to {selectedUser?.email}'s account
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-2">
-            <div className="space-y-2">
-              <Label htmlFor="amount" className="text-gray-300">Current Balance</Label>
-              <div className="text-xl font-bold text-unicorn-gold">
-                ${userWallets[selectedUser?.id || '']?.balance.toFixed(2) || '0.00'}
+        {/* Role Update Dialog */}
+        <Dialog open={roleDialogOpen} onOpenChange={setRoleDialogOpen}>
+          <DialogContent className="bg-unicorn-darkPurple border-unicorn-gold/30 text-white">
+            <DialogHeader>
+              <DialogTitle>Update User Role</DialogTitle>
+              <DialogDescription className="text-gray-400">
+                Change the role for {selectedUser?.email}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <div className="space-y-2">
+                <Label htmlFor="role" className="text-gray-300">Role</Label>
+                <Select
+                  value={selectedRole}
+                  onValueChange={setSelectedRole}
+                >
+                  <SelectTrigger id="role" className="bg-unicorn-darkPurple/50 border-unicorn-gold/30 text-white">
+                    <SelectValue placeholder="Select role" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-unicorn-darkPurple border-unicorn-gold/30 text-white">
+                    <SelectItem value="user">User</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="amount" className="text-gray-300">Amount to Credit ($)</Label>
-              <Input
-                id="amount"
-                type="number"
-                step="0.01"
-                min="0"
-                value={creditAmount}
-                onChange={(e) => setCreditAmount(e.target.value)}
-                placeholder="Enter amount..."
-                className="bg-unicorn-darkPurple/50 border-unicorn-gold/30 text-white"
-              />
+            <DialogFooter>
+              <Button
+                variant="ghost"
+                onClick={() => setRoleDialogOpen(false)}
+                className="text-gray-300 hover:text-gray-100 hover:bg-unicorn-darkPurple/50"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleRoleUpdate}
+                disabled={isUpdatingRole}
+                className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black"
+              >
+                {isUpdatingRole ? (
+                  <div className="h-4 w-4 border-t-2 border-unicorn-black border-solid rounded-full animate-spin mr-2"></div>
+                ) : (
+                  <Check className="h-4 w-4 mr-2" />
+                )}
+                Save
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Credit User Dialog */}
+        <Dialog open={creditDialogOpen} onOpenChange={setCreditDialogOpen}>
+          <DialogContent className="bg-unicorn-darkPurple border-unicorn-gold/30 text-white">
+            <DialogHeader>
+              <DialogTitle>Credit User Account</DialogTitle>
+              <DialogDescription className="text-gray-400">
+                Add funds to {selectedUser?.email}'s account
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <div className="space-y-2">
+                <Label htmlFor="amount" className="text-gray-300">Current Balance</Label>
+                <div className="text-xl font-bold text-unicorn-gold">
+                  ${userWallets[selectedUser?.id || '']?.balance.toFixed(2) || '0.00'}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="amount" className="text-gray-300">Amount to Credit ($)</Label>
+                <Input
+                  id="amount"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={creditAmount}
+                  onChange={(e) => setCreditAmount(e.target.value)}
+                  placeholder="Enter amount..."
+                  className="bg-unicorn-darkPurple/50 border-unicorn-gold/30 text-white"
+                />
+              </div>
             </div>
-          </div>
-          <DialogFooter>
-            <Button
-              variant="ghost"
-              onClick={() => setCreditDialogOpen(false)}
-              className="text-gray-300 hover:text-gray-100 hover:bg-unicorn-darkPurple/50"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleCreditUser}
-              disabled={isProcessingCredit || !creditAmount}
-              className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black"
-            >
-              {isProcessingCredit ? (
-                <div className="h-4 w-4 border-t-2 border-unicorn-black border-solid rounded-full animate-spin mr-2"></div>
-              ) : (
-                <Wallet className="h-4 w-4 mr-2" />
-              )}
-              Credit Account
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </DashboardLayout>
+            <DialogFooter>
+              <Button
+                variant="ghost"
+                onClick={() => setCreditDialogOpen(false)}
+                className="text-gray-300 hover:text-gray-100 hover:bg-unicorn-darkPurple/50"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleCreditUser}
+                disabled={isProcessingCredit || !creditAmount}
+                className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black"
+              >
+                {isProcessingCredit ? (
+                  <div className="h-4 w-4 border-t-2 border-unicorn-black border-solid rounded-full animate-spin mr-2"></div>
+                ) : (
+                  <Wallet className="h-4 w-4 mr-2" />
+                )}
+                Credit Account
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </DashboardLayout>
+    </AdminRoute>
   );
 };
 

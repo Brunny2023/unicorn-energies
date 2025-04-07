@@ -1,18 +1,15 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Wallet, ArrowDownRight, AlertCircle, Info } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { calculateWithdrawal, processWithdrawal, formatCurrency } from "@/utils/investmentUtils";
-import { WithdrawalRequest } from "@/types/investment";
+import { calculateWithdrawal, processWithdrawal, formatCurrency, fetchWalletData } from "@/utils/investmentUtils";
+import { WithdrawalRequest, WalletData } from "@/types/investment";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -32,6 +29,7 @@ const Withdraw = () => {
   const [loading, setLoading] = useState(false);
   const [calculatingFee, setCalculatingFee] = useState(false);
   const [walletBalance, setWalletBalance] = useState(0);
+  const [accruedProfits, setAccruedProfits] = useState(0);
   const [withdrawalRequest, setWithdrawalRequest] = useState<WithdrawalRequest | null>(null);
 
   const form = useForm<z.infer<typeof withdrawalSchema>>({
@@ -42,22 +40,21 @@ const Withdraw = () => {
   });
 
   // Fetch wallet balance when component mounts
-  useState(() => {
-    fetchWalletBalance();
-  });
+  useEffect(() => {
+    if (user) {
+      fetchWalletBalance();
+    }
+  }, [user]);
 
   const fetchWalletBalance = async () => {
     try {
       if (!user) return;
 
-      const { data, error } = await supabase
-        .from('wallets')
-        .select('balance')
-        .eq('user_id', user.id)
-        .single();
-
-      if (error) throw error;
-      setWalletBalance(data.balance);
+      const wallet = await fetchWalletData(user.id);
+      if (wallet) {
+        setWalletBalance(wallet.balance);
+        setAccruedProfits(wallet.accrued_profits);
+      }
     } catch (error) {
       console.error("Error fetching wallet balance:", error);
       toast({
@@ -96,8 +93,6 @@ const Withdraw = () => {
     try {
       setLoading(true);
       
-      const amount = withdrawalRequest.amount;
-      
       if (!withdrawalRequest.eligible) {
         toast({
           title: "Cannot process withdrawal",
@@ -108,7 +103,7 @@ const Withdraw = () => {
         return;
       }
       
-      const success = await processWithdrawal(user.id, amount);
+      const success = await processWithdrawal(user.id, withdrawalRequest);
       
       if (success) {
         toast({

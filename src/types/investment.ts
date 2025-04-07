@@ -31,6 +31,7 @@ export type Transaction = {
 };
 
 export type Plan = {
+  id?: string;
   name: string;
   minAmount: number;
   maxAmount: number;

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Card, CardContent } from "@/components/ui/card";
@@ -215,203 +214,205 @@ const AdminTransactions = () => {
   const transactionStatuses = ["completed", "pending", "failed"];
 
   return (
-    <DashboardLayout isAdmin>
-      <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <h2 className="text-3xl font-bold text-white">Transaction History</h2>
-          <div className="w-full sm:w-auto flex flex-wrap items-center gap-2">
-            <div className="relative w-full sm:w-auto">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                placeholder="Search transactions..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 bg-unicorn-darkPurple/50 border-unicorn-gold/30 text-white placeholder:text-gray-400"
-              />
-            </div>
-            
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="border-unicorn-gold/30 text-unicorn-gold">
-                  <Filter className="h-4 w-4 mr-2" />
-                  Type
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-unicorn-darkPurple/90 border-unicorn-gold/30 text-white">
-                {transactionTypes.map((type) => (
-                  <DropdownMenuCheckboxItem
-                    key={type}
-                    checked={selectedTypes.includes(type)}
-                    onCheckedChange={(checked) => {
-                      setSelectedTypes(
-                        checked
-                          ? [...selectedTypes, type]
-                          : selectedTypes.filter((t) => t !== type)
-                      );
-                    }}
-                    className="capitalize"
-                  >
-                    {type}
-                  </DropdownMenuCheckboxItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-            
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="border-unicorn-gold/30 text-unicorn-gold">
-                  <Filter className="h-4 w-4 mr-2" />
-                  Status
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-unicorn-darkPurple/90 border-unicorn-gold/30 text-white">
-                {transactionStatuses.map((status) => (
-                  <DropdownMenuCheckboxItem
-                    key={status}
-                    checked={selectedStatuses.includes(status)}
-                    onCheckedChange={(checked) => {
-                      setSelectedStatuses(
-                        checked
-                          ? [...selectedStatuses, status]
-                          : selectedStatuses.filter((s) => s !== status)
-                      );
-                    }}
-                    className="capitalize"
-                  >
-                    {status}
-                  </DropdownMenuCheckboxItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+    <AdminRoute>
+      <DashboardLayout>
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <h2 className="text-3xl font-bold text-white">Transaction History</h2>
+            <div className="w-full sm:w-auto flex flex-wrap items-center gap-2">
+              <div className="relative w-full sm:w-auto">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                  placeholder="Search transactions..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-9 bg-unicorn-darkPurple/50 border-unicorn-gold/30 text-white placeholder:text-gray-400"
+                />
+              </div>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="border-unicorn-gold/30 text-unicorn-gold">
+                    <Filter className="h-4 w-4 mr-2" />
+                    Type
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="bg-unicorn-darkPurple/90 border-unicorn-gold/30 text-white">
+                  {transactionTypes.map((type) => (
+                    <DropdownMenuCheckboxItem
+                      key={type}
+                      checked={selectedTypes.includes(type)}
+                      onCheckedChange={(checked) => {
+                        setSelectedTypes(
+                          checked
+                            ? [...selectedTypes, type]
+                            : selectedTypes.filter((t) => t !== type)
+                        );
+                      }}
+                      className="capitalize"
+                    >
+                      {type}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="border-unicorn-gold/30 text-unicorn-gold">
+                    <Filter className="h-4 w-4 mr-2" />
+                    Status
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="bg-unicorn-darkPurple/90 border-unicorn-gold/30 text-white">
+                  {transactionStatuses.map((status) => (
+                    <DropdownMenuCheckboxItem
+                      key={status}
+                      checked={selectedStatuses.includes(status)}
+                      onCheckedChange={(checked) => {
+                        setSelectedStatuses(
+                          checked
+                            ? [...selectedStatuses, status]
+                            : selectedStatuses.filter((s) => s !== status)
+                        );
+                      }}
+                      className="capitalize"
+                    >
+                      {status}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
 
-            <Select value={sortOrder} onValueChange={handleSort}>
-              <SelectTrigger className="w-[120px] bg-unicorn-darkPurple/50 border-unicorn-gold/30 text-white">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent className="bg-unicorn-darkPurple border-unicorn-gold/30 text-white">
-                <SelectItem value="desc">Newest first</SelectItem>
-                <SelectItem value="asc">Oldest first</SelectItem>
-              </SelectContent>
-            </Select>
-            
-            <Button
-              variant="outline"
-              className="border-unicorn-gold text-unicorn-gold hover:bg-unicorn-gold/20"
-              onClick={fetchTransactions}
-            >
-              Refresh
-            </Button>
+              <Select value={sortOrder} onValueChange={handleSort}>
+                <SelectTrigger className="w-[120px] bg-unicorn-darkPurple/50 border-unicorn-gold/30 text-white">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent className="bg-unicorn-darkPurple border-unicorn-gold/30 text-white">
+                  <SelectItem value="desc">Newest first</SelectItem>
+                  <SelectItem value="asc">Oldest first</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              <Button
+                variant="outline"
+                className="border-unicorn-gold text-unicorn-gold hover:bg-unicorn-gold/20"
+                onClick={fetchTransactions}
+              >
+                Refresh
+              </Button>
+            </div>
           </div>
-        </div>
 
-        <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-gray-300">
-                <thead className="bg-unicorn-darkPurple/50 text-gray-400 text-xs uppercase">
-                  <tr>
-                    <th className="px-4 py-3 text-left">Transaction</th>
-                    <th className="px-4 py-3 text-left">User</th>
-                    <th className="px-4 py-3 text-left">Type</th>
-                    <th className="px-4 py-3 text-right">Amount</th>
-                    <th className="px-4 py-3 text-left">Status</th>
-                    <th className="px-4 py-3 text-left">Date</th>
-                    <th className="px-4 py-3 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-unicorn-gold/20">
-                  {loading ? (
-                    Array.from({ length: 5 }).map((_, index) => (
-                      <tr key={index} className="animate-pulse">
-                        <td className="px-4 py-4">
-                          <div className="h-4 bg-gray-700/50 rounded w-20"></div>
-                        </td>
-                        <td className="px-4 py-4">
-                          <div className="h-4 bg-gray-700/50 rounded w-40"></div>
-                        </td>
-                        <td className="px-4 py-4">
-                          <div className="h-6 bg-gray-700/50 rounded w-20"></div>
-                        </td>
-                        <td className="px-4 py-4 text-right">
-                          <div className="h-4 bg-gray-700/50 rounded ml-auto w-24"></div>
-                        </td>
-                        <td className="px-4 py-4">
-                          <div className="h-4 bg-gray-700/50 rounded w-16"></div>
-                        </td>
-                        <td className="px-4 py-4">
-                          <div className="h-4 bg-gray-700/50 rounded w-32"></div>
-                        </td>
-                        <td className="px-4 py-4 text-right">
-                          <div className="h-8 bg-gray-700/50 rounded w-8 ml-auto"></div>
-                        </td>
-                      </tr>
-                    ))
-                  ) : filteredTransactions.length > 0 ? (
-                    filteredTransactions.map((transaction) => (
-                      <tr key={transaction.id} className="hover:bg-unicorn-darkPurple/30">
-                        <td className="px-4 py-4">
-                          <div className="text-white font-mono text-xs">
-                            #{transaction.id.substring(0, 8)}...
-                          </div>
-                        </td>
-                        <td className="px-4 py-4">
-                          <div>
-                            <div className="font-medium text-white">
-                              {transaction.user?.full_name || "No Name"}
-                            </div>
-                            <div className="text-xs text-gray-400">{transaction.user?.email}</div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-4">
-                          <span
-                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getTypeBadgeColor(
-                              transaction.type
-                            )}`}
-                          >
-                            {getTransactionIcon(transaction.type)}
-                            <span className="ml-1 capitalize">{transaction.type}</span>
-                          </span>
-                        </td>
-                        <td className="px-4 py-4 text-right font-medium">
-                          <span className={transaction.type === "withdrawal" ? "text-red-400" : "text-green-400"}>
-                            {transaction.type === "withdrawal" ? "-" : "+"}${transaction.amount.toFixed(2)}
-                          </span>
-                        </td>
-                        <td className="px-4 py-4">
-                          <span className={`capitalize ${getTransactionStatusColor(transaction.status)}`}>
-                            {transaction.status}
-                          </span>
-                        </td>
-                        <td className="px-4 py-4 text-xs text-gray-400">
-                          {formatDate(transaction.created_at)}
-                        </td>
-                        <td className="px-4 py-4 text-right">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 text-gray-400 hover:text-unicorn-gold"
-                            title="View details"
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                            <span className="sr-only">View details</span>
-                          </Button>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
+          <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="w-full text-gray-300">
+                  <thead className="bg-unicorn-darkPurple/50 text-gray-400 text-xs uppercase">
                     <tr>
-                      <td colSpan={7} className="px-4 py-8 text-center text-gray-400">
-                        No transactions found
-                      </td>
+                      <th className="px-4 py-3 text-left">Transaction</th>
+                      <th className="px-4 py-3 text-left">User</th>
+                      <th className="px-4 py-3 text-left">Type</th>
+                      <th className="px-4 py-3 text-right">Amount</th>
+                      <th className="px-4 py-3 text-left">Status</th>
+                      <th className="px-4 py-3 text-left">Date</th>
+                      <th className="px-4 py-3 text-right">Actions</th>
                     </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </DashboardLayout>
+                  </thead>
+                  <tbody className="divide-y divide-unicorn-gold/20">
+                    {loading ? (
+                      Array.from({ length: 5 }).map((_, index) => (
+                        <tr key={index} className="animate-pulse">
+                          <td className="px-4 py-4">
+                            <div className="h-4 bg-gray-700/50 rounded w-20"></div>
+                          </td>
+                          <td className="px-4 py-4">
+                            <div className="h-4 bg-gray-700/50 rounded w-40"></div>
+                          </td>
+                          <td className="px-4 py-4">
+                            <div className="h-6 bg-gray-700/50 rounded w-20"></div>
+                          </td>
+                          <td className="px-4 py-4 text-right">
+                            <div className="h-4 bg-gray-700/50 rounded ml-auto w-24"></div>
+                          </td>
+                          <td className="px-4 py-4">
+                            <div className="h-4 bg-gray-700/50 rounded w-16"></div>
+                          </td>
+                          <td className="px-4 py-4">
+                            <div className="h-4 bg-gray-700/50 rounded w-32"></div>
+                          </td>
+                          <td className="px-4 py-4 text-right">
+                            <div className="h-8 bg-gray-700/50 rounded w-8 ml-auto"></div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : filteredTransactions.length > 0 ? (
+                      filteredTransactions.map((transaction) => (
+                        <tr key={transaction.id} className="hover:bg-unicorn-darkPurple/30">
+                          <td className="px-4 py-4">
+                            <div className="text-white font-mono text-xs">
+                              #{transaction.id.substring(0, 8)}...
+                            </div>
+                          </td>
+                          <td className="px-4 py-4">
+                            <div>
+                              <div className="font-medium text-white">
+                                {transaction.user?.full_name || "No Name"}
+                              </div>
+                              <div className="text-xs text-gray-400">{transaction.user?.email}</div>
+                            </div>
+                          </td>
+                          <td className="px-4 py-4">
+                            <span
+                              className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getTypeBadgeColor(
+                                transaction.type
+                              )}`}
+                            >
+                              {getTransactionIcon(transaction.type)}
+                              <span className="ml-1 capitalize">{transaction.type}</span>
+                            </span>
+                          </td>
+                          <td className="px-4 py-4 text-right font-medium">
+                            <span className={transaction.type === "withdrawal" ? "text-red-400" : "text-green-400"}>
+                              {transaction.type === "withdrawal" ? "-" : "+"}${transaction.amount.toFixed(2)}
+                            </span>
+                          </td>
+                          <td className="px-4 py-4">
+                            <span className={`capitalize ${getTransactionStatusColor(transaction.status)}`}>
+                              {transaction.status}
+                            </span>
+                          </td>
+                          <td className="px-4 py-4 text-xs text-gray-400">
+                            {formatDate(transaction.created_at)}
+                          </td>
+                          <td className="px-4 py-4 text-right">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0 text-gray-400 hover:text-unicorn-gold"
+                              title="View details"
+                            >
+                              <ExternalLink className="h-4 w-4" />
+                              <span className="sr-only">View details</span>
+                            </Button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={7} className="px-4 py-8 text-center text-gray-400">
+                          No transactions found
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </DashboardLayout>
+    </AdminRoute>
   );
 };
 

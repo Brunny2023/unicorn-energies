@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { Investment, WalletData, Transaction, Plan, CalculationResults, WithdrawalRequest, Ticket } from "@/types/investment";
 
@@ -12,7 +11,6 @@ export const getUserInvestments = async (userId: string): Promise<Investment[]> 
     
     if (error) throw error;
     
-    // Map database fields to our Investment type
     const investments: Investment[] = data.map(inv => ({
       id: inv.id,
       plan_id: inv.plan_id,
@@ -67,7 +65,6 @@ export const fetchTransactions = async (userId: string): Promise<Transaction[]> 
   }
 };
 
-// Investment calculation functions
 export const calculateInvestment = (amount: number, plan: Plan): CalculationResults => {
   if (amount <= 0) return null;
   
@@ -89,7 +86,6 @@ export const createInvestment = async (
   planDetails: Plan
 ): Promise<void> => {
   try {
-    // Calculate investment details
     const results = calculateInvestment(amount, planDetails);
     if (!results) throw new Error("Invalid calculation results");
     
@@ -97,16 +93,13 @@ export const createInvestment = async (
     const endDate = new Date();
     endDate.setDate(endDate.getDate() + planDetails.duration);
     
-    // Start a transaction
-    // 1. Decrement wallet balance
-    const { error: walletError } = await supabase.rpc('decrement_balance', { 
-      user_id: userId,
-      amount_to_subtract: amount 
-    });
+    const { error: walletError } = await supabase
+      .from('wallets')
+      .update({ balance: supabase.rpc('GREATEST', { x: 0, y: supabase.raw('balance - ' + amount) }) })
+      .eq('user_id', userId);
       
     if (walletError) throw walletError;
     
-    // 2. Create investment record
     const { error: investmentError } = await supabase
       .from('investments')
       .insert({
@@ -123,7 +116,6 @@ export const createInvestment = async (
       
     if (investmentError) throw investmentError;
     
-    // 3. Create transaction record
     const { error: transactionError } = await supabase
       .from('transactions')
       .insert({
@@ -157,39 +149,52 @@ export const formatCurrency = (amount: number): string => {
   }).format(amount);
 };
 
-export const calculateWithdrawal = (
-  walletData: WalletData,
+export const calculateWithdrawal = async (
+  userId: string,
   requestedAmount: number
-): WithdrawalRequest | null => {
-  if (!walletData || requestedAmount <= 0) {
+): Promise<WithdrawalRequest> => {
+  try {
+    const wallet = await fetchWalletData(userId);
+    
+    if (!wallet || requestedAmount <= 0) {
+      return {
+        amount: requestedAmount,
+        fee: 0,
+        netAmount: 0,
+        eligible: false,
+        reason: "Invalid amount or wallet data"
+      };
+    }
+    
+    if (requestedAmount > wallet.accrued_profits) {
+      return {
+        amount: requestedAmount,
+        fee: 0,
+        netAmount: 0,
+        eligible: false,
+        reason: "Requested amount exceeds available profits"
+      };
+    }
+    
+    const fee = (requestedAmount * wallet.withdrawal_fee_percentage) / 100;
+    const netAmount = requestedAmount - fee;
+    
+    return {
+      amount: requestedAmount,
+      fee,
+      netAmount,
+      eligible: true
+    };
+  } catch (error) {
+    console.error("Error calculating withdrawal:", error);
     return {
       amount: requestedAmount,
       fee: 0,
       netAmount: 0,
       eligible: false,
-      reason: "Invalid amount or wallet data"
+      reason: "Error processing withdrawal request"
     };
   }
-  
-  if (requestedAmount > walletData.accrued_profits) {
-    return {
-      amount: requestedAmount,
-      fee: 0,
-      netAmount: 0,
-      eligible: false,
-      reason: "Requested amount exceeds available profits"
-    };
-  }
-  
-  const fee = (requestedAmount * walletData.withdrawal_fee_percentage) / 100;
-  const netAmount = requestedAmount - fee;
-  
-  return {
-    amount: requestedAmount,
-    fee,
-    netAmount,
-    eligible: true
-  };
 };
 
 export const processWithdrawal = async (
@@ -199,24 +204,22 @@ export const processWithdrawal = async (
   try {
     if (!withdrawal.eligible) return false;
     
-    // 1. Update wallet - decrement accrued profits
-    const { error: walletError1 } = await supabase.rpc('decrement_balance', { 
-      user_id: userId,
-      amount_to_subtract: withdrawal.amount,
-      column_name: 'accrued_profits'
-    });
+    const { error: walletError1 } = await supabase
+      .from('wallets')
+      .update({ 
+        accrued_profits: supabase.rpc('GREATEST', { x: 0, y: supabase.raw('accrued_profits - ' + withdrawal.amount) }) 
+      })
+      .eq('user_id', userId);
       
     if (walletError1) throw walletError1;
     
-    // 2. Update wallet - increment balance
-    const { error: walletError2 } = await supabase.rpc('increment_balance', { 
-      user_id: userId,
-      amount_to_add: withdrawal.netAmount
-    });
+    const { error: walletError2 } = await supabase
+      .from('wallets')
+      .update({ balance: supabase.raw('balance + ' + withdrawal.netAmount) })
+      .eq('user_id', userId);
       
     if (walletError2) throw walletError2;
     
-    // 3. Create transaction record
     const { error: transactionError } = await supabase
       .from('transactions')
       .insert({
@@ -235,7 +238,6 @@ export const processWithdrawal = async (
   }
 };
 
-// Ticket-related functions
 export const createTicket = async (
   userId: string,
   subject: string,
@@ -270,7 +272,12 @@ export const getUserTickets = async (userId: string): Promise<Ticket[]> => {
       .order('created_at', { ascending: false });
       
     if (error) throw error;
-    return data as Ticket[];
+    
+    return data.map(ticket => ({
+      ...ticket,
+      status: ticket.status as 'open' | 'in-progress' | 'resolved' | 'closed',
+      priority: ticket.priority as 'low' | 'medium' | 'high'
+    })) as Ticket[];
   } catch (error) {
     console.error("Error fetching tickets:", error);
     return [];
@@ -286,7 +293,12 @@ export const getTicketDetails = async (ticketId: string): Promise<Ticket | null>
       .single();
       
     if (error) throw error;
-    return data as Ticket;
+    
+    return {
+      ...data,
+      status: data.status as 'open' | 'in-progress' | 'resolved' | 'closed',
+      priority: data.priority as 'low' | 'medium' | 'high'
+    } as Ticket;
   } catch (error) {
     console.error("Error fetching ticket details:", error);
     return null;
@@ -314,7 +326,6 @@ export const updateTicket = async (
   }
 };
 
-// Functions for admin 
 export const getAllTickets = async (): Promise<Ticket[]> => {
   try {
     const { data, error } = await supabase
@@ -323,7 +334,12 @@ export const getAllTickets = async (): Promise<Ticket[]> => {
       .order('created_at', { ascending: false });
       
     if (error) throw error;
-    return data as Ticket[];
+    
+    return data.map(ticket => ({
+      ...ticket,
+      status: ticket.status as 'open' | 'in-progress' | 'resolved' | 'closed',
+      priority: ticket.priority as 'low' | 'medium' | 'high'
+    })) as Ticket[];
   } catch (error) {
     console.error("Error fetching all tickets:", error);
     return [];
@@ -335,7 +351,6 @@ export const generateAIResponse = async (
   message: string
 ): Promise<boolean> => {
   try {
-    // Simulate AI response for now
     const aiResponse = "Thank you for contacting our support team. We're looking into your issue and will get back to you soon.";
     
     const { error } = await supabase

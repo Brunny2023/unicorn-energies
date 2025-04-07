@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -45,7 +44,6 @@ const AdminDashboard = () => {
     credits: 0,
   });
 
-  // Sample chart data
   const chartData = [
     { name: "Jan", deposits: 5000, withdrawals: 1000 },
     { name: "Feb", deposits: 7000, withdrawals: 2000 },
@@ -63,7 +61,6 @@ const AdminDashboard = () => {
   const fetchAdminDashboardData = async () => {
     setLoading(true);
     try {
-      // Fetch wallet summary
       const { data: wallets, error: walletsError } = await supabase
         .from('wallets')
         .select('balance');
@@ -77,7 +74,6 @@ const AdminDashboard = () => {
         walletCount: wallets?.length || 0,
       });
 
-      // Fetch users summary
       const { data: users, error: usersError } = await supabase
         .from('profiles')
         .select('role');
@@ -91,7 +87,6 @@ const AdminDashboard = () => {
         admins,
       });
 
-      // Fetch transactions summary
       const { data: transactions, error: transactionsError } = await supabase
         .from('transactions')
         .select('type, amount');
@@ -119,181 +114,180 @@ const AdminDashboard = () => {
   };
 
   return (
-    <DashboardLayout isAdmin>
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h2 className="text-3xl font-bold text-white">Admin Dashboard</h2>
-          <Button onClick={fetchAdminDashboardData} variant="outline" className="border-unicorn-gold text-unicorn-gold hover:bg-unicorn-gold/20">
-            Refresh Data
-          </Button>
-        </div>
-        
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg text-gray-300">Total Users</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center">
-                <Users className="mr-2 h-5 w-5 text-unicorn-gold" />
-                {loading ? (
-                  <div className="animate-pulse">
-                    <div className="h-9 w-20 bg-gray-700/50 rounded"></div>
-                  </div>
-                ) : (
-                  <div className="text-3xl font-bold text-white">{usersSummary.totalUsers}</div>
-                )}
-              </div>
-              <div className="mt-2 text-sm text-gray-400">
-                Including {usersSummary.admins} admin{usersSummary.admins !== 1 ? 's' : ''}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg text-gray-300">Total Wallet Balance</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center">
-                <Wallet className="mr-2 h-5 w-5 text-unicorn-gold" />
-                {loading ? (
-                  <div className="animate-pulse">
-                    <div className="h-9 w-28 bg-gray-700/50 rounded"></div>
-                  </div>
-                ) : (
-                  <div className="text-3xl font-bold text-white">
-                    ${walletSummary.totalBalance.toFixed(2)}
-                  </div>
-                )}
-              </div>
-              <div className="mt-2 text-sm text-gray-400">
-                Across {walletSummary.walletCount} wallet{walletSummary.walletCount !== 1 ? 's' : ''}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg text-gray-300">Transaction Volume</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center">
-                <CreditCard className="mr-2 h-5 w-5 text-unicorn-gold" />
-                {loading ? (
-                  <div className="animate-pulse">
-                    <div className="h-9 w-28 bg-gray-700/50 rounded"></div>
-                  </div>
-                ) : (
-                  <div className="text-3xl font-bold text-white">
-                    ${transactionsSummary.totalVolume.toFixed(2)}
-                  </div>
-                )}
-              </div>
-              <div className="mt-2 text-sm text-gray-400">
-                {transactionsSummary.totalTransactions} transaction{transactionsSummary.totalTransactions !== 1 ? 's' : ''}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Chart */}
-        <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
-          <CardHeader>
-            <CardTitle className="text-white">Transactions Overview</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData}>
-                  <XAxis dataKey="name" stroke="#9CA3AF" />
-                  <YAxis stroke="#9CA3AF" />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: '#1f1445',
-                      borderColor: '#C9A854',
-                      color: '#ffffff',
-                    }} 
-                  />
-                  <Line type="monotone" dataKey="deposits" stroke="#C9A854" strokeWidth={2} />
-                  <Line type="monotone" dataKey="withdrawals" stroke="#EF4444" strokeWidth={2} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Transaction Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg text-gray-300">
+    <AdminRoute>
+      <DashboardLayout>
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-3xl font-bold text-white">Admin Dashboard</h2>
+            <Button onClick={fetchAdminDashboardData} variant="outline" className="border-unicorn-gold text-unicorn-gold hover:bg-unicorn-gold/20">
+              Refresh Data
+            </Button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg text-gray-300">Total Users</CardTitle>
+              </CardHeader>
+              <CardContent>
                 <div className="flex items-center">
-                  <ArrowUpRight className="mr-2 h-4 w-4 text-green-500" />
-                  Deposits
+                  <Users className="mr-2 h-5 w-5 text-unicorn-gold" />
+                  {loading ? (
+                    <div className="animate-pulse">
+                      <div className="h-9 w-20 bg-gray-700/50 rounded"></div>
+                    </div>
+                  ) : (
+                    <div className="text-3xl font-bold text-white">{usersSummary.totalUsers}</div>
+                  )}
                 </div>
-              </CardTitle>
+                <div className="mt-2 text-sm text-gray-400">
+                  Including {usersSummary.admins} admin{usersSummary.admins !== 1 ? 's' : ''}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg text-gray-300">Total Wallet Balance</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center">
+                  <Wallet className="mr-2 h-5 w-5 text-unicorn-gold" />
+                  {loading ? (
+                    <div className="animate-pulse">
+                      <div className="h-9 w-28 bg-gray-700/50 rounded"></div>
+                    </div>
+                  ) : (
+                    <div className="text-3xl font-bold text-white">
+                      ${walletSummary.totalBalance.toFixed(2)}
+                    </div>
+                  )}
+                </div>
+                <div className="mt-2 text-sm text-gray-400">
+                  Across {walletSummary.walletCount} wallet{walletSummary.walletCount !== 1 ? 's' : ''}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg text-gray-300">Transaction Volume</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center">
+                  <CreditCard className="mr-2 h-5 w-5 text-unicorn-gold" />
+                  {loading ? (
+                    <div className="animate-pulse">
+                      <div className="h-9 w-28 bg-gray-700/50 rounded"></div>
+                    </div>
+                  ) : (
+                    <div className="text-3xl font-bold text-white">
+                      ${transactionsSummary.totalVolume.toFixed(2)}
+                    </div>
+                  )}
+                </div>
+                <div className="mt-2 text-sm text-gray-400">
+                  {transactionsSummary.totalTransactions} transaction{transactionsSummary.totalTransactions !== 1 ? 's' : ''}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
+            <CardHeader>
+              <CardTitle className="text-white">Transactions Overview</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-white">
-                {loading ? (
-                  <div className="animate-pulse">
-                    <div className="h-9 w-16 bg-gray-700/50 rounded"></div>
-                  </div>
-                ) : (
-                  transactionsSummary.deposits
-                )}
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={chartData}>
+                    <XAxis dataKey="name" stroke="#9CA3AF" />
+                    <YAxis stroke="#9CA3AF" />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: '#1f1445',
+                        borderColor: '#C9A854',
+                        color: '#ffffff',
+                      }} 
+                    />
+                    <Line type="monotone" dataKey="deposits" stroke="#C9A854" strokeWidth={2} />
+                    <Line type="monotone" dataKey="withdrawals" stroke="#EF4444" strokeWidth={2} />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg text-gray-300">
-                <div className="flex items-center">
-                  <ArrowUpRight className="mr-2 h-4 w-4 text-red-500 rotate-180" />
-                  Withdrawals
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-white">
-                {loading ? (
-                  <div className="animate-pulse">
-                    <div className="h-9 w-16 bg-gray-700/50 rounded"></div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg text-gray-300">
+                  <div className="flex items-center">
+                    <ArrowUpRight className="mr-2 h-4 w-4 text-green-500" />
+                    Deposits
                   </div>
-                ) : (
-                  transactionsSummary.withdrawals
-                )}
-              </div>
-            </CardContent>
-          </Card>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-white">
+                  {loading ? (
+                    <div className="animate-pulse">
+                      <div className="h-9 w-16 bg-gray-700/50 rounded"></div>
+                    </div>
+                  ) : (
+                    transactionsSummary.deposits
+                  )}
+                </div>
+              </CardContent>
+            </Card>
 
-          <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg text-gray-300">
-                <div className="flex items-center">
-                  <CreditCard className="mr-2 h-4 w-4 text-blue-500" />
-                  Admin Credits
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-white">
-                {loading ? (
-                  <div className="animate-pulse">
-                    <div className="h-9 w-16 bg-gray-700/50 rounded"></div>
+            <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg text-gray-300">
+                  <div className="flex items-center">
+                    <ArrowUpRight className="mr-2 h-4 w-4 text-red-500 rotate-180" />
+                    Withdrawals
                   </div>
-                ) : (
-                  transactionsSummary.credits
-                )}
-              </div>
-            </CardContent>
-          </Card>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-white">
+                  {loading ? (
+                    <div className="animate-pulse">
+                      <div className="h-9 w-16 bg-gray-700/50 rounded"></div>
+                    </div>
+                  ) : (
+                    transactionsSummary.withdrawals
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg text-gray-300">
+                  <div className="flex items-center">
+                    <CreditCard className="mr-2 h-4 w-4 text-blue-500" />
+                    Admin Credits
+                  </div>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-white">
+                  {loading ? (
+                    <div className="animate-pulse">
+                      <div className="h-9 w-16 bg-gray-700/50 rounded"></div>
+                    </div>
+                  ) : (
+                    transactionsSummary.credits
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
-      </div>
-    </DashboardLayout>
+      </DashboardLayout>
+    </AdminRoute>
   );
 };
 

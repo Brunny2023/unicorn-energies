@@ -1,13 +1,11 @@
-
 import { supabase } from "@/integrations/supabase/client";
-import { ToastAction } from "@/hooks/use-toast";
 
 export type AuthToast = {
   toast: (props: {
     title: string;
     description: string;
     variant?: "default" | "destructive";
-    action?: ToastAction;
+    action?: any;
   }) => void;
 };
 
