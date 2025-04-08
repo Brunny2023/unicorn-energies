@@ -21,7 +21,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue
-} from "@/components/ui";
+} from "@/components/ui/index";
 
 import {
   ArrowUpRight,

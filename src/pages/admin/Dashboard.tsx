@@ -200,12 +200,23 @@ const Dashboard = () => {
       if (updateError) throw updateError;
       
       // Return funds to user's wallet
-      const { error: walletError } = await supabase.rpc('refund_withdrawal', {
-        user_id_input: transaction.user_id,
-        amount_input: transaction.amount
-      });
+      const { data: wallet, error: walletFetchError } = await supabase
+        .from('wallets')
+        .select('*')
+        .eq('user_id', transaction.user_id)
+        .single();
       
-      if (walletError) throw walletError;
+      if (walletFetchError) throw walletFetchError;
+      
+      const { error: walletUpdateError } = await supabase
+        .from('wallets')
+        .update({ 
+          balance: wallet.balance + transaction.amount,
+          updated_at: new Date().toISOString()
+        })
+        .eq('user_id', transaction.user_id);
+      
+      if (walletUpdateError) throw walletUpdateError;
       
       toast({
         title: "Success",

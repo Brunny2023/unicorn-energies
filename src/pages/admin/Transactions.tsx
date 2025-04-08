@@ -1,7 +1,7 @@
+
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Transaction } from "@/types/investment";
 import { formatCurrency } from "@/utils/investmentUtils";
 import { useToast } from "@/hooks/use-toast";
 import AdminLayout from "@/components/layout/AdminLayout";
@@ -29,7 +29,8 @@ import {
   SelectValue
 } from "@/components/admin/AdminImports";
 
-interface Transaction {
+// Renamed to TransactionItem to avoid conflict with imported type
+interface TransactionItem {
   id: string;
   user_id: string;
   type: string;
