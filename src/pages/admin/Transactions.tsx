@@ -1,9 +1,33 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { Transaction } from "@/types/investment";
+import { formatCurrency } from "@/utils/investmentUtils";
 import { useToast } from "@/hooks/use-toast";
-import DashboardLayout from "@/components/dashboard/DashboardLayout";
-import AdminRoute from "@/components/auth/AdminRoute";
+import AdminLayout from "@/components/layout/AdminLayout";
+import { 
+  ArrowUpRight, 
+  ArrowDownRight, 
+  Button, 
+  Card, 
+  CardContent, 
+  CircleDollarSign,
+  Clock,
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  ExternalLink,
+  Filter,
+  Input,
+  LineChart,
+  Search,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/admin/AdminImports";
 
 interface Transaction {
   id: string;
@@ -185,7 +209,7 @@ const Transactions = () => {
   const transactionStatuses = ["completed", "pending", "failed"];
 
   return (
-    <DashboardLayout isAdmin>
+    <AdminLayout>
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <h2 className="text-3xl font-bold text-white">Transaction History</h2>
@@ -344,7 +368,7 @@ const Transactions = () => {
                         </td>
                         <td className="px-4 py-4 text-right font-medium">
                           <span className={transaction.type === "withdrawal" ? "text-red-400" : "text-green-400"}>
-                            {transaction.type === "withdrawal" ? "-" : "+"}${transaction.amount.toFixed(2)}
+                            {transaction.type === "withdrawal" ? "-" : "+"}${formatCurrency(transaction.amount)}
                           </span>
                         </td>
                         <td className="px-4 py-4">
@@ -381,7 +405,7 @@ const Transactions = () => {
           </CardContent>
         </Card>
       </div>
-    </DashboardLayout>
+    </AdminLayout>
   );
 };
 

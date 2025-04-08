@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import Captcha from "@/components/ui/Captcha";
+import useCaptcha from "@/hooks/useCaptcha";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -19,6 +23,8 @@ const loginSchema = z.object({
 
 const Login = () => {
   const { user, signIn, loading } = useAuth();
+  const { siteKey, token, verified, handleVerify } = useCaptcha();
+  const [captchaError, setCaptchaError] = useState(false);
   
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -29,6 +35,12 @@ const Login = () => {
   });
 
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
+    if (!verified || !token) {
+      setCaptchaError(true);
+      return;
+    }
+    
+    setCaptchaError(false);
     await signIn(data.email, data.password);
   };
 
@@ -105,6 +117,18 @@ const Login = () => {
                     </FormItem>
                   )}
                 />
+
+                {/* CAPTCHA */}
+                <div className="space-y-4">
+                  <Captcha siteKey={siteKey} onVerify={handleVerify} />
+                  
+                  {captchaError && (
+                    <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>Please complete the CAPTCHA verification</AlertDescription>
+                    </Alert>
+                  )}
+                </div>
 
                 <Button
                   type="submit"

@@ -1,9 +1,31 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import DashboardLayout from "@/components/dashboard/DashboardLayout";
-import AdminRoute from "@/components/auth/AdminRoute";
+import AdminLayout from "@/components/layout/AdminLayout";
+import { formatCurrency } from "@/utils/investmentUtils";
+import { 
+  Button, 
+  Card, 
+  CardContent,
+  Check,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Input,
+  Label,
+  Search,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  UserCog,
+  Wallet
+} from "@/components/admin/AdminImports";
 
 interface User {
   id: string;
@@ -224,7 +246,7 @@ const Users = () => {
   };
 
   return (
-    <DashboardLayout isAdmin>
+    <AdminLayout>
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <h2 className="text-3xl font-bold text-white">User Management</h2>
@@ -449,7 +471,7 @@ const Users = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </DashboardLayout>
+    </AdminLayout>
   );
 };
 

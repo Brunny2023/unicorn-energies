@@ -33,6 +33,16 @@ import AdminRoute from "./components/auth/AdminRoute";
 
 const queryClient = new QueryClient();
 
+// Define Turnstile interface in a way that doesn't conflict with useCaptcha
+declare global {
+  interface Window {
+    turnstile: {
+      render: (container: string | HTMLElement, params: any) => string;
+      reset: (widgetId: string) => void;
+    };
+  }
+}
+
 const AppContent = () => {
   // Initialize Cloudflare Turnstile
   useEffect(() => {
@@ -90,12 +100,6 @@ const AppContent = () => {
     </>
   );
 };
-
-declare global {
-  interface Window {
-    turnstile?: any;
-  }
-}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>

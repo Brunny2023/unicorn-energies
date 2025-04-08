@@ -1,0 +1,72 @@
+
+// This file centralizes all imports needed for admin pages
+import { 
+  Button,
+  Card, 
+  CardContent, 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  Input,
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui";
+
+import {
+  ArrowUpRight,
+  ArrowDownRight,
+  Check,
+  CircleDollarSign,
+  Clock,
+  ExternalLink,
+  Filter,
+  LineChart,
+  Search,
+  UserCog,
+  Wallet
+} from "lucide-react";
+
+export {
+  ArrowUpRight,
+  ArrowDownRight,
+  Button,
+  Card,
+  CardContent,
+  Check,
+  CircleDollarSign,
+  Clock,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  ExternalLink,
+  Filter,
+  Input,
+  Label,
+  LineChart,
+  Search,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  UserCog,
+  Wallet
+};
