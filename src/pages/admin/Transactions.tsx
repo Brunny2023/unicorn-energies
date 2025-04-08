@@ -2,59 +2,25 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { formatCurrency } from "@/utils/investmentUtils";
 import { useToast } from "@/hooks/use-toast";
 import AdminLayout from "@/components/layout/AdminLayout";
-import { 
-  ArrowUpRight, 
-  ArrowDownRight, 
-  Button, 
-  Card, 
-  CardContent, 
-  CircleDollarSign,
-  Clock,
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  ExternalLink,
-  Filter,
-  Input,
-  LineChart,
-  Search,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/admin/AdminImports";
-
-// Renamed to TransactionItem to avoid conflict with imported type
-interface TransactionItem {
-  id: string;
-  user_id: string;
-  type: string;
-  amount: number;
-  status: string;
-  created_at: string;
-  description: string | null;
-  user: {
-    email: string;
-    full_name: string | null;
-  };
-}
+import TransactionFilters from "@/components/admin/transactions/TransactionFilters";
+import TransactionsTable from "@/components/admin/transactions/TransactionsTable";
+import { TransactionItem } from "@/types/admin";
 
 const Transactions = () => {
   const { toast } = useToast();
-  const { user } = useAuth();
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<TransactionItem[]>([]);
+  const [filteredTransactions, setFilteredTransactions] = useState<TransactionItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [sortOrder, setSortOrder] = useState<string>("desc");
+
+  const transactionTypes = ["deposit", "withdrawal", "investment", "credit"];
+  const transactionStatuses = ["completed", "pending", "failed"];
 
   useEffect(() => {
     fetchTransactions();
@@ -91,7 +57,7 @@ const Transactions = () => {
           };
         }
         return tx;
-      }) as Transaction[];
+      }) as TransactionItem[];
       
       setTransactions(processedData);
       setFilteredTransactions(processedData);
@@ -152,259 +118,42 @@ const Transactions = () => {
     setFilteredTransactions(sorted);
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).format(date);
+  const handleSearchChange = (term: string) => {
+    setSearchTerm(term);
   };
 
-  const getTransactionStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "completed":
-        return "text-green-500";
-      case "pending":
-        return "text-yellow-500";
-      case "failed":
-        return "text-red-500";
-      default:
-        return "text-gray-500";
-    }
+  const handleFilterTypes = (types: string[]) => {
+    setSelectedTypes(types);
   };
 
-  const getTransactionIcon = (type: string) => {
-    switch (type.toLowerCase()) {
-      case "deposit":
-        return <ArrowUpRight className="h-4 w-4 text-green-500" />;
-      case "withdrawal":
-        return <ArrowDownRight className="h-4 w-4 text-red-500" />;
-      case "investment":
-        return <LineChart className="h-4 w-4 text-blue-500" />;
-      case "credit":
-        return <CircleDollarSign className="h-4 w-4 text-green-500" />;
-      default:
-        return <Clock className="h-4 w-4 text-gray-500" />;
-    }
+  const handleFilterStatuses = (statuses: string[]) => {
+    setSelectedStatuses(statuses);
   };
-
-  const getTypeBadgeColor = (type: string) => {
-    switch (type.toLowerCase()) {
-      case "deposit":
-        return "bg-green-900/30 text-green-400";
-      case "withdrawal":
-        return "bg-red-900/30 text-red-400";
-      case "investment":
-        return "bg-blue-900/30 text-blue-400";
-      case "credit":
-        return "bg-purple-900/30 text-purple-400";
-      default:
-        return "bg-gray-900/30 text-gray-400";
-    }
-  };
-
-  const transactionTypes = ["deposit", "withdrawal", "investment", "credit"];
-  const transactionStatuses = ["completed", "pending", "failed"];
 
   return (
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <h2 className="text-3xl font-bold text-white">Transaction History</h2>
-          <div className="w-full sm:w-auto flex flex-wrap items-center gap-2">
-            <div className="relative w-full sm:w-auto">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                placeholder="Search transactions..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 bg-unicorn-darkPurple/50 border-unicorn-gold/30 text-white placeholder:text-gray-400"
-              />
-            </div>
-            
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="border-unicorn-gold/30 text-unicorn-gold">
-                  <Filter className="h-4 w-4 mr-2" />
-                  Type
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-unicorn-darkPurple/90 border-unicorn-gold/30 text-white">
-                {transactionTypes.map((type) => (
-                  <DropdownMenuCheckboxItem
-                    key={type}
-                    checked={selectedTypes.includes(type)}
-                    onCheckedChange={(checked) => {
-                      setSelectedTypes(
-                        checked
-                          ? [...selectedTypes, type]
-                          : selectedTypes.filter((t) => t !== type)
-                      );
-                    }}
-                    className="capitalize"
-                  >
-                    {type}
-                  </DropdownMenuCheckboxItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-            
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="border-unicorn-gold/30 text-unicorn-gold">
-                  <Filter className="h-4 w-4 mr-2" />
-                  Status
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-unicorn-darkPurple/90 border-unicorn-gold/30 text-white">
-                {transactionStatuses.map((status) => (
-                  <DropdownMenuCheckboxItem
-                    key={status}
-                    checked={selectedStatuses.includes(status)}
-                    onCheckedChange={(checked) => {
-                      setSelectedStatuses(
-                        checked
-                          ? [...selectedStatuses, status]
-                          : selectedStatuses.filter((s) => s !== status)
-                      );
-                    }}
-                    className="capitalize"
-                  >
-                    {status}
-                  </DropdownMenuCheckboxItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <Select value={sortOrder} onValueChange={handleSort}>
-              <SelectTrigger className="w-[120px] bg-unicorn-darkPurple/50 border-unicorn-gold/30 text-white">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent className="bg-unicorn-darkPurple border-unicorn-gold/30 text-white">
-                <SelectItem value="desc">Newest first</SelectItem>
-                <SelectItem value="asc">Oldest first</SelectItem>
-              </SelectContent>
-            </Select>
-            
-            <Button
-              variant="outline"
-              className="border-unicorn-gold text-unicorn-gold hover:bg-unicorn-gold/20"
-              onClick={fetchTransactions}
-            >
-              Refresh
-            </Button>
-          </div>
+          <TransactionFilters 
+            onSearch={handleSearchChange}
+            onFilterTypes={handleFilterTypes}
+            onFilterStatuses={handleFilterStatuses}
+            onSort={handleSort}
+            onRefresh={fetchTransactions}
+            searchTerm={searchTerm}
+            selectedTypes={selectedTypes}
+            selectedStatuses={selectedStatuses}
+            sortOrder={sortOrder}
+            transactionTypes={transactionTypes}
+            transactionStatuses={transactionStatuses}
+          />
         </div>
 
-        <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-gray-300">
-                <thead className="bg-unicorn-darkPurple/50 text-gray-400 text-xs uppercase">
-                  <tr>
-                    <th className="px-4 py-3 text-left">Transaction</th>
-                    <th className="px-4 py-3 text-left">User</th>
-                    <th className="px-4 py-3 text-left">Type</th>
-                    <th className="px-4 py-3 text-right">Amount</th>
-                    <th className="px-4 py-3 text-left">Status</th>
-                    <th className="px-4 py-3 text-left">Date</th>
-                    <th className="px-4 py-3 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-unicorn-gold/20">
-                  {loading ? (
-                    Array.from({ length: 5 }).map((_, index) => (
-                      <tr key={index} className="animate-pulse">
-                        <td className="px-4 py-4">
-                          <div className="h-4 bg-gray-700/50 rounded w-20"></div>
-                        </td>
-                        <td className="px-4 py-4">
-                          <div className="h-4 bg-gray-700/50 rounded w-40"></div>
-                        </td>
-                        <td className="px-4 py-4">
-                          <div className="h-6 bg-gray-700/50 rounded w-20"></div>
-                        </td>
-                        <td className="px-4 py-4 text-right">
-                          <div className="h-4 bg-gray-700/50 rounded ml-auto w-24"></div>
-                        </td>
-                        <td className="px-4 py-4">
-                          <div className="h-4 bg-gray-700/50 rounded w-16"></div>
-                        </td>
-                        <td className="px-4 py-4">
-                          <div className="h-4 bg-gray-700/50 rounded w-32"></div>
-                        </td>
-                        <td className="px-4 py-4 text-right">
-                          <div className="h-8 bg-gray-700/50 rounded w-8 ml-auto"></div>
-                        </td>
-                      </tr>
-                    ))
-                  ) : filteredTransactions.length > 0 ? (
-                    filteredTransactions.map((transaction) => (
-                      <tr key={transaction.id} className="hover:bg-unicorn-darkPurple/30">
-                        <td className="px-4 py-4">
-                          <div className="text-white font-mono text-xs">
-                            #{transaction.id.substring(0, 8)}...
-                          </div>
-                        </td>
-                        <td className="px-4 py-4">
-                          <div>
-                            <div className="font-medium text-white">
-                              {transaction.user?.full_name || "No Name"}
-                            </div>
-                            <div className="text-xs text-gray-400">{transaction.user?.email}</div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-4">
-                          <span
-                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getTypeBadgeColor(
-                              transaction.type
-                            )}`}
-                          >
-                            {getTransactionIcon(transaction.type)}
-                            <span className="ml-1 capitalize">{transaction.type}</span>
-                          </span>
-                        </td>
-                        <td className="px-4 py-4 text-right font-medium">
-                          <span className={transaction.type === "withdrawal" ? "text-red-400" : "text-green-400"}>
-                            {transaction.type === "withdrawal" ? "-" : "+"}${formatCurrency(transaction.amount)}
-                          </span>
-                        </td>
-                        <td className="px-4 py-4">
-                          <span className={`capitalize ${getTransactionStatusColor(transaction.status)}`}>
-                            {transaction.status}
-                          </span>
-                        </td>
-                        <td className="px-4 py-4 text-xs text-gray-400">
-                          {formatDate(transaction.created_at)}
-                        </td>
-                        <td className="px-4 py-4 text-right">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 text-gray-400 hover:text-unicorn-gold"
-                            title="View details"
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                            <span className="sr-only">View details</span>
-                          </Button>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={7} className="px-4 py-8 text-center text-gray-400">
-                        No transactions found
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
+        <TransactionsTable 
+          transactions={filteredTransactions}
+          loading={loading}
+        />
       </div>
     </AdminLayout>
   );

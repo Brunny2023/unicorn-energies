@@ -3,7 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AdminRoute from "./components/auth/AdminRoute";
-import { Toaster } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 // Pages
 import Index from "./pages/Index";
