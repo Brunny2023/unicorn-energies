@@ -35,7 +35,7 @@ const Investments = () => {
       // Calculate stats
       const activeInvestments = data.filter(inv => inv.status === 'active');
       const totalInvested = data.reduce((sum, inv) => sum + Number(inv.amount), 0);
-      const totalReturns = data.reduce((sum, inv) => sum + Number(inv.totalReturn), 0);
+      const totalReturns = data.reduce((sum, inv) => sum + Number(inv.total_return), 0);
       
       setStats({
         activeCount: activeInvestments.length,

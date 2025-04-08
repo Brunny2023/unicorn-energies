@@ -8,7 +8,7 @@ interface AdminRouteProps {
   isAdmin?: boolean; // Optional isAdmin prop for explicit admin-only routes
 }
 
-const AdminRoute = ({ children }: AdminRouteProps) => {
+const AdminRoute = ({ children, isAdmin }: AdminRouteProps) => {
   const { user, loading, isAdmin: userIsAdmin } = useAuth();
 
   if (loading) {

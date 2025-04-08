@@ -9,7 +9,7 @@ interface StatsCardsProps {
   totalReturns: number;
 }
 
-// Local formatter to avoid dependency on utils
+// Local formatter to avoid dependency
 const formatCurrency = (amount: number): string => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',

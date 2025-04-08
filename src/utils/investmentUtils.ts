@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Investment, Plan, WalletData, Ticket, WithdrawalRequest } from '@/types/investment';
 
@@ -32,29 +31,21 @@ export const calculateInvestmentResults = (amount: number, plan: Plan) => {
   };
 };
 
+// Export calculateInvestment as an alias of calculateInvestmentResults
 export const calculateInvestment = calculateInvestmentResults;
 
 export const fetchInvestmentPlans = async (): Promise<Plan[]> => {
   try {
-    // Since investment_plans is not in the database type, we need to handle it manually
-    const { data, error } = await supabase
-      .from('investment_plans')
-      .select('*');
-
-    if (error) {
-      console.error("Error fetching investment plans:", error);
-      return [];
-    }
-
-    // Transform the data to match our Plan type
-    return data.map(plan => ({
-      id: plan.id,
-      name: plan.name,
-      minAmount: plan.min_amount,
-      maxAmount: plan.max_amount,
-      dailyReturn: plan.daily_return,
-      duration: plan.duration
-    })) as Plan[];
+    // Hardcoded investment plans since the table doesn't exist in Supabase
+    const plans: Plan[] = [
+      { id: "goldfish", name: "Goldfish", minAmount: 100, maxAmount: 999, dailyReturn: 1.2, duration: 15 },
+      { id: "dolphin", name: "Dolphin", minAmount: 1000, maxAmount: 4999, dailyReturn: 1.5, duration: 20 },
+      { id: "shark", name: "Shark", minAmount: 5000, maxAmount: 14999, dailyReturn: 1.8, duration: 25 },
+      { id: "whales", name: "Whales", minAmount: 15000, maxAmount: 50000, dailyReturn: 2.2, duration: 30 },
+      { id: "accredited", name: "Accredited Investor", minAmount: 50000, maxAmount: 1000000, dailyReturn: 2.5, duration: 40 }
+    ];
+    
+    return plans;
   } catch (error) {
     console.error("Error fetching investment plans:", error);
     return [];
@@ -66,33 +57,20 @@ export const createInvestment = async (userId: string, planId: string, amount: n
     // Fetch the selected investment plan if not provided
     let plan = planDetails;
     if (!plan) {
-      const { data: planData, error: planError } = await supabase
-        .from('investment_plans')
-        .select('*')
-        .eq('id', planId)
-        .single();
-
-      if (planError) {
-        throw new Error(`Error fetching investment plan: ${planError.message}`);
+      // Since we don't have the investment_plans table, use hardcoded plans
+      plan = (await fetchInvestmentPlans()).find(p => p.id === planId);
+      
+      if (!plan) {
+        throw new Error(`Plan with ID ${planId} not found`);
       }
-
-      plan = {
-        id: planData.id,
-        name: planData.name,
-        minAmount: planData.min_amount,
-        maxAmount: planData.max_amount,
-        dailyReturn: planData.daily_return,
-        duration: planData.duration
-      };
     }
 
     // Calculate start and end dates
     const startDate = new Date();
     const endDate = new Date(startDate.getTime() + (plan.duration * 24 * 60 * 60 * 1000)); // Duration in days
 
-    // Calculate daily return and total return
-    const dailyReturn = plan.dailyReturn;
-    const totalReturn = amount + (amount * (dailyReturn / 100) * plan.duration);
+    // Calculate total return
+    const totalReturn = amount + (amount * (plan.dailyReturn / 100) * plan.duration);
 
     // Create a new investment record with database column names
     const { data: investment, error: investmentError } = await supabase
@@ -102,7 +80,7 @@ export const createInvestment = async (userId: string, planId: string, amount: n
           plan_id: planId,
           user_id: userId,
           amount: amount,
-          daily_return: dailyReturn,
+          daily_return: plan.dailyReturn,
           duration: plan.duration,
           start_date: startDate.toISOString(),
           end_date: endDate.toISOString(),
@@ -117,7 +95,7 @@ export const createInvestment = async (userId: string, planId: string, amount: n
       throw new Error(`Error creating investment: ${investmentError.message}`);
     }
 
-    // Transform to match our Investment type
+    // Return the investment data
     return {
       id: investment.id,
       plan_id: investment.plan_id,
@@ -150,7 +128,7 @@ export const getUserInvestments = async (userId: string): Promise<Investment[]> 
       return [];
     }
 
-    // Transform to match our Investment type
+    // Return data from the database
     return data.map(inv => ({
       id: inv.id,
       plan_id: inv.plan_id,

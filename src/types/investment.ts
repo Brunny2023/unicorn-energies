@@ -14,11 +14,11 @@ export type Investment = {
   plan_id: string;
   user_id: string;
   amount: number;
-  daily_return: number; // Database column name
+  daily_return: number;
   duration: number;
-  start_date: string; // Database column name
-  end_date: string; // Database column name
-  total_return: number; // Database column name
+  start_date: string;
+  end_date: string;
+  total_return: number;
   status: 'active' | 'completed' | 'cancelled';
   created_at: string;
 };

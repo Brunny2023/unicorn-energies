@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from 'lucide-react';
@@ -6,15 +5,6 @@ import { AlertCircle } from 'lucide-react';
 interface CaptchaProps {
   siteKey: string;
   onVerify: (token: string) => void;
-}
-
-declare global {
-  interface Window {
-    turnstile: {
-      render: (container: string | HTMLElement, params: any) => string;
-      reset: (widgetId: string) => void;
-    };
-  }
 }
 
 const Captcha = ({ siteKey, onVerify }: CaptchaProps) => {
