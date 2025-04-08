@@ -1,79 +1,122 @@
-
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import AdminRoute from "@/components/auth/AdminRoute"; // Fix import
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Search,
+  MessageSquare,
+  ChevronRight,
+  Filter,
+  Calendar,
+  ArrowUpDown,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Ticket } from "@/types/investment";
-import { MessageSquare, CheckCircle, AlertTriangle, Clock } from "lucide-react";
+import { getAllTickets } from "@/utils/investmentUtils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const AdminTickets = () => {
-  const { toast } = useToast();
-  const navigate = useNavigate();
   const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [filteredTickets, setFilteredTickets] = useState<Ticket[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({
-    open: 0,
-    inProgress: 0,
-    resolved: 0,
-    total: 0
-  });
+  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
+  const [selectedPriorities, setSelectedPriorities] = useState<string[]>([]);
 
   useEffect(() => {
-    fetchAllTickets();
+    fetchTickets();
   }, []);
 
-  const fetchAllTickets = async () => {
+  useEffect(() => {
+    filterTickets();
+  }, [searchTerm, tickets, selectedStatuses, selectedPriorities]);
+
+  const fetchTickets = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      
-      // Get all tickets
-      const { data, error } = await supabase
-        .from('tickets')
-        .select('*')
-        .order('created_at', { ascending: false });
-        
-      if (error) throw error;
-      
-      setTickets(data || []);
-      
-      // Calculate stats
-      const open = data?.filter(ticket => ticket.status === 'open').length || 0;
-      const inProgress = data?.filter(ticket => ticket.status === 'in-progress').length || 0;
-      const resolved = data?.filter(ticket => ticket.status === 'resolved' || ticket.status === 'closed').length || 0;
-      
-      setStats({
-        open,
-        inProgress,
-        resolved,
-        total: data?.length || 0
-      });
-      
-      setLoading(false);
+      const ticketsData = await getAllTickets();
+      setTickets(ticketsData);
+      setFilteredTickets(ticketsData);
     } catch (error) {
       console.error("Error fetching tickets:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load tickets",
-        variant: "destructive"
-      });
+    } finally {
       setLoading(false);
     }
   };
 
+  const filterTickets = () => {
+    let filtered = [...tickets];
+
+    if (searchTerm) {
+      filtered = filtered.filter(
+        (ticket) =>
+          ticket.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          ticket.message.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    if (selectedStatuses.length > 0) {
+      filtered = filtered.filter((ticket) =>
+        selectedStatuses.includes(ticket.status)
+      );
+    }
+
+    if (selectedPriorities.length > 0) {
+      filtered = filtered.filter((ticket) =>
+        selectedPriorities.includes(ticket.priority)
+      );
+    }
+
+    setFilteredTickets(filtered);
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'open':
-        return <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20">Open</Badge>;
-      case 'in-progress':
-        return <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20">In Progress</Badge>;
-      case 'resolved':
-        return <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20">Resolved</Badge>;
-      case 'closed':
-        return <Badge variant="outline" className="bg-gray-500/10 text-gray-500 border-gray-500/20">Closed</Badge>;
+      case "open":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-amber-500/10 text-amber-500 border-amber-500/20"
+          >
+            Open
+          </Badge>
+        );
+      case "in-progress":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-blue-500/10 text-blue-500 border-blue-500/20"
+          >
+            In Progress
+          </Badge>
+        );
+      case "resolved":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-green-500/10 text-green-500 border-green-500/20"
+          >
+            Resolved
+          </Badge>
+        );
+      case "closed":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-gray-500/10 text-gray-500 border-gray-500/20"
+          >
+            Closed
+          </Badge>
+        );
       default:
         return null;
     }
@@ -81,159 +124,269 @@ const AdminTickets = () => {
 
   const getPriorityBadge = (priority: string) => {
     switch (priority) {
-      case 'high':
-        return <Badge variant="outline" className="bg-red-500/10 text-red-500 border-red-500/20">High</Badge>;
-      case 'medium':
-        return <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20">Medium</Badge>;
-      case 'low':
-        return <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20">Low</Badge>;
+      case "high":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-red-500/10 text-red-500 border-red-500/20"
+          >
+            High
+          </Badge>
+        );
+      case "medium":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-amber-500/10 text-amber-500 border-amber-500/20"
+          >
+            Medium
+          </Badge>
+        );
+      case "low":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-green-500/10 text-green-500 border-green-500/20"
+          >
+            Low
+          </Badge>
+        );
       default:
         return null;
     }
   };
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(date);
+  };
+
   return (
-    <DashboardLayout>
+    <DashboardLayout isAdmin>
       <div className="space-y-6">
-        <h2 className="text-3xl font-bold text-white">Support Tickets</h2>
-        
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg text-gray-300">Total Tickets</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center">
-                <MessageSquare className="mr-2 h-5 w-5 text-unicorn-gold" />
-                {loading ? (
-                  <div className="animate-pulse">
-                    <div className="h-9 w-20 bg-gray-700/50 rounded"></div>
-                  </div>
-                ) : (
-                  <div className="text-3xl font-bold text-white">{stats.total}</div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <h2 className="text-3xl font-bold text-white">Support Tickets</h2>
+          <div className="w-full sm:w-auto flex flex-wrap items-center gap-2">
+            <div className="relative w-full sm:w-auto">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                placeholder="Search tickets..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9 bg-unicorn-darkPurple/50 border-unicorn-gold/30 text-white placeholder:text-gray-400"
+              />
+            </div>
 
-          <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg text-gray-300">Open Tickets</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center">
-                <AlertTriangle className="mr-2 h-5 w-5 text-amber-500" />
-                {loading ? (
-                  <div className="animate-pulse">
-                    <div className="h-9 w-20 bg-gray-700/50 rounded"></div>
-                  </div>
-                ) : (
-                  <div className="text-3xl font-bold text-white">{stats.open}</div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="border-unicorn-gold/30 text-unicorn-gold"
+                >
+                  <Filter className="h-4 w-4 mr-2" />
+                  Status
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-unicorn-darkPurple/90 border-unicorn-gold/30 text-white">
+                <DropdownMenuCheckboxItem
+                  checked={selectedStatuses.includes("open")}
+                  onCheckedChange={(checked) => {
+                    setSelectedStatuses(
+                      checked
+                        ? [...selectedStatuses, "open"]
+                        : selectedStatuses.filter((s) => s !== "open")
+                    );
+                  }}
+                >
+                  Open
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem
+                  checked={selectedStatuses.includes("in-progress")}
+                  onCheckedChange={(checked) => {
+                    setSelectedStatuses(
+                      checked
+                        ? [...selectedStatuses, "in-progress"]
+                        : selectedStatuses.filter((s) => s !== "in-progress")
+                    );
+                  }}
+                >
+                  In Progress
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem
+                  checked={selectedStatuses.includes("resolved")}
+                  onCheckedChange={(checked) => {
+                    setSelectedStatuses(
+                      checked
+                        ? [...selectedStatuses, "resolved"]
+                        : selectedStatuses.filter((s) => s !== "resolved")
+                    );
+                  }}
+                >
+                  Resolved
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem
+                  checked={selectedStatuses.includes("closed")}
+                  onCheckedChange={(checked) => {
+                    setSelectedStatuses(
+                      checked
+                        ? [...selectedStatuses, "closed"]
+                        : selectedStatuses.filter((s) => s !== "closed")
+                    );
+                  }}
+                >
+                  Closed
+                </DropdownMenuCheckboxItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-          <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg text-gray-300">In Progress</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center">
-                <Clock className="mr-2 h-5 w-5 text-blue-500" />
-                {loading ? (
-                  <div className="animate-pulse">
-                    <div className="h-9 w-20 bg-gray-700/50 rounded"></div>
-                  </div>
-                ) : (
-                  <div className="text-3xl font-bold text-white">{stats.inProgress}</div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="border-unicorn-gold/30 text-unicorn-gold"
+                >
+                  <Filter className="h-4 w-4 mr-2" />
+                  Priority
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-unicorn-darkPurple/90 border-unicorn-gold/30 text-white">
+                <DropdownMenuCheckboxItem
+                  checked={selectedPriorities.includes("high")}
+                  onCheckedChange={(checked) => {
+                    setSelectedPriorities(
+                      checked
+                        ? [...selectedPriorities, "high"]
+                        : selectedPriorities.filter((p) => p !== "high")
+                    );
+                  }}
+                >
+                  High
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem
+                  checked={selectedPriorities.includes("medium")}
+                  onCheckedChange={(checked) => {
+                    setSelectedPriorities(
+                      checked
+                        ? [...selectedPriorities, "medium"]
+                        : selectedPriorities.filter((p) => p !== "medium")
+                    );
+                  }}
+                >
+                  Medium
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem
+                  checked={selectedPriorities.includes("low")}
+                  onCheckedChange={(checked) => {
+                    setSelectedPriorities(
+                      checked
+                        ? [...selectedPriorities, "low"]
+                        : selectedPriorities.filter((p) => p !== "low")
+                    );
+                  }}
+                >
+                  Low
+                </DropdownMenuCheckboxItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-          <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg text-gray-300">Resolved</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center">
-                <CheckCircle className="mr-2 h-5 w-5 text-green-500" />
-                {loading ? (
-                  <div className="animate-pulse">
-                    <div className="h-9 w-20 bg-gray-700/50 rounded"></div>
-                  </div>
-                ) : (
-                  <div className="text-3xl font-bold text-white">{stats.resolved}</div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+            <Button
+              variant="outline"
+              className="border-unicorn-gold text-unicorn-gold hover:bg-unicorn-gold/20"
+              onClick={fetchTickets}
+            >
+              Refresh
+            </Button>
+          </div>
         </div>
-        
-        {/* Tickets List */}
+
         <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
-          <CardHeader>
-            <CardTitle className="text-xl text-white">All Tickets</CardTitle>
-          </CardHeader>
           <CardContent className="p-0">
-            {loading ? (
-              <div className="p-6">
-                <div className="flex flex-col space-y-4">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="animate-pulse">
-                      <div className="h-24 bg-gray-700/50 rounded"></div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : tickets.length > 0 ? (
-              <div className="divide-y divide-unicorn-gold/30">
-                {tickets.map((ticket) => (
-                  <div key={ticket.id} className="p-4 hover:bg-unicorn-purple/10 transition-colors">
-                    <Link to={`/admin/tickets/${ticket.id}`}>
-                      <div className="flex flex-col md:flex-row md:items-center justify-between">
-                        <div className="flex-1">
-                          <div className="font-medium text-white text-lg mb-1">
+            <div className="overflow-x-auto">
+              <table className="w-full text-gray-300">
+                <thead className="bg-unicorn-darkPurple/50 text-gray-400 text-xs uppercase">
+                  <tr>
+                    <th className="px-4 py-3 text-left">Subject</th>
+                    <th className="px-4 py-3 text-left">Status</th>
+                    <th className="px-4 py-3 text-left">Priority</th>
+                    <th className="px-4 py-3 text-left">Created At</th>
+                    <th className="px-4 py-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-unicorn-gold/20">
+                  {loading ? (
+                    Array.from({ length: 5 }).map((_, index) => (
+                      <tr key={index} className="animate-pulse">
+                        <td className="px-4 py-4">
+                          <div className="h-4 bg-gray-700/50 rounded w-64"></div>
+                        </td>
+                        <td className="px-4 py-4">
+                          <div className="h-6 bg-gray-700/50 rounded w-20"></div>
+                        </td>
+                        <td className="px-4 py-4">
+                          <div className="h-6 bg-gray-700/50 rounded w-20"></div>
+                        </td>
+                        <td className="px-4 py-4">
+                          <div className="h-4 bg-gray-700/50 rounded w-32"></div>
+                        </td>
+                        <td className="px-4 py-4 text-right">
+                          <div className="h-8 bg-gray-700/50 rounded w-8 ml-auto"></div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : filteredTickets.length > 0 ? (
+                    filteredTickets.map((ticket) => (
+                      <tr
+                        key={ticket.id}
+                        className="hover:bg-unicorn-darkPurple/30"
+                      >
+                        <td className="px-4 py-4">
+                          <div className="text-white font-medium">
                             {ticket.subject}
                           </div>
-                          <div className="text-sm text-gray-400 mb-2">
-                            Created on {new Date(ticket.created_at).toLocaleDateString()} by User ID: {ticket.user_id.substring(0, 8)}...
-                          </div>
-                          <div className="flex space-x-2">
-                            {getStatusBadge(ticket.status)}
-                            {getPriorityBadge(ticket.priority)}
-                            {!ticket.ai_response && (
-                              <Badge variant="outline" className="bg-unicorn-gold/10 text-unicorn-gold border-unicorn-gold/20">
-                                Needs Response
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                        
-                        <div className="mt-4 md:mt-0">
-                          <Button
-                            variant="outline"
-                            className="border-unicorn-gold/50 text-unicorn-gold hover:bg-unicorn-gold/20"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              navigate(`/admin/tickets/${ticket.id}`);
-                            }}
-                          >
-                            View Details
-                          </Button>
-                        </div>
-                      </div>
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="p-6 text-center">
-                <p className="text-gray-400">No tickets found</p>
-              </div>
-            )}
+                        </td>
+                        <td className="px-4 py-4">
+                          {getStatusBadge(ticket.status)}
+                        </td>
+                        <td className="px-4 py-4">
+                          {getPriorityBadge(ticket.priority)}
+                        </td>
+                        <td className="px-4 py-4 text-xs text-gray-400">
+                          {formatDate(ticket.created_at)}
+                        </td>
+                        <td className="px-4 py-4 text-right">
+                          <Link to={`/admin/tickets/${ticket.id}`}>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0 text-gray-400 hover:text-unicorn-gold"
+                              title="View details"
+                            >
+                              <ChevronRight className="h-4 w-4" />
+                              <span className="sr-only">View details</span>
+                            </Button>
+                          </Link>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan={5}
+                        className="px-4 py-8 text-center text-gray-400"
+                      >
+                        No tickets found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </CardContent>
         </Card>
       </div>

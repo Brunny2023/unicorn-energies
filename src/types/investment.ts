@@ -31,7 +31,7 @@ export type Transaction = {
 };
 
 export type Plan = {
-  id?: string;
+  id: string;
   name: string;
   minAmount: number;
   maxAmount: number;
@@ -49,7 +49,7 @@ export type WithdrawalRequest = {
   amount: number;
   fee: number;
   netAmount: number;
-  eligible?: boolean;
+  eligible: boolean;
   reason?: string;
 };
 

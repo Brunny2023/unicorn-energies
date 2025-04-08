@@ -1,5 +1,93 @@
-import { supabase } from "@/integrations/supabase/client";
-import { Investment, WalletData, Transaction, Plan, CalculationResults, WithdrawalRequest, Ticket } from "@/types/investment";
+import { supabase } from '@/integrations/supabase/client';
+import { Investment, Plan, WalletData, Ticket, WithdrawalRequest } from '@/types/investment';
+
+export const calculateInvestmentResults = (amount: number, plan: Plan) => {
+  const dailyProfit = amount * (plan.dailyReturn / 100);
+  const totalProfit = dailyProfit * plan.duration;
+  const totalReturn = amount + totalProfit;
+
+  return {
+    dailyProfit,
+    totalProfit,
+    totalReturn,
+  };
+};
+
+export const fetchInvestmentPlans = async (): Promise<Plan[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('investment_plans')
+      .select('*');
+
+    if (error) {
+      console.error("Error fetching investment plans:", error);
+      return [];
+    }
+
+    return data as Plan[];
+  } catch (error) {
+    console.error("Error fetching investment plans:", error);
+    return [];
+  }
+};
+
+export const createInvestment = async (userId: string, planId: string, amount: number): Promise<Investment | null> => {
+  try {
+    // Fetch the selected investment plan
+    const { data: plan, error: planError } = await supabase
+      .from('investment_plans')
+      .select('*')
+      .eq('id', planId)
+      .single();
+
+    if (planError) {
+      throw new Error(`Error fetching investment plan: ${planError.message}`);
+    }
+
+    // Ensure the plan exists
+    if (!plan) {
+      throw new Error('Investment plan not found');
+    }
+
+    // Calculate start and end dates
+    const startDate = new Date();
+    const endDate = new Date(startDate.getTime() + plan.duration * 24 * 60 * 60 * 1000); // Duration in days
+
+    // Calculate daily return
+    const dailyReturn = plan.dailyReturn;
+
+    // Calculate total return
+    const totalReturn = amount + (amount * (dailyReturn / 100) * plan.duration);
+
+    // Create a new investment record
+    const { data: investment, error: investmentError } = await supabase
+      .from('investments')
+      .insert([
+        {
+          plan_id: planId,
+          user_id: userId,
+          amount: amount,
+          dailyReturn: dailyReturn,
+          duration: plan.duration,
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString(),
+          totalReturn: totalReturn,
+          status: 'active',
+        },
+      ])
+      .select('*')
+      .single();
+
+    if (investmentError) {
+      throw new Error(`Error creating investment: ${investmentError.message}`);
+    }
+
+    return investment as Investment;
+  } catch (error: any) {
+    console.error("Error creating investment:", error.message);
+    return null;
+  }
+};
 
 export const getUserInvestments = async (userId: string): Promise<Investment[]> => {
   try {
@@ -7,28 +95,56 @@ export const getUserInvestments = async (userId: string): Promise<Investment[]> 
       .from('investments')
       .select('*')
       .eq('user_id', userId)
-      .order('created_at', { ascending: false });
-    
-    if (error) throw error;
-    
-    const investments: Investment[] = data.map(inv => ({
-      id: inv.id,
-      plan_id: inv.plan_id,
-      user_id: inv.user_id,
-      amount: inv.amount,
-      dailyReturn: inv.daily_return,
-      duration: inv.duration,
-      startDate: inv.start_date,
-      endDate: inv.end_date,
-      totalReturn: inv.total_return,
-      status: inv.status as 'active' | 'completed' | 'cancelled',
-      createdAt: inv.created_at
-    }));
-    
-    return investments;
+      .order('startDate', { ascending: false });
+
+    if (error) {
+      console.error("Error fetching user investments:", error);
+      return [];
+    }
+
+    return data as Investment[];
   } catch (error) {
     console.error("Error fetching user investments:", error);
-    throw error;
+    return [];
+  }
+};
+
+export const getInvestmentDetails = async (investmentId: string): Promise<Investment | null> => {
+    try {
+      const { data, error } = await supabase
+        .from('investments')
+        .select('*')
+        .eq('id', investmentId)
+        .single();
+  
+      if (error) {
+        console.error("Error fetching investment details:", error);
+        return null;
+      }
+  
+      return data as Investment;
+    } catch (error) {
+      console.error("Error fetching investment details:", error);
+      return null;
+    }
+  };
+
+export const cancelInvestment = async (investmentId: string): Promise<boolean> => {
+  try {
+    const { error } = await supabase
+      .from('investments')
+      .update({ status: 'cancelled' })
+      .eq('id', investmentId);
+
+    if (error) {
+      console.error("Error cancelling investment:", error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error cancelling investment:", error);
+    return false;
   }
 };
 
@@ -36,231 +152,133 @@ export const fetchWalletData = async (userId: string): Promise<WalletData | null
   try {
     const { data, error } = await supabase
       .from('wallets')
-      .select('id, balance, accrued_profits, withdrawal_fee_percentage')
+      .select('*')
       .eq('user_id', userId)
       .single();
 
-    if (error) throw error;
-    return data;
+    if (error) {
+      console.error("Error fetching wallet data:", error);
+      return null;
+    }
+
+    return data as WalletData;
   } catch (error) {
-    console.error('Error fetching wallet:', error);
+    console.error("Error fetching wallet data:", error);
     return null;
   }
 };
 
-export const fetchTransactions = async (userId: string): Promise<Transaction[]> => {
+export const processWithdrawal = async (userId: string, amount: number): Promise<boolean> => {
   try {
-    const { data, error } = await supabase
-      .from('transactions')
+    // Get wallet data
+    const { data: wallet, error: walletError } = await supabase
+      .from('wallets')
       .select('*')
       .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(5);
+      .single();
 
-    if (error) throw error;
-    return data || [];
-  } catch (error) {
-    console.error('Error fetching transactions:', error);
-    throw error;
-  }
-};
+    if (walletError || !wallet) {
+      throw new Error('Could not fetch wallet data');
+    }
 
-export const calculateInvestment = (amount: number, plan: Plan): CalculationResults => {
-  if (amount <= 0) return null;
-  
-  const dailyProfit = (amount * plan.dailyReturn) / 100;
-  const totalProfit = dailyProfit * plan.duration;
-  const totalReturn = amount + totalProfit;
-  
-  return {
-    dailyProfit,
-    totalProfit,
-    totalReturn
-  };
-};
+    // Check if wallet has enough balance
+    if (wallet.balance < amount) {
+      throw new Error('Insufficient balance');
+    }
 
-export const createInvestment = async (
-  userId: string,
-  planId: string,
-  amount: number,
-  planDetails: Plan
-): Promise<void> => {
-  try {
-    const results = calculateInvestment(amount, planDetails);
-    if (!results) throw new Error("Invalid calculation results");
-    
-    const startDate = new Date();
-    const endDate = new Date();
-    endDate.setDate(endDate.getDate() + planDetails.duration);
-    
-    const { error: walletError } = await supabase
+    // Calculate fee
+    const fee = (amount * wallet.withdrawal_fee_percentage) / 100;
+    const netAmount = amount - fee;
+
+    // Update wallet balance
+    const { error: updateError } = await supabase
       .from('wallets')
-      .update({ balance: supabase.rpc('GREATEST', { x: 0, y: supabase.raw('balance - ' + amount) }) })
+      .update({ balance: wallet.balance - amount })
       .eq('user_id', userId);
-      
-    if (walletError) throw walletError;
-    
-    const { error: investmentError } = await supabase
-      .from('investments')
-      .insert({
-        user_id: userId,
-        plan_id: planId,
-        amount,
-        daily_return: planDetails.dailyReturn,
-        duration: planDetails.duration,
-        start_date: startDate.toISOString(),
-        end_date: endDate.toISOString(),
-        total_return: results.totalReturn,
-        status: 'active'
-      });
-      
-    if (investmentError) throw investmentError;
-    
-    const { error: transactionError } = await supabase
+
+    if (updateError) {
+      throw updateError;
+    }
+
+    // Record transaction
+    const { error: txError } = await supabase
       .from('transactions')
       .insert({
         user_id: userId,
-        amount,
-        type: 'investment',
-        description: `Investment in ${planId} plan`
+        amount: amount,
+        type: 'withdrawal',
+        status: 'completed',
+        description: `Withdrawal with ${fee.toFixed(2)} fee. Net: ${netAmount.toFixed(2)}`,
       });
-      
-    if (transactionError) throw transactionError;
+
+    if (txError) {
+      throw txError;
+    }
+
+    return true;
   } catch (error) {
-    console.error("Error creating investment:", error);
-    throw error;
+    console.error('Error processing withdrawal:', error);
+    return false;
   }
 };
 
-export const calculateDaysRemaining = (endDate: string): number => {
-  const end = new Date(endDate);
-  const now = new Date();
-  const diffTime = end.getTime() - now.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return Math.max(0, diffDays);
-};
-
-export const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(amount);
-};
-
-export const calculateWithdrawal = async (
-  userId: string,
-  requestedAmount: number
-): Promise<WithdrawalRequest> => {
+export const createSupportTicket = async (userId: string, subject: string, message: string, priority: string): Promise<Ticket | null> => {
   try {
-    const wallet = await fetchWalletData(userId);
-    
-    if (!wallet || requestedAmount <= 0) {
-      return {
-        amount: requestedAmount,
-        fee: 0,
-        netAmount: 0,
-        eligible: false,
-        reason: "Invalid amount or wallet data"
-      };
+    const { data, error } = await supabase
+      .from('tickets')
+      .insert([
+        {
+          user_id: userId,
+          subject: subject,
+          message: message,
+          status: 'open',
+          priority: priority,
+        },
+      ])
+      .select('*')
+      .single();
+
+    if (error) {
+      throw error;
     }
-    
-    if (requestedAmount > wallet.accrued_profits) {
-      return {
-        amount: requestedAmount,
-        fee: 0,
-        netAmount: 0,
-        eligible: false,
-        reason: "Requested amount exceeds available profits"
-      };
-    }
-    
-    const fee = (requestedAmount * wallet.withdrawal_fee_percentage) / 100;
-    const netAmount = requestedAmount - fee;
-    
-    return {
-      amount: requestedAmount,
-      fee,
-      netAmount,
-      eligible: true
-    };
+
+    return data as Ticket;
   } catch (error) {
-    console.error("Error calculating withdrawal:", error);
+    console.error('Error creating support ticket:', error);
+    return null;
+  }
+};
+
+export const calculateWithdrawalFee = (walletData: WalletData | null, amount: number): WithdrawalRequest => {
+  if (!walletData) {
     return {
-      amount: requestedAmount,
+      amount,
       fee: 0,
       netAmount: 0,
       eligible: false,
-      reason: "Error processing withdrawal request"
+      reason: 'Wallet not found'
     };
   }
-};
 
-export const processWithdrawal = async (
-  userId: string,
-  withdrawal: WithdrawalRequest
-): Promise<boolean> => {
-  try {
-    if (!withdrawal.eligible) return false;
-    
-    const { error: walletError1 } = await supabase
-      .from('wallets')
-      .update({ 
-        accrued_profits: supabase.rpc('GREATEST', { x: 0, y: supabase.raw('accrued_profits - ' + withdrawal.amount) }) 
-      })
-      .eq('user_id', userId);
-      
-    if (walletError1) throw walletError1;
-    
-    const { error: walletError2 } = await supabase
-      .from('wallets')
-      .update({ balance: supabase.raw('balance + ' + withdrawal.netAmount) })
-      .eq('user_id', userId);
-      
-    if (walletError2) throw walletError2;
-    
-    const { error: transactionError } = await supabase
-      .from('transactions')
-      .insert({
-        user_id: userId,
-        amount: withdrawal.netAmount,
-        type: 'withdrawal',
-        description: `Withdrawal of profits (Fee: ${formatCurrency(withdrawal.fee)})`
-      });
-      
-    if (transactionError) throw transactionError;
-    
-    return true;
-  } catch (error) {
-    console.error("Error processing withdrawal:", error);
-    return false;
+  if (walletData.balance < amount) {
+    return {
+      amount,
+      fee: 0,
+      netAmount: 0,
+      eligible: false,
+      reason: 'Insufficient balance'
+    };
   }
-};
 
-export const createTicket = async (
-  userId: string,
-  subject: string,
-  message: string,
-  priority: 'low' | 'medium' | 'high' = 'medium'
-): Promise<boolean> => {
-  try {
-    const { error } = await supabase
-      .from('tickets')
-      .insert({
-        user_id: userId,
-        subject,
-        message,
-        priority,
-        status: 'open'
-      });
-      
-    if (error) throw error;
-    return true;
-  } catch (error) {
-    console.error("Error creating ticket:", error);
-    return false;
-  }
+  const fee = (amount * walletData.withdrawal_fee_percentage) / 100;
+  const netAmount = amount - fee;
+
+  return {
+    amount,
+    fee,
+    netAmount,
+    eligible: true
+  };
 };
 
 export const getUserTickets = async (userId: string): Promise<Ticket[]> => {
@@ -270,16 +288,17 @@ export const getUserTickets = async (userId: string): Promise<Ticket[]> => {
       .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
-      
+
     if (error) throw error;
-    
-    return data.map(ticket => ({
+
+    // Ensure the response matches our Ticket type
+    return (data as Ticket[]).map(ticket => ({
       ...ticket,
       status: ticket.status as 'open' | 'in-progress' | 'resolved' | 'closed',
       priority: ticket.priority as 'low' | 'medium' | 'high'
-    })) as Ticket[];
+    }));
   } catch (error) {
-    console.error("Error fetching tickets:", error);
+    console.error('Error fetching tickets:', error);
     return [];
   }
 };
@@ -291,37 +310,32 @@ export const getTicketDetails = async (ticketId: string): Promise<Ticket | null>
       .select('*')
       .eq('id', ticketId)
       .single();
-      
+
     if (error) throw error;
     
+    // Ensure the response matches our Ticket type
     return {
       ...data,
       status: data.status as 'open' | 'in-progress' | 'resolved' | 'closed',
       priority: data.priority as 'low' | 'medium' | 'high'
     } as Ticket;
   } catch (error) {
-    console.error("Error fetching ticket details:", error);
+    console.error('Error fetching ticket details:', error);
     return null;
   }
 };
 
-export const updateTicket = async (
-  ticketId: string,
-  updates: { status?: string; message?: string }
-): Promise<boolean> => {
+export const updateTicket = async (ticketId: string, updateData: Partial<Ticket>): Promise<boolean> => {
   try {
     const { error } = await supabase
       .from('tickets')
-      .update({
-        ...updates,
-        updated_at: new Date().toISOString()
-      })
+      .update(updateData)
       .eq('id', ticketId);
-      
+
     if (error) throw error;
     return true;
   } catch (error) {
-    console.error("Error updating ticket:", error);
+    console.error('Error updating ticket:', error);
     return false;
   }
 };
@@ -332,40 +346,17 @@ export const getAllTickets = async (): Promise<Ticket[]> => {
       .from('tickets')
       .select('*')
       .order('created_at', { ascending: false });
-      
+
     if (error) throw error;
-    
-    return data.map(ticket => ({
+
+    // Ensure the response matches our Ticket type
+    return (data as Ticket[]).map(ticket => ({
       ...ticket,
       status: ticket.status as 'open' | 'in-progress' | 'resolved' | 'closed',
       priority: ticket.priority as 'low' | 'medium' | 'high'
-    })) as Ticket[];
+    }));
   } catch (error) {
-    console.error("Error fetching all tickets:", error);
+    console.error('Error fetching all tickets:', error);
     return [];
-  }
-};
-
-export const generateAIResponse = async (
-  ticketId: string,
-  message: string
-): Promise<boolean> => {
-  try {
-    const aiResponse = "Thank you for contacting our support team. We're looking into your issue and will get back to you soon.";
-    
-    const { error } = await supabase
-      .from('tickets')
-      .update({
-        ai_response: aiResponse,
-        ai_responded_at: new Date().toISOString(),
-        status: 'in-progress'
-      })
-      .eq('id', ticketId);
-      
-    if (error) throw error;
-    return true;
-  } catch (error) {
-    console.error("Error generating AI response:", error);
-    return false;
   }
 };

@@ -1,199 +1,160 @@
-
-import { useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button } from "@/components/ui/button";
+import React, { ReactNode, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
-import { 
-  Home, 
-  LineChart, 
-  CreditCard, 
-  Users, 
-  History, 
-  BarChart3, 
-  LogOut, 
-  ChevronDown, 
-  ChevronRight,
+import { Button } from "@/components/ui/button";
+import { signOut } from "@/contexts/auth/authActions";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
+import {
+  Wallet,
+  LineChart,
+  CreditCard,
+  ArrowRightLeft,
+  LogOut,
   Menu,
   X,
-  MessageSquareText
-} from 'lucide-react';
+  ChevronRight,
+  Users,
+  Settings,
+  MessageSquare,
+  Home,
+} from "lucide-react";
+import StarsBackground from "@/components/ui/StarsBackground";
 
-interface NavItemProps {
-  icon: React.ReactNode;
-  label: string;
-  to: string;
-  isActive: boolean;
-  adminOnly?: boolean;
-  isAdmin: boolean;
+interface DashboardLayoutProps {
+  children: ReactNode;
+  isAdmin?: boolean; // Add optional isAdmin prop
 }
 
-const NavItem = ({ icon, label, to, isActive, adminOnly = false, isAdmin }: NavItemProps) => {
-  if (adminOnly && !isAdmin) return null;
-  
-  return (
-    <Link to={to}>
-      <div 
-        className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
-          isActive 
-            ? 'bg-unicorn-gold/20 text-unicorn-gold' 
-            : 'text-gray-300 hover:bg-unicorn-purple/20 hover:text-unicorn-gold'
-        }`}
-      >
-        {icon}
-        <span className="font-medium">{label}</span>
-        {isActive && (
-          <div className="ml-auto">
-            <ChevronRight className="h-5 w-5" />
-          </div>
-        )}
-      </div>
-    </Link>
-  );
-};
-
-const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
-  const location = useLocation();
+const DashboardLayout = ({ children, isAdmin = false }: DashboardLayoutProps) => {
+  const { user } = useAuth();
+  const { toast } = useToast();
   const navigate = useNavigate();
-  const { user, signOut, isAdmin } = useAuth();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
-  // Close mobile menu on route change
-  useEffect(() => {
-    setMobileMenuOpen(false);
-  }, [location.pathname]);
-  
-  const isActive = (path: string) => {
-    if (path === '/dashboard' || path === '/admin/dashboard') {
-      return location.pathname === path;
-    }
-    return location.pathname.startsWith(path);
+  const location = useLocation();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const handleSignOut = async () => {
+    await signOut({ toast, navigate });
   };
 
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+  };
+
+  const menuItems = [
+    {
+      label: "Dashboard",
+      icon: Home,
+      path: "/dashboard",
+      adminOnly: false,
+    },
+    {
+      label: "Investments",
+      icon: LineChart,
+      path: "/dashboard/investments",
+      adminOnly: false,
+    },
+    {
+      label: "Withdraw",
+      icon: Wallet,
+      path: "/dashboard/withdraw",
+      adminOnly: false,
+    },
+    {
+      label: "Tickets",
+      icon: MessageSquare,
+      path: "/dashboard/tickets",
+      adminOnly: false,
+    },
+    {
+      label: "Users",
+      icon: Users,
+      path: "/admin/users",
+      adminOnly: true,
+    },
+    {
+      label: "Transactions",
+      icon: CreditCard,
+      path: "/admin/transactions",
+      adminOnly: true,
+    },
+    {
+      label: "Tickets Admin",
+      icon: MessageSquare,
+      path: "/admin/tickets",
+      adminOnly: true,
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-unicorn-black to-unicorn-darkPurple">
-      <Navbar />
-      
-      <div className="container mx-auto px-4 pt-8 pb-16">
-        <div className="flex flex-col md:flex-row gap-8">
-          {/* Mobile Menu Toggle */}
-          <div className="md:hidden flex justify-between items-center mb-4">
-            <h1 className="text-xl font-bold text-white">Dashboard</h1>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-white"
-            >
-              {mobileMenuOpen ? <X /> : <Menu />}
-            </Button>
-          </div>
-          
-          {/* Sidebar Navigation */}
-          <div className={`md:w-64 flex-shrink-0 ${mobileMenuOpen ? 'block' : 'hidden md:block'}`}>
-            <div className="bg-unicorn-darkPurple/80 backdrop-blur-lg rounded-xl border border-unicorn-gold/20 p-4 sticky top-24">
-              {/* User Section */}
-              <div className="pb-4 mb-4 border-b border-unicorn-gold/20">
-                <div className="flex items-center space-x-3">
-                  <div className="h-10 w-10 rounded-full bg-unicorn-gold/80 flex items-center justify-center text-unicorn-black font-bold">
-                    {user?.email?.charAt(0).toUpperCase()}
-                  </div>
-                  <div className="overflow-hidden">
-                    <div className="text-white font-medium truncate">{user?.email}</div>
-                    <div className="text-xs text-gray-400">{isAdmin ? 'Administrator' : 'Investor'}</div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Nav Links */}
-              <nav className="space-y-1">
-                <NavItem 
-                  icon={<Home className="h-5 w-5" />} 
-                  label="Dashboard" 
-                  to={isAdmin ? "/admin/dashboard" : "/dashboard"} 
-                  isActive={isActive(isAdmin ? "/admin/dashboard" : "/dashboard")}
-                  isAdmin={isAdmin}
-                />
-                
-                {!isAdmin && (
-                  <>
-                    <NavItem 
-                      icon={<LineChart className="h-5 w-5" />} 
-                      label="Investments" 
-                      to="/dashboard/investments" 
-                      isActive={isActive("/dashboard/investments")}
-                      isAdmin={isAdmin}
-                    />
-                    <NavItem 
-                      icon={<CreditCard className="h-5 w-5" />} 
-                      label="Withdraw" 
-                      to="/dashboard/withdraw" 
-                      isActive={isActive("/dashboard/withdraw")}
-                      isAdmin={isAdmin}
-                    />
-                    <NavItem 
-                      icon={<MessageSquareText className="h-5 w-5" />} 
-                      label="Support Tickets" 
-                      to="/dashboard/tickets" 
-                      isActive={isActive("/dashboard/tickets")}
-                      isAdmin={isAdmin}
-                    />
-                  </>
-                )}
-                
-                {isAdmin && (
-                  <>
-                    <NavItem 
-                      icon={<Users className="h-5 w-5" />} 
-                      label="Users" 
-                      to="/admin/users" 
-                      isActive={isActive("/admin/users")}
-                      adminOnly
-                      isAdmin={isAdmin}
-                    />
-                    <NavItem 
-                      icon={<History className="h-5 w-5" />} 
-                      label="Transactions" 
-                      to="/admin/transactions" 
-                      isActive={isActive("/admin/transactions")}
-                      adminOnly
-                      isAdmin={isAdmin}
-                    />
-                    <NavItem 
-                      icon={<MessageSquareText className="h-5 w-5" />} 
-                      label="Support Tickets" 
-                      to="/admin/tickets" 
-                      isActive={isActive("/admin/tickets")}
-                      adminOnly
-                      isAdmin={isAdmin}
-                    />
-                  </>
-                )}
-              </nav>
-              
-              {/* Logout Button */}
-              <div className="pt-4 mt-4 border-t border-unicorn-gold/20">
-                <Button 
-                  variant="ghost" 
-                  className="w-full justify-start text-gray-400 hover:text-white hover:bg-unicorn-purple/20"
-                  onClick={() => signOut()}
-                >
-                  <LogOut className="h-5 w-5 mr-3" />
-                  Sign Out
-                </Button>
-              </div>
-            </div>
-          </div>
-          
-          {/* Main Content */}
-          <div className="flex-1">
-            {children}
-          </div>
+    <div className="relative h-screen flex flex-col">
+      <StarsBackground />
+
+      {/* Mobile Menu Button */}
+      <Button
+        variant="ghost"
+        className="absolute top-4 left-4 z-50 text-white md:hidden"
+        onClick={toggleMenu}
+      >
+        <Menu className="h-6 w-6" />
+      </Button>
+
+      {/* Sidebar (always visible on larger screens) */}
+      <aside
+        className={`fixed z-40 top-0 left-0 h-full w-64 bg-unicorn-darkPurple/90 border-r border-unicorn-gold/30 overflow-y-auto transition-transform transform md:translate-x-0 ${
+          isMenuOpen ? "translate-x-0" : "-translate-x-full"
+        } md:relative md:block`}
+      >
+        <div className="flex items-center justify-between p-4">
+          <Link to="/" className="flex items-center text-2xl font-bold text-white">
+            UnicornVest
+          </Link>
+          {/* Close button for mobile menu */}
+          <Button variant="ghost" className="text-white md:hidden" onClick={closeMenu}>
+            <X className="h-6 w-6" />
+          </Button>
         </div>
-      </div>
-      
-      <Footer />
+
+        <nav className="py-6">
+          {menuItems.map(
+            (item) =>
+              (!item.adminOnly || (item.adminOnly && isAdmin)) && (
+                <Link
+                  key={item.label}
+                  to={item.path}
+                  className={`flex items-center px-6 py-3 text-white hover:bg-unicorn-purple/20 transition-colors ${
+                    location.pathname === item.path ? "bg-unicorn-purple/30 font-semibold" : ""
+                  }`}
+                  onClick={closeMenu}
+                >
+                  <item.icon className="h-4 w-4 mr-2" />
+                  {item.label}
+                  {location.pathname === item.path && <ChevronRight className="ml-auto h-4 w-4" />}
+                </Link>
+              )
+          )}
+        </nav>
+
+        <div className="p-4 mt-auto">
+          <Button
+            variant="ghost"
+            className="flex items-center justify-start w-full text-white hover:bg-red-500/20"
+            onClick={handleSignOut}
+          >
+            <LogOut className="h-4 w-4 mr-2" />
+            Sign Out
+          </Button>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 md:pl-64 p-6">
+        {children}
+      </main>
     </div>
   );
 };

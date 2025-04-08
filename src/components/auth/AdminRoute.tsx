@@ -5,16 +5,17 @@ import { useAuth } from "@/contexts/AuthContext";
 
 interface AdminRouteProps {
   children: ReactNode;
+  isAdmin?: boolean; // Add optional isAdmin prop
 }
 
-const AdminRoute = ({ children }: AdminRouteProps) => {
-  const { user, loading, isAdmin } = useAuth();
+const AdminRoute = ({ children, isAdmin }: AdminRouteProps) => {
+  const { user, loading, isAdmin: userIsAdmin } = useAuth();
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  if (!user || !isAdmin) {
+  if (!user || !userIsAdmin) {
     return <Navigate to="/login" replace />;
   }
 
