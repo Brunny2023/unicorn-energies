@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { calculateInvestment, createInvestment } from "@/utils/investmentUtils";
+import { calculateInvestmentResults, createInvestment } from "@/utils/investmentUtils";
 import { Plan, CalculationResults } from "@/types/investment";
 import InvestmentForm from './calculator/InvestmentForm';
 import ResultsDisplay from './calculator/ResultsDisplay';
@@ -46,6 +46,7 @@ const PlanCalculator = ({ selectedPlan, plans, onSelectPlan }: PlanCalculatorPro
   useEffect(() => {
     if (selectedPlan) {
       const plan: Plan = {
+        id: selectedPlan.id,
         name: selectedPlan.name,
         minAmount: selectedPlan.minAmount,
         maxAmount: selectedPlan.maxAmount,
@@ -53,7 +54,7 @@ const PlanCalculator = ({ selectedPlan, plans, onSelectPlan }: PlanCalculatorPro
         duration: selectedPlan.duration
       };
       
-      const results = calculateInvestment(investmentAmount, plan);
+      const results = calculateInvestmentResults(investmentAmount, plan);
       setCalculationResults(results);
     } else {
       setCalculationResults(null);
@@ -113,6 +114,7 @@ const PlanCalculator = ({ selectedPlan, plans, onSelectPlan }: PlanCalculatorPro
       setIsSubmitting(true);
       
       const planDetails: Plan = {
+        id: selectedPlan.id,
         name: selectedPlan.name,
         minAmount: selectedPlan.minAmount,
         maxAmount: selectedPlan.maxAmount,
@@ -123,8 +125,7 @@ const PlanCalculator = ({ selectedPlan, plans, onSelectPlan }: PlanCalculatorPro
       await createInvestment(
         user.id,
         selectedPlan.id,
-        investmentAmount,
-        planDetails
+        investmentAmount
       );
       
       toast({

@@ -4,6 +4,9 @@ export type WalletData = {
   balance: number;
   accrued_profits: number;
   withdrawal_fee_percentage: number;
+  user_id: string;
+  created_at?: string;
+  updated_at?: string;
 };
 
 export type Investment = {
@@ -11,13 +14,13 @@ export type Investment = {
   plan_id: string;
   user_id: string;
   amount: number;
-  dailyReturn: number;
+  daily_return: number; // Database column name
   duration: number;
-  startDate: string;
-  endDate: string;
-  totalReturn: number;
+  start_date: string; // Database column name
+  end_date: string; // Database column name
+  total_return: number; // Database column name
   status: 'active' | 'completed' | 'cancelled';
-  createdAt: string;
+  created_at: string;
 };
 
 export type Transaction = {

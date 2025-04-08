@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +10,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { calculateWithdrawalFee, processWithdrawal } from "@/utils/investmentUtils";
 import { WalletData, WithdrawalRequest } from "@/types/investment";
+import Captcha from "@/components/ui/Captcha";
+import useCaptcha from "@/hooks/useCaptcha";
 
 const Withdraw = () => {
   const { user } = useAuth();
@@ -20,6 +23,9 @@ const Withdraw = () => {
   const [calculating, setCalculating] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [success, setSuccess] = useState(false);
+  
+  // Use the captcha hook
+  const captcha = useCaptcha();
 
   useEffect(() => {
     if (user) {
@@ -88,7 +94,14 @@ const Withdraw = () => {
   };
 
   const handleWithdraw = async () => {
-    if (!withdrawalRequest || !withdrawalRequest.eligible || !user) {
+    if (!withdrawalRequest || !withdrawalRequest.eligible || !user || !captcha.verified) {
+      if (!captcha.verified) {
+        toast({
+          variant: "destructive",
+          title: "CAPTCHA Required",
+          description: "Please complete the CAPTCHA verification first.",
+        });
+      }
       return;
     }
 
@@ -107,6 +120,7 @@ const Withdraw = () => {
         // Reset form
         setAmount("");
         setWithdrawalRequest(null);
+        captcha.resetCaptcha();
       } else {
         throw new Error("Withdrawal processing failed");
       }
@@ -191,9 +205,14 @@ const Withdraw = () => {
           <div>Fee: ${withdrawalRequest.fee.toFixed(2)}</div>
           <div>Net Amount: ${withdrawalRequest.netAmount.toFixed(2)}</div>
         </div>
+        
+        <div className="mt-4">
+          <Captcha siteKey={captcha.siteKey} onVerify={captcha.handleVerify} />
+        </div>
+        
         <Button
           onClick={handleWithdraw}
-          disabled={processing}
+          disabled={processing || !captcha.verified}
           className="w-full mt-4 bg-green-500 hover:bg-green-600 text-white"
         >
           {processing ? (

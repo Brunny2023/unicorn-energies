@@ -5,10 +5,10 @@ import { useAuth } from "@/contexts/AuthContext";
 
 interface AdminRouteProps {
   children: ReactNode;
-  isAdmin?: boolean; // Add optional isAdmin prop
+  isAdmin?: boolean; // Optional isAdmin prop for explicit admin-only routes
 }
 
-const AdminRoute = ({ children, isAdmin }: AdminRouteProps) => {
+const AdminRoute = ({ children }: AdminRouteProps) => {
   const { user, loading, isAdmin: userIsAdmin } = useAuth();
 
   if (loading) {

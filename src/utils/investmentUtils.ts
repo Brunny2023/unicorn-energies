@@ -1,6 +1,25 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { Investment, Plan, WalletData, Ticket, WithdrawalRequest } from '@/types/investment';
 
+// Formatting utilities
+export const formatCurrency = (amount: number): string => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+  }).format(amount);
+};
+
+export const calculateDaysRemaining = (endDate: string): number => {
+  const end = new Date(endDate);
+  const now = new Date();
+  const diffTime = end.getTime() - now.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return Math.max(0, diffDays);
+};
+
+// Investment calculation utilities
 export const calculateInvestmentResults = (amount: number, plan: Plan) => {
   const dailyProfit = amount * (plan.dailyReturn / 100);
   const totalProfit = dailyProfit * plan.duration;
@@ -13,8 +32,11 @@ export const calculateInvestmentResults = (amount: number, plan: Plan) => {
   };
 };
 
+export const calculateInvestment = calculateInvestmentResults;
+
 export const fetchInvestmentPlans = async (): Promise<Plan[]> => {
   try {
+    // Since investment_plans is not in the database type, we need to handle it manually
     const { data, error } = await supabase
       .from('investment_plans')
       .select('*');
@@ -24,42 +46,55 @@ export const fetchInvestmentPlans = async (): Promise<Plan[]> => {
       return [];
     }
 
-    return data as Plan[];
+    // Transform the data to match our Plan type
+    return data.map(plan => ({
+      id: plan.id,
+      name: plan.name,
+      minAmount: plan.min_amount,
+      maxAmount: plan.max_amount,
+      dailyReturn: plan.daily_return,
+      duration: plan.duration
+    })) as Plan[];
   } catch (error) {
     console.error("Error fetching investment plans:", error);
     return [];
   }
 };
 
-export const createInvestment = async (userId: string, planId: string, amount: number): Promise<Investment | null> => {
+export const createInvestment = async (userId: string, planId: string, amount: number, planDetails?: Plan): Promise<Investment | null> => {
   try {
-    // Fetch the selected investment plan
-    const { data: plan, error: planError } = await supabase
-      .from('investment_plans')
-      .select('*')
-      .eq('id', planId)
-      .single();
-
-    if (planError) {
-      throw new Error(`Error fetching investment plan: ${planError.message}`);
-    }
-
-    // Ensure the plan exists
+    // Fetch the selected investment plan if not provided
+    let plan = planDetails;
     if (!plan) {
-      throw new Error('Investment plan not found');
+      const { data: planData, error: planError } = await supabase
+        .from('investment_plans')
+        .select('*')
+        .eq('id', planId)
+        .single();
+
+      if (planError) {
+        throw new Error(`Error fetching investment plan: ${planError.message}`);
+      }
+
+      plan = {
+        id: planData.id,
+        name: planData.name,
+        minAmount: planData.min_amount,
+        maxAmount: planData.max_amount,
+        dailyReturn: planData.daily_return,
+        duration: planData.duration
+      };
     }
 
     // Calculate start and end dates
     const startDate = new Date();
-    const endDate = new Date(startDate.getTime() + plan.duration * 24 * 60 * 60 * 1000); // Duration in days
+    const endDate = new Date(startDate.getTime() + (plan.duration * 24 * 60 * 60 * 1000)); // Duration in days
 
-    // Calculate daily return
+    // Calculate daily return and total return
     const dailyReturn = plan.dailyReturn;
-
-    // Calculate total return
     const totalReturn = amount + (amount * (dailyReturn / 100) * plan.duration);
 
-    // Create a new investment record
+    // Create a new investment record with database column names
     const { data: investment, error: investmentError } = await supabase
       .from('investments')
       .insert([
@@ -67,11 +102,11 @@ export const createInvestment = async (userId: string, planId: string, amount: n
           plan_id: planId,
           user_id: userId,
           amount: amount,
-          dailyReturn: dailyReturn,
+          daily_return: dailyReturn,
           duration: plan.duration,
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString(),
-          totalReturn: totalReturn,
+          start_date: startDate.toISOString(),
+          end_date: endDate.toISOString(),
+          total_return: totalReturn,
           status: 'active',
         },
       ])
@@ -82,7 +117,20 @@ export const createInvestment = async (userId: string, planId: string, amount: n
       throw new Error(`Error creating investment: ${investmentError.message}`);
     }
 
-    return investment as Investment;
+    // Transform to match our Investment type
+    return {
+      id: investment.id,
+      plan_id: investment.plan_id,
+      user_id: investment.user_id,
+      amount: investment.amount,
+      daily_return: investment.daily_return,
+      duration: investment.duration,
+      start_date: investment.start_date,
+      end_date: investment.end_date,
+      total_return: investment.total_return,
+      status: investment.status,
+      created_at: investment.created_at
+    } as Investment;
   } catch (error: any) {
     console.error("Error creating investment:", error.message);
     return null;
@@ -95,14 +143,27 @@ export const getUserInvestments = async (userId: string): Promise<Investment[]> 
       .from('investments')
       .select('*')
       .eq('user_id', userId)
-      .order('startDate', { ascending: false });
+      .order('start_date', { ascending: false });
 
     if (error) {
       console.error("Error fetching user investments:", error);
       return [];
     }
 
-    return data as Investment[];
+    // Transform to match our Investment type
+    return data.map(inv => ({
+      id: inv.id,
+      plan_id: inv.plan_id,
+      user_id: inv.user_id,
+      amount: inv.amount,
+      daily_return: inv.daily_return,
+      duration: inv.duration,
+      start_date: inv.start_date,
+      end_date: inv.end_date,
+      total_return: inv.total_return,
+      status: inv.status,
+      created_at: inv.created_at
+    })) as Investment[];
   } catch (error) {
     console.error("Error fetching user investments:", error);
     return [];
@@ -110,24 +171,37 @@ export const getUserInvestments = async (userId: string): Promise<Investment[]> 
 };
 
 export const getInvestmentDetails = async (investmentId: string): Promise<Investment | null> => {
-    try {
-      const { data, error } = await supabase
-        .from('investments')
-        .select('*')
-        .eq('id', investmentId)
-        .single();
-  
-      if (error) {
-        console.error("Error fetching investment details:", error);
-        return null;
-      }
-  
-      return data as Investment;
-    } catch (error) {
+  try {
+    const { data, error } = await supabase
+      .from('investments')
+      .select('*')
+      .eq('id', investmentId)
+      .single();
+
+    if (error) {
       console.error("Error fetching investment details:", error);
       return null;
     }
-  };
+
+    // Transform to match our Investment type
+    return {
+      id: data.id,
+      plan_id: data.plan_id,
+      user_id: data.user_id,
+      amount: data.amount,
+      daily_return: data.daily_return,
+      duration: data.duration,
+      start_date: data.start_date,
+      end_date: data.end_date,
+      total_return: data.total_return,
+      status: data.status,
+      created_at: data.created_at
+    } as Investment;
+  } catch (error) {
+    console.error("Error fetching investment details:", error);
+    return null;
+  }
+};
 
 export const cancelInvestment = async (investmentId: string): Promise<boolean> => {
   try {
@@ -242,12 +316,26 @@ export const createSupportTicket = async (userId: string, subject: string, messa
       throw error;
     }
 
-    return data as Ticket;
+    return {
+      id: data.id,
+      user_id: data.user_id,
+      subject: data.subject,
+      message: data.message,
+      status: data.status as 'open' | 'in-progress' | 'resolved' | 'closed',
+      priority: data.priority as 'low' | 'medium' | 'high',
+      created_at: data.created_at,
+      updated_at: data.updated_at,
+      ai_response: data.ai_response,
+      ai_responded_at: data.ai_responded_at
+    };
   } catch (error) {
     console.error('Error creating support ticket:', error);
     return null;
   }
 };
+
+// Alias for compatibility with component usage
+export const createTicket = createSupportTicket;
 
 export const calculateWithdrawalFee = (walletData: WalletData | null, amount: number): WithdrawalRequest => {
   if (!walletData) {
@@ -291,11 +379,18 @@ export const getUserTickets = async (userId: string): Promise<Ticket[]> => {
 
     if (error) throw error;
 
-    // Ensure the response matches our Ticket type
-    return (data as Ticket[]).map(ticket => ({
-      ...ticket,
+    // Transform to match our Ticket type
+    return data.map(ticket => ({
+      id: ticket.id,
+      user_id: ticket.user_id,
+      subject: ticket.subject,
+      message: ticket.message,
       status: ticket.status as 'open' | 'in-progress' | 'resolved' | 'closed',
-      priority: ticket.priority as 'low' | 'medium' | 'high'
+      priority: ticket.priority as 'low' | 'medium' | 'high',
+      created_at: ticket.created_at,
+      updated_at: ticket.updated_at,
+      ai_response: ticket.ai_response,
+      ai_responded_at: ticket.ai_responded_at
     }));
   } catch (error) {
     console.error('Error fetching tickets:', error);
@@ -313,12 +408,19 @@ export const getTicketDetails = async (ticketId: string): Promise<Ticket | null>
 
     if (error) throw error;
     
-    // Ensure the response matches our Ticket type
+    // Transform to match our Ticket type
     return {
-      ...data,
+      id: data.id,
+      user_id: data.user_id,
+      subject: data.subject,
+      message: data.message,
       status: data.status as 'open' | 'in-progress' | 'resolved' | 'closed',
-      priority: data.priority as 'low' | 'medium' | 'high'
-    } as Ticket;
+      priority: data.priority as 'low' | 'medium' | 'high',
+      created_at: data.created_at,
+      updated_at: data.updated_at,
+      ai_response: data.ai_response,
+      ai_responded_at: data.ai_responded_at
+    };
   } catch (error) {
     console.error('Error fetching ticket details:', error);
     return null;
@@ -349,11 +451,18 @@ export const getAllTickets = async (): Promise<Ticket[]> => {
 
     if (error) throw error;
 
-    // Ensure the response matches our Ticket type
-    return (data as Ticket[]).map(ticket => ({
-      ...ticket,
+    // Transform to match our Ticket type
+    return data.map(ticket => ({
+      id: ticket.id,
+      user_id: ticket.user_id,
+      subject: ticket.subject,
+      message: ticket.message,
       status: ticket.status as 'open' | 'in-progress' | 'resolved' | 'closed',
-      priority: ticket.priority as 'low' | 'medium' | 'high'
+      priority: ticket.priority as 'low' | 'medium' | 'high',
+      created_at: ticket.created_at,
+      updated_at: ticket.updated_at,
+      ai_response: ticket.ai_response,
+      ai_responded_at: ticket.ai_responded_at
     }));
   } catch (error) {
     console.error('Error fetching all tickets:', error);

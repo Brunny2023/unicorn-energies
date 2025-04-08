@@ -1,33 +1,8 @@
 import React, { useState, useEffect } from "react";
-import DashboardLayout from "@/components/dashboard/DashboardLayout";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { 
-  Search, 
-  ArrowUpRight, 
-  ArrowDownRight, 
-  LineChart,
-  CircleDollarSign,
-  Clock,
-  ExternalLink,
-  Filter
-} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuCheckboxItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import AdminRoute from "@/components/auth/AdminRoute";
 
 interface Transaction {
@@ -44,8 +19,9 @@ interface Transaction {
   };
 }
 
-const AdminTransactions = () => {
+const Transactions = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -409,4 +385,4 @@ const AdminTransactions = () => {
   );
 };
 
-export default AdminTransactions;
+export default Transactions;

@@ -1,12 +1,24 @@
 import React, { useState, useEffect } from "react";
-import DashboardLayout from "@/components/dashboard/DashboardLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Users, CreditCard, ArrowUpRight, Wallet } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import AdminRoute from "@/components/auth/AdminRoute";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { UserCheck, CreditCard, PieChart, BarChart2, DollarSign, Clock, TrendingUp, AlertCircle } from "lucide-react";
+import { 
+  ResponsiveContainer, 
+  AreaChart, 
+  Area, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip,
+  BarChart,
+  Bar,
+  Cell,
+  Legend
+} from "recharts";
 
 interface WalletSummary {
   totalBalance: number;
@@ -131,7 +143,7 @@ const AdminDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="flex items-center">
-                <Users className="mr-2 h-5 w-5 text-unicorn-gold" />
+                <UserCheck className="mr-2 h-5 w-5 text-unicorn-gold" />
                 {loading ? (
                   <div className="animate-pulse">
                     <div className="h-9 w-20 bg-gray-700/50 rounded"></div>
@@ -200,7 +212,7 @@ const AdminDashboard = () => {
           <CardContent>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData}>
+                <AreaChart data={chartData}>
                   <XAxis dataKey="name" stroke="#9CA3AF" />
                   <YAxis stroke="#9CA3AF" />
                   <Tooltip 
@@ -210,9 +222,9 @@ const AdminDashboard = () => {
                       color: '#ffffff',
                     }} 
                   />
-                  <Line type="monotone" dataKey="deposits" stroke="#C9A854" strokeWidth={2} />
-                  <Line type="monotone" dataKey="withdrawals" stroke="#EF4444" strokeWidth={2} />
-                </LineChart>
+                  <Area type="monotone" dataKey="deposits" stroke="#C9A854" strokeWidth={2} />
+                  <Area type="monotone" dataKey="withdrawals" stroke="#EF4444" strokeWidth={2} />
+                </AreaChart>
               </ResponsiveContainer>
             </div>
           </CardContent>

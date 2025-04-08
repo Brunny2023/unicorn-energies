@@ -3,7 +3,7 @@ import { ChangeEvent } from 'react';
 import { Plan } from '@/types/investment';
 
 interface InvestmentFormProps {
-  selectedPlan: Plan | null;
+  selectedPlan: any | null;
   plans: { id: string; name: string; range: string; minAmount: number; maxAmount: number; dailyReturn: number; duration: number; totalReturn: number; features: string[]; highlighted?: boolean; }[];
   investmentAmount: number;
   onSelectPlan: (plan: any) => void;

@@ -9,10 +9,10 @@ import AmountInput from '@/components/calculator/AmountInput';
 import ResultsDisplay from '@/components/calculator/ResultsDisplay';
 
 const plans: Plan[] = [
-  { name: "Goldfish", minAmount: 100, maxAmount: 999, dailyReturn: 1.2, duration: 15 },
-  { name: "Dolphin", minAmount: 1000, maxAmount: 4999, dailyReturn: 1.5, duration: 20 },
-  { name: "Shark", minAmount: 5000, maxAmount: 14999, dailyReturn: 1.8, duration: 25 },
-  { name: "Whales", minAmount: 15000, maxAmount: 50000, dailyReturn: 2.2, duration: 30 }
+  { id: "goldfish", name: "Goldfish", minAmount: 100, maxAmount: 999, dailyReturn: 1.2, duration: 15 },
+  { id: "dolphin", name: "Dolphin", minAmount: 1000, maxAmount: 4999, dailyReturn: 1.5, duration: 20 },
+  { id: "shark", name: "Shark", minAmount: 5000, maxAmount: 14999, dailyReturn: 1.8, duration: 25 },
+  { id: "whales", name: "Whales", minAmount: 15000, maxAmount: 50000, dailyReturn: 2.2, duration: 30 }
 ];
 
 const ProfitCalculatorSection = () => {

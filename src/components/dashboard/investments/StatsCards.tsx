@@ -1,7 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, ArrowUpRight, TrendingUp } from "lucide-react";
-import { formatCurrency } from "@/utils/investmentUtils";
 
 interface StatsCardsProps {
   loading: boolean;
@@ -9,6 +8,15 @@ interface StatsCardsProps {
   totalInvested: number;
   totalReturns: number;
 }
+
+// Local formatter to avoid dependency on utils
+const formatCurrency = (amount: number): string => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+  }).format(amount);
+};
 
 const StatsCards = ({ loading, activeCount, totalInvested, totalReturns }: StatsCardsProps) => {
   return (

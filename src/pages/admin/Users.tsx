@@ -1,35 +1,8 @@
 import React, { useState, useEffect } from "react";
-import DashboardLayout from "@/components/dashboard/DashboardLayout";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { 
-  Search, 
-  UserPlus, 
-  UserCog,
-  Wallet,
-  Check,
-  X
-} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/components/ui/use-toast";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import AdminRoute from "@/components/auth/AdminRoute";
 
 interface User {
@@ -45,7 +18,7 @@ interface UserWallet {
   balance: number;
 }
 
-const AdminUsers = () => {
+const Users = () => {
   const { toast } = useToast();
   const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
@@ -480,4 +453,4 @@ const AdminUsers = () => {
   );
 };
 
-export default AdminUsers;
+export default Users;

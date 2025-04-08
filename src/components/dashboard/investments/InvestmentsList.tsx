@@ -4,12 +4,28 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Clock, CheckCircle, AlertCircle } from "lucide-react";
 import { Investment } from "@/types/investment";
-import { calculateDaysRemaining, formatCurrency } from "@/utils/investmentUtils";
 
 interface InvestmentsListProps {
   loading: boolean;
   investments: Investment[];
 }
+
+// Local utility functions to avoid dependency
+const calculateDaysRemaining = (endDate: string): number => {
+  const end = new Date(endDate);
+  const now = new Date();
+  const diffTime = end.getTime() - now.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return Math.max(0, diffDays);
+};
+
+const formatCurrency = (amount: number): string => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+  }).format(amount);
+};
 
 const InvestmentsList = ({ loading, investments }: InvestmentsListProps) => {
   const navigate = useNavigate();
@@ -77,9 +93,9 @@ const InvestmentsList = ({ loading, investments }: InvestmentsListProps) => {
                         {investment.plan_id} Plan
                       </div>
                       <div className="text-sm text-gray-400">
-                        Started on {new Date(investment.startDate).toLocaleDateString()}
+                        Started on {new Date(investment.start_date).toLocaleDateString()}
                       </div>
-                      {getStatusBadge(investment.status, investment.endDate)}
+                      {getStatusBadge(investment.status, investment.end_date)}
                     </div>
                     
                     <div className="mt-4 md:mt-0 grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -93,14 +109,14 @@ const InvestmentsList = ({ loading, investments }: InvestmentsListProps) => {
                       <div>
                         <div className="text-sm text-gray-400">Daily Return</div>
                         <div className="font-medium text-unicorn-gold">
-                          {investment.dailyReturn}%
+                          {investment.daily_return}%
                         </div>
                       </div>
                       
                       <div>
                         <div className="text-sm text-gray-400">Total Return</div>
                         <div className="font-medium text-unicorn-gold">
-                          {formatCurrency(Number(investment.totalReturn))}
+                          {formatCurrency(Number(investment.total_return))}
                         </div>
                       </div>
                     </div>
