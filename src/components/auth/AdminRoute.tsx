@@ -1,25 +1,28 @@
 
-import { ReactNode } from "react";
-import { Navigate } from "react-router-dom";
+import React from "react";
 import { useAuth } from "@/contexts/AuthContext";
 
-interface AdminRouteProps {
-  children: ReactNode;
-  isAdmin?: boolean; // Optional isAdmin prop for explicit admin-only routes
-}
+// Development mode flag - set to true to bypass authentication
+const DEVELOPMENT_MODE = true;
 
-const AdminRoute = ({ children, isAdmin }: AdminRouteProps) => {
-  const { user, loading, isAdmin: userIsAdmin } = useAuth();
+const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, loading, isAdmin } = useAuth();
 
+  // In development mode, allow access without authentication
+  if (DEVELOPMENT_MODE) {
+    return <>{children}</>;
+  }
+
+  // Regular authentication and admin check for production
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-unicorn-darkPurple/90">
+        <div className="h-16 w-16 border-t-4 border-unicorn-gold border-solid rounded-full animate-spin"></div>
+      </div>
+    );
   }
 
-  if (!user || !userIsAdmin) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return <>{children}</>;
+  return user && isAdmin ? <>{children}</> : null;
 };
 
 export default AdminRoute;

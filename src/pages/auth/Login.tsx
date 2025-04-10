@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,10 +11,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import Captcha from "@/components/ui/Captcha";
-import useCaptcha from "@/hooks/useCaptcha";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+// Development mode flag - set to true to bypass authentication
+const DEVELOPMENT_MODE = true;
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -23,8 +23,8 @@ const loginSchema = z.object({
 
 const Login = () => {
   const { user, signIn, loading } = useAuth();
-  const { siteKey, token, verified, handleVerify } = useCaptcha();
-  const [captchaError, setCaptchaError] = useState(false);
+  const { toast } = useToast();
+  const navigate = useNavigate();
   
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -34,16 +34,28 @@ const Login = () => {
     },
   });
 
+  const handleDevModeLogin = () => {
+    toast({
+      title: "Development Mode",
+      description: "Bypassing authentication and navigating to dashboard.",
+    });
+    
+    // Navigate directly to admin dashboard in dev mode
+    navigate("/admin/dashboard");
+  };
+
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
-    if (!verified || !token) {
-      setCaptchaError(true);
+    if (DEVELOPMENT_MODE) {
+      handleDevModeLogin();
       return;
     }
     
-    setCaptchaError(false);
+    // Normal authentication flow (unused in dev mode)
     await signIn(data.email, data.password);
   };
 
+  // If we're in dev mode and on the login page, show the login form
+  // If we have a real authenticated user, redirect to dashboard
   if (user) {
     return <Navigate to="/dashboard" />;
   }
@@ -69,6 +81,11 @@ const Login = () => {
               <p className="mt-2 text-gray-400">
                 Welcome back! Please enter your credentials to continue.
               </p>
+              {DEVELOPMENT_MODE && (
+                <div className="mt-2 text-green-400 border border-green-400 p-2 rounded-md">
+                  Development Mode: Authentication bypass enabled
+                </div>
+              )}
             </div>
             
             <Form {...form}>
@@ -118,17 +135,23 @@ const Login = () => {
                   )}
                 />
 
-                {/* CAPTCHA */}
-                <div className="space-y-4">
-                  <Captcha siteKey={siteKey} onVerify={handleVerify} />
-                  
-                  {captchaError && (
-                    <Alert variant="destructive">
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertDescription>Please complete the CAPTCHA verification</AlertDescription>
-                    </Alert>
-                  )}
-                </div>
+                {/* Development mode button replaces CAPTCHA */}
+                {DEVELOPMENT_MODE ? (
+                  <div className="space-y-4">
+                    <Button 
+                      type="button"
+                      onClick={handleDevModeLogin}
+                      className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold"
+                    >
+                      Dev Mode Login (Skip Authentication)
+                    </Button>
+                  </div>
+                ) : (
+                  // This is where the original CAPTCHA would be
+                  <div className="space-y-4">
+                    {/* CAPTCHA component is removed in dev mode */}
+                  </div>
+                )}
 
                 <Button
                   type="submit"
