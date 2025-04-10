@@ -9,7 +9,8 @@ export interface TransactionItem {
   status: string;
   created_at: string;
   description: string | null;
-  user: {
+  created_by?: string;
+  user?: {
     email: string;
     full_name: string | null;
   };
