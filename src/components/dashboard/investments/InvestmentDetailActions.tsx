@@ -1,7 +1,16 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Download, RefreshCw, AlertTriangle, Printer, Share2, BarChart4 } from "lucide-react";
+import { 
+  Download, 
+  RefreshCw, 
+  AlertTriangle, 
+  Printer, 
+  Share2, 
+  BarChart4, 
+  CalendarClock,
+  Clock
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   Tooltip,
@@ -9,6 +18,24 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 interface InvestmentDetailActionsProps {
   isActive?: boolean;
@@ -19,6 +46,9 @@ const InvestmentDetailActions: React.FC<InvestmentDetailActionsProps> = ({ isAct
   const [isReinvesting, setIsReinvesting] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [reinvestAmount, setReinvestAmount] = useState("0");
+  const [reinvestDuration, setReinvestDuration] = useState("15");
 
   const handleReinvest = () => {
     setIsReinvesting(true);
@@ -26,9 +56,10 @@ const InvestmentDetailActions: React.FC<InvestmentDetailActionsProps> = ({ isAct
     // Simulate API call
     setTimeout(() => {
       setIsReinvesting(false);
+      setIsDialogOpen(false);
       toast({
         title: "Reinvestment Scheduled",
-        description: "Your reinvestment has been scheduled successfully.",
+        description: `Your reinvestment of $${parseFloat(reinvestAmount).toLocaleString()} for ${reinvestDuration} days has been scheduled successfully.`,
       });
     }, 1500);
   };
@@ -80,18 +111,82 @@ const InvestmentDetailActions: React.FC<InvestmentDetailActionsProps> = ({ isAct
         {isActive ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <Button 
-                className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black flex items-center justify-center"
-                onClick={handleReinvest}
-                disabled={isReinvesting}
-              >
-                {isReinvesting ? (
-                  <span className="h-4 w-4 border-t-2 border-unicorn-black border-solid rounded-full animate-spin mr-2"></span>
-                ) : (
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                )}
-                Reinvest Profits
-              </Button>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button 
+                    className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black flex items-center justify-center"
+                  >
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Reinvest Profits
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="bg-unicorn-darkPurple border border-unicorn-gold/30 text-white">
+                  <DialogHeader>
+                    <DialogTitle className="text-unicorn-gold">Schedule Reinvestment</DialogTitle>
+                    <DialogDescription className="text-gray-400">
+                      Set up a reinvestment from your current profits.
+                    </DialogDescription>
+                  </DialogHeader>
+                  
+                  <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="amount" className="text-right">
+                        Amount
+                      </Label>
+                      <Input
+                        id="amount"
+                        type="number"
+                        value={reinvestAmount}
+                        onChange={(e) => setReinvestAmount(e.target.value)}
+                        className="col-span-3 bg-unicorn-darkPurple/50 border-unicorn-gold/20 text-white"
+                        placeholder="Enter amount"
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="duration" className="text-right">
+                        Duration
+                      </Label>
+                      <Select 
+                        value={reinvestDuration} 
+                        onValueChange={setReinvestDuration}
+                      >
+                        <SelectTrigger className="col-span-3 bg-unicorn-darkPurple/50 border-unicorn-gold/20 text-white">
+                          <SelectValue placeholder="Select duration" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-unicorn-darkPurple border-unicorn-gold/20">
+                          <SelectItem value="15">15 days</SelectItem>
+                          <SelectItem value="30">30 days</SelectItem>
+                          <SelectItem value="45">45 days</SelectItem>
+                          <SelectItem value="60">60 days</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CalendarClock className="h-4 w-4 text-unicorn-gold" />
+                      <span className="text-sm text-unicorn-gold">
+                        Estimated completion date: {
+                          new Date(Date.now() + parseInt(reinvestDuration) * 24 * 60 * 60 * 1000).toLocaleDateString()
+                        }
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <DialogFooter>
+                    <Button 
+                      onClick={handleReinvest}
+                      disabled={isReinvesting}
+                      className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black"
+                    >
+                      {isReinvesting ? (
+                        <span className="h-4 w-4 border-t-2 border-unicorn-black border-solid rounded-full animate-spin mr-2"></span>
+                      ) : (
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                      )}
+                      Confirm Reinvestment
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
               
               <Button 
                 variant="outline" 
@@ -164,6 +259,23 @@ const InvestmentDetailActions: React.FC<InvestmentDetailActionsProps> = ({ isAct
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>Performance Reports</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      className="h-9 w-9 border border-unicorn-gold/30 text-unicorn-gold hover:bg-unicorn-gold/10 flex-1"
+                    >
+                      <Clock className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Investment History</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>

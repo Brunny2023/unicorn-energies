@@ -48,16 +48,16 @@ export interface Ticket {
   id: string;
   user_id: string;
   subject: string;
-  status: string;
-  priority: string;
-  created_at: string;
+  message: string;
+  status: 'open' | 'in-progress' | 'resolved' | 'closed' | 'replied';
+  priority: 'low' | 'medium' | 'high';
   category: string;
-  last_reply_at?: string;
-  closed_at?: string;
-  message?: string;
+  created_at: string;
+  updated_at?: string;
   ai_response?: string;
   ai_responded_at?: string;
-  updated_at?: string;
+  last_reply_at?: string;
+  closed_at?: string;
 }
 
 export interface TicketMessage {
