@@ -65,6 +65,7 @@ const TicketDetails = () => {
   useEffect(() => {
     // In development mode, use dummy data
     if (DEVELOPMENT_MODE && id) {
+      console.log("Loading dummy ticket data for ID:", id);
       setTimeout(() => {
         const dummyTicket = DUMMY_TICKETS[id as keyof typeof DUMMY_TICKETS];
         if (dummyTicket) {

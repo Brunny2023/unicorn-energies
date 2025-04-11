@@ -13,7 +13,6 @@ export const createSupportTicket = async (userId: string, subject: string, messa
           message: message,
           status: 'open',
           priority: priority,
-          // Note: category is custom and handled in our app, not in DB
         },
       ])
       .select('*')
@@ -30,7 +29,7 @@ export const createSupportTicket = async (userId: string, subject: string, messa
       message: data.message || '',
       status: data.status as 'open' | 'in-progress' | 'resolved' | 'closed' | 'replied',
       priority: data.priority as 'low' | 'medium' | 'high',
-      category: category, // Use the input category instead
+      category: category || determineCategory(data), // Use the input category or determine it
       created_at: data.created_at,
       updated_at: data.updated_at,
       ai_response: data.ai_response,
@@ -47,6 +46,8 @@ export const createTicket = createSupportTicket;
 
 export const getUserTickets = async (userId: string): Promise<Ticket[]> => {
   try {
+    console.log('Fetching tickets for user:', userId);
+    
     const { data, error } = await supabase
       .from('tickets')
       .select('*')
@@ -54,6 +55,8 @@ export const getUserTickets = async (userId: string): Promise<Ticket[]> => {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
+    
+    console.log('Tickets fetched:', data?.length || 0);
 
     // Transform to match our Ticket type, ensuring category is always populated
     return (data || []).map(ticket => ({
@@ -77,6 +80,8 @@ export const getUserTickets = async (userId: string): Promise<Ticket[]> => {
 
 export const getTicketDetails = async (ticketId: string): Promise<Ticket | null> => {
   try {
+    console.log('Fetching ticket details for ID:', ticketId);
+    
     const { data, error } = await supabase
       .from('tickets')
       .select('*')
@@ -84,6 +89,8 @@ export const getTicketDetails = async (ticketId: string): Promise<Ticket | null>
       .single();
 
     if (error) throw error;
+    
+    console.log('Ticket details fetched successfully');
     
     // Transform to match our Ticket type
     return {
@@ -107,6 +114,8 @@ export const getTicketDetails = async (ticketId: string): Promise<Ticket | null>
 
 export const updateTicket = async (ticketId: string, updateData: Partial<Ticket>): Promise<boolean> => {
   try {
+    console.log('Updating ticket:', ticketId);
+    
     // Extract only the fields that exist in the database
     const dbUpdateData = {
       subject: updateData.subject,
@@ -122,6 +131,8 @@ export const updateTicket = async (ticketId: string, updateData: Partial<Ticket>
       .eq('id', ticketId);
 
     if (error) throw error;
+    
+    console.log('Ticket updated successfully');
     return true;
   } catch (error) {
     console.error('Error updating ticket:', error);
@@ -131,12 +142,16 @@ export const updateTicket = async (ticketId: string, updateData: Partial<Ticket>
 
 export const getAllTickets = async (): Promise<Ticket[]> => {
   try {
+    console.log('Fetching all tickets');
+    
     const { data, error } = await supabase
       .from('tickets')
       .select('*')
       .order('created_at', { ascending: false });
 
     if (error) throw error;
+    
+    console.log('All tickets fetched:', data?.length || 0);
 
     // Transform to match our Ticket type
     return (data || []).map(ticket => ({
@@ -148,7 +163,7 @@ export const getAllTickets = async (): Promise<Ticket[]> => {
       priority: ticket.priority as 'low' | 'medium' | 'high',
       category: determineCategory(ticket), // Add category detection
       created_at: ticket.created_at,
-      updated_at: ticket.updated_at,
+      updated_at: data.updated_at,
       ai_response: ticket.ai_response,
       ai_responded_at: ticket.ai_responded_at
     }));

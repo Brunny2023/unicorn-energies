@@ -57,6 +57,7 @@ const TicketsList = () => {
   useEffect(() => {
     // In development mode, use dummy data
     if (DEVELOPMENT_MODE) {
+      console.log("Loading dummy tickets data");
       setTimeout(() => {
         setTickets(DUMMY_TICKETS as Ticket[]);
         setLoading(false);
