@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
@@ -10,12 +11,70 @@ import {
   LineChart, 
   Wallet, 
   Clock,
-  TrendingUp
+  TrendingUp,
+  MessageSquare
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
-// Local formatter function
+// Sample data for development mode
+const DEVELOPMENT_MODE = true;
+
+const SAMPLE_DATA = {
+  wallet: {
+    balance: 12500,
+    accrued_profits: 750,
+    withdrawal_fee_percentage: 2.5
+  },
+  investments: {
+    active_count: 3,
+    total_invested: 15000,
+    total_expected_return: 19500
+  },
+  transactions: [
+    {
+      id: "tx-1",
+      type: "deposit",
+      amount: 5000,
+      status: "completed",
+      created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+      id: "tx-2",
+      type: "investment",
+      amount: 3000,
+      status: "completed",
+      created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      description: "Gold Plan Investment"
+    },
+    {
+      id: "tx-3",
+      type: "withdrawal",
+      amount: 1200,
+      status: "pending",
+      created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+      id: "tx-4",
+      type: "credit",
+      amount: 350,
+      status: "completed",
+      created_at: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+      description: "Referral Bonus"
+    }
+  ],
+  tickets: {
+    open_count: 2,
+    latest_ticket: {
+      id: "ticket-1",
+      subject: "Withdrawal Query",
+      status: "open",
+      created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+    }
+  }
+};
+
+// Formatter function
 const formatCurrency = (amount: number): string => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -24,44 +83,39 @@ const formatCurrency = (amount: number): string => {
   }).format(amount);
 };
 
-interface Transaction {
-  id: string;
-  type: string;
-  amount: number;
-  status: string;
-  created_at: string;
-  description: string | null;
-}
-
-interface WalletData {
-  id: string;
-  balance: number;
-  accrued_profits: number;
-  withdrawal_fee_percentage: number;
-}
-
-interface InvestmentStats {
-  active_count: number;
-  total_invested: number;
-  total_expected_return: number;
-}
-
 const Dashboard = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [walletData, setWalletData] = useState<WalletData | null>(null);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [investmentStats, setInvestmentStats] = useState<InvestmentStats>({
+  const [walletData, setWalletData] = useState<any>(null);
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [investmentStats, setInvestmentStats] = useState<any>({
     active_count: 0,
     total_invested: 0,
     total_expected_return: 0
   });
+  const [ticketStats, setTicketStats] = useState<any>({
+    open_count: 0,
+    latest_ticket: null
+  });
 
   useEffect(() => {
+    if (DEVELOPMENT_MODE) {
+      // Simulate loading
+      setTimeout(() => {
+        setWalletData(SAMPLE_DATA.wallet);
+        setTransactions(SAMPLE_DATA.transactions);
+        setInvestmentStats(SAMPLE_DATA.investments);
+        setTicketStats(SAMPLE_DATA.tickets);
+        setLoading(false);
+      }, 1000);
+      return;
+    }
+
     if (user) {
       fetchWallet();
       fetchTransactions();
       fetchInvestmentStats();
+      fetchTicketStats();
     }
   }, [user]);
 
@@ -69,7 +123,7 @@ const Dashboard = () => {
     try {
       const { data, error } = await supabase
         .from('wallets')
-        .select('id, balance, accrued_profits, withdrawal_fee_percentage')
+        .select('*')
         .eq('user_id', user?.id)
         .single();
 
@@ -77,8 +131,6 @@ const Dashboard = () => {
       setWalletData(data);
     } catch (error) {
       console.error('Error fetching wallet:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -121,6 +173,29 @@ const Dashboard = () => {
       });
     } catch (error) {
       console.error('Error fetching investment stats:', error);
+    }
+  };
+
+  const fetchTicketStats = async () => {
+    try {
+      // Get open tickets count
+      const { data: openTickets, error: openError } = await supabase
+        .from('tickets')
+        .select('*')
+        .eq('user_id', user?.id)
+        .eq('status', 'open')
+        .order('created_at', { ascending: false });
+
+      if (openError) throw openError;
+      
+      setTicketStats({
+        open_count: openTickets?.length || 0,
+        latest_ticket: openTickets?.[0] || null
+      });
+    } catch (error) {
+      console.error('Error fetching ticket stats:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -168,7 +243,17 @@ const Dashboard = () => {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <h2 className="text-3xl font-bold text-white">Welcome to Your Dashboard</h2>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <h2 className="text-3xl font-bold text-white">Dashboard Overview</h2>
+          <div className="flex space-x-4">
+            <Button asChild variant="outline" className="text-unicorn-gold border-unicorn-gold hover:bg-unicorn-gold/20">
+              <Link to="/dashboard/deposit">Deposit Funds</Link>
+            </Button>
+            <Button asChild className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black">
+              <Link to="/investment-plans">Invest Now</Link>
+            </Button>
+          </div>
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
@@ -180,7 +265,7 @@ const Dashboard = () => {
                 <Wallet className="mr-2 h-5 w-5 text-unicorn-gold" />
                 {loading ? (
                   <div className="animate-pulse">
-                    <div className="h-9 w-32 bg-gray-700/50 rounded"></div>
+                    <div className="h-9 w-32 bg-unicorn-darkPurple/50 rounded"></div>
                   </div>
                 ) : (
                   <div className="text-3xl font-bold text-white">
@@ -212,7 +297,13 @@ const Dashboard = () => {
             <CardContent>
               <div className="flex items-center">
                 <LineChart className="mr-2 h-5 w-5 text-unicorn-gold" />
-                <div className="text-3xl font-bold text-white">{investmentStats.active_count}</div>
+                {loading ? (
+                  <div className="animate-pulse">
+                    <div className="h-9 w-10 bg-unicorn-darkPurple/50 rounded"></div>
+                  </div>
+                ) : (
+                  <div className="text-3xl font-bold text-white">{investmentStats.active_count}</div>
+                )}
               </div>
               <div className="mt-2 flex text-sm text-gray-400">
                 <span>Total Invested: </span>
@@ -236,76 +327,156 @@ const Dashboard = () => {
 
           <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg text-gray-300">Total Earnings</CardTitle>
+              <CardTitle className="text-lg text-gray-300">Support Tickets</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center">
-                <TrendingUp className="mr-2 h-5 w-5 text-unicorn-gold" />
-                <div className="text-3xl font-bold text-white">
-                  {formatCurrency(investmentStats.total_expected_return)}
+                <MessageSquare className="mr-2 h-5 w-5 text-unicorn-gold" />
+                {loading ? (
+                  <div className="animate-pulse">
+                    <div className="h-9 w-10 bg-unicorn-darkPurple/50 rounded"></div>
+                  </div>
+                ) : (
+                  <div className="text-3xl font-bold text-white">{ticketStats.open_count}</div>
+                )}
+              </div>
+              {ticketStats.latest_ticket ? (
+                <div className="mt-2 text-sm text-gray-400">
+                  <span>Latest: </span>
+                  <span className="text-white">{ticketStats.latest_ticket.subject}</span>
                 </div>
-              </div>
-              <div className="mt-2 flex text-sm text-gray-400">
-                <span>Expected Return: </span>
-                <span className="ml-1 text-unicorn-gold">
-                  {investmentStats.total_invested > 0 
-                    ? `${((investmentStats.total_expected_return / investmentStats.total_invested - 1) * 100).toFixed(2)}%` 
-                    : "0.00%"
-                  }
-                </span>
-              </div>
+              ) : (
+                <div className="mt-2 text-sm text-gray-400">No open tickets</div>
+              )}
               <div className="mt-4">
-                <Button asChild variant="outline" className="text-unicorn-gold border-unicorn-gold hover:bg-unicorn-gold/20">
-                  <Link to="/calculator">Profit Calculator</Link>
+                <Button asChild className="text-unicorn-black bg-unicorn-gold hover:bg-unicorn-darkGold">
+                  <Link to="/dashboard/tickets">
+                    {ticketStats.open_count > 0 ? "View Tickets" : "Create Ticket"}
+                  </Link>
                 </Button>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        <div className="mt-8">
-          <h3 className="text-xl font-bold text-white mb-4">Recent Transactions</h3>
-          <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
-            <CardContent className="p-0">
-              {transactions.length > 0 ? (
-                <div className="divide-y divide-unicorn-gold/30">
-                  {transactions.map((transaction) => (
-                    <div key={transaction.id} className="p-4 flex items-center justify-between">
-                      <div className="flex items-center">
-                        <div className="mr-3 rounded-full bg-unicorn-darkPurple/80 p-2">
-                          {getTransactionIcon(transaction.type)}
-                        </div>
-                        <div>
-                          <div className="font-medium text-white capitalize">{transaction.type}</div>
-                          <div className="text-sm text-gray-400">
-                            {formatDate(transaction.created_at)}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-2">
+            <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg text-gray-300">Recent Transactions</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                {loading ? (
+                  <div className="p-6 space-y-4">
+                    {[...Array(3)].map((_, index) => (
+                      <div key={index} className="flex items-center justify-between animate-pulse">
+                        <div className="flex items-center">
+                          <div className="w-10 h-10 bg-unicorn-darkPurple/50 rounded-full mr-3"></div>
+                          <div>
+                            <div className="h-5 bg-unicorn-darkPurple/50 rounded w-24 mb-2"></div>
+                            <div className="h-4 bg-unicorn-darkPurple/50 rounded w-32"></div>
                           </div>
-                          {transaction.description && (
-                            <div className="text-xs text-gray-500 mt-1">{transaction.description}</div>
-                          )}
+                        </div>
+                        <div className="text-right">
+                          <div className="h-5 bg-unicorn-darkPurple/50 rounded w-16 mb-2"></div>
+                          <div className="h-4 bg-unicorn-darkPurple/50 rounded w-12"></div>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className="font-medium text-white">
-                          {transaction.type === 'withdrawal' || transaction.type === 'fee' ? '-' : '+'}${transaction.amount.toFixed(2)}
+                    ))}
+                  </div>
+                ) : transactions.length > 0 ? (
+                  <div className="divide-y divide-unicorn-gold/30">
+                    {transactions.map((transaction) => (
+                      <div key={transaction.id} className="p-4 flex items-center justify-between">
+                        <div className="flex items-center">
+                          <div className="mr-3 rounded-full bg-unicorn-darkPurple/80 p-2">
+                            {getTransactionIcon(transaction.type)}
+                          </div>
+                          <div>
+                            <div className="font-medium text-white capitalize">{transaction.type}</div>
+                            <div className="text-sm text-gray-400">
+                              {formatDate(transaction.created_at)}
+                            </div>
+                            {transaction.description && (
+                              <div className="text-xs text-gray-500 mt-1">{transaction.description}</div>
+                            )}
+                          </div>
                         </div>
-                        <div className={`text-xs ${getTransactionStatusColor(transaction.status)}`}>
-                          {transaction.status}
+                        <div className="text-right">
+                          <div className="font-medium text-white">
+                            {transaction.type === 'withdrawal' || transaction.type === 'fee' ? '-' : '+'}
+                            {formatCurrency(transaction.amount)}
+                          </div>
+                          <div className={`text-xs ${getTransactionStatusColor(transaction.status)}`}>
+                            {transaction.status}
+                          </div>
                         </div>
                       </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-6 text-center">
+                    <p className="text-gray-400 mb-4">No transactions yet</p>
+                    <Button asChild className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black">
+                      <Link to="/dashboard/deposit">Make Your First Deposit</Link>
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="md:col-span-1">
+            <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30 h-full">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg text-gray-300">Portfolio Summary</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {loading ? (
+                  <div className="space-y-4 animate-pulse">
+                    <div className="h-8 bg-unicorn-darkPurple/50 rounded"></div>
+                    <div className="h-8 bg-unicorn-darkPurple/50 rounded"></div>
+                    <div className="h-8 bg-unicorn-darkPurple/50 rounded"></div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Total Invested</span>
+                      <span className="text-white font-medium">{formatCurrency(investmentStats.total_invested)}</span>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="p-6 text-center">
-                  <p className="text-gray-400">No transactions yet</p>
-                  <Button asChild className="mt-4 bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black">
-                    <Link to="/dashboard/deposit">Make Your First Deposit</Link>
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Expected Returns</span>
+                      <span className="text-green-400 font-medium">{formatCurrency(investmentStats.total_expected_return)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Profit</span>
+                      <span className="text-unicorn-gold font-medium">
+                        {formatCurrency(investmentStats.total_expected_return - investmentStats.total_invested)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">ROI</span>
+                      <span className="text-unicorn-gold font-medium">
+                        {investmentStats.total_invested > 0 
+                          ? `${((investmentStats.total_expected_return / investmentStats.total_invested - 1) * 100).toFixed(2)}%` 
+                          : "0.00%"
+                        }
+                      </span>
+                    </div>
+                    
+                    <div className="pt-4 mt-4 border-t border-unicorn-gold/30">
+                      <Button asChild className="w-full text-unicorn-black bg-unicorn-gold hover:bg-unicorn-darkGold">
+                        <Link to="/calculator">
+                          <TrendingUp className="h-4 w-4 mr-2" />
+                          Investment Calculator
+                        </Link>
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </DashboardLayout>

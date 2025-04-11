@@ -14,12 +14,15 @@ interface TicketsListContentProps {
 const TicketsListContent: React.FC<TicketsListContentProps> = ({ tickets, loading }) => {
   return (
     <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
-      <CardHeader>
-        <CardTitle className="text-white">Your Tickets</CardTitle>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-xl text-white flex items-center">
+          Support Tickets
+        </CardTitle>
         <CardDescription className="text-gray-400">
           View and manage your support requests
         </CardDescription>
       </CardHeader>
+      
       <CardContent>
         {loading ? (
           <TicketsLoadingSkeleton />
