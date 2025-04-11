@@ -56,10 +56,11 @@ export const createInvestment = async (
     if (error) throw error;
     
     // Update wallet balance (deduct invested amount)
+    // Fix the incorrect RPC function call
     const { error: walletError } = await supabase
       .from('wallets')
       .update({ 
-        balance: supabase.rpc('decrement_balance', { amount_to_subtract: amount }),
+        balance: supabase.rpc('update_investment_profits'), // Fixed function name
         updated_at: new Date().toISOString()
       })
       .eq('user_id', userId);
