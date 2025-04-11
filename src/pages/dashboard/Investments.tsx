@@ -7,6 +7,10 @@ import { Investment } from "@/types/investment";
 import { useToast } from "@/hooks/use-toast";
 import StatsCards from "@/components/dashboard/investments/StatsCards";
 import InvestmentsList from "@/components/dashboard/investments/InvestmentsList";
+import { Button } from "@/components/ui/button";
+import { PlusCircle, TrendingUp, AlertTriangle } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Progress } from "@/components/ui/progress";
 
 // Development mode flag
 const DEVELOPMENT_MODE = true;
@@ -51,6 +55,19 @@ const DUMMY_INVESTMENTS: Investment[] = [
     created_at: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
     start_date: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
     end_date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: "inv-4",
+    user_id: "dev-user-id",
+    plan_id: "Diamond",
+    amount: 25000,
+    daily_return: 1.0,
+    duration: 180,
+    total_return: 45000,
+    status: "pending",
+    created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    start_date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),
+    end_date: new Date(Date.now() + 181 * 24 * 60 * 60 * 1000).toISOString()
   }
 ];
 
@@ -64,6 +81,7 @@ const Investments = () => {
     totalInvested: 0,
     totalReturns: 0,
   });
+  const [activeTab, setActiveTab] = useState<'all' | 'active' | 'pending' | 'completed'>('all');
 
   useEffect(() => {
     // In development mode, use dummy data
@@ -123,10 +141,81 @@ const Investments = () => {
     }
   };
 
+  // Filter investments based on active tab
+  const filteredInvestments = investments.filter(inv => {
+    if (activeTab === 'all') return true;
+    return inv.status === activeTab;
+  });
+
+  // Calculate portfolio growth percentage (simplified for demo)
+  const calculateGrowth = () => {
+    if (stats.totalInvested === 0) return 0;
+    return ((stats.totalReturns - stats.totalInvested) / stats.totalInvested) * 100;
+  };
+
+  // Format percentage
+  const formatPercentage = (value: number) => {
+    return `${value.toFixed(2)}%`;
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <h2 className="text-3xl font-bold text-white">Investment Portfolio</h2>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+          <div>
+            <h2 className="text-3xl font-bold text-white">Investment Portfolio</h2>
+            <p className="text-gray-400 mt-1">
+              Manage your active investments and track returns
+            </p>
+          </div>
+          
+          <div className="mt-4 md:mt-0">
+            <Link to="/investment-plans">
+              <Button className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black">
+                <PlusCircle className="mr-2 h-4 w-4" />
+                New Investment
+              </Button>
+            </Link>
+          </div>
+        </div>
+        
+        {/* Portfolio Summary */}
+        <div className="bg-unicorn-darkPurple/80 border border-unicorn-gold/30 p-6 rounded-lg">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
+            <div>
+              <h3 className="text-xl font-semibold text-white flex items-center">
+                <TrendingUp className="mr-2 h-5 w-5 text-unicorn-gold" />
+                Portfolio Growth
+              </h3>
+              <p className="text-gray-400 text-sm mt-1">
+                Year-to-date performance of your investment portfolio
+              </p>
+            </div>
+            <div className="mt-4 md:mt-0 px-4 py-2 bg-unicorn-gold/10 border border-unicorn-gold/20 rounded-full">
+              <span className="text-unicorn-gold font-semibold">{formatPercentage(calculateGrowth())}</span>
+            </div>
+          </div>
+          
+          <div className="mb-2 flex justify-between items-center">
+            <span className="text-sm text-gray-400">Progress to Target (100%)</span>
+            <span className="text-sm font-medium text-unicorn-gold">{formatPercentage(Math.min(calculateGrowth(), 100))}</span>
+          </div>
+          
+          <Progress 
+            value={Math.min(calculateGrowth(), 100)} 
+            className="h-2 bg-unicorn-purple/30"
+          />
+          
+          {calculateGrowth() < 10 && (
+            <div className="mt-4 flex items-start gap-2 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-md">
+              <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-gray-300">
+                Your portfolio is currently growing slower than expected. Consider diversifying 
+                with additional investment plans for better returns.
+              </p>
+            </div>
+          )}
+        </div>
         
         {/* Stats Cards */}
         <StatsCards 
@@ -136,8 +225,36 @@ const Investments = () => {
           totalReturns={stats.totalReturns} 
         />
         
+        {/* Tab Filters */}
+        <div className="flex overflow-x-auto pb-2 border-b border-unicorn-gold/20">
+          <button 
+            className={`px-4 py-2 font-medium text-sm whitespace-nowrap ${activeTab === 'all' ? 'text-unicorn-gold border-b-2 border-unicorn-gold' : 'text-gray-400 hover:text-gray-200'}`}
+            onClick={() => setActiveTab('all')}
+          >
+            All Investments
+          </button>
+          <button 
+            className={`px-4 py-2 font-medium text-sm whitespace-nowrap ${activeTab === 'active' ? 'text-unicorn-gold border-b-2 border-unicorn-gold' : 'text-gray-400 hover:text-gray-200'}`}
+            onClick={() => setActiveTab('active')}
+          >
+            Active
+          </button>
+          <button 
+            className={`px-4 py-2 font-medium text-sm whitespace-nowrap ${activeTab === 'pending' ? 'text-unicorn-gold border-b-2 border-unicorn-gold' : 'text-gray-400 hover:text-gray-200'}`}
+            onClick={() => setActiveTab('pending')}
+          >
+            Pending
+          </button>
+          <button 
+            className={`px-4 py-2 font-medium text-sm whitespace-nowrap ${activeTab === 'completed' ? 'text-unicorn-gold border-b-2 border-unicorn-gold' : 'text-gray-400 hover:text-gray-200'}`}
+            onClick={() => setActiveTab('completed')}
+          >
+            Completed
+          </button>
+        </div>
+        
         {/* Investments List */}
-        <InvestmentsList loading={loading} investments={investments} />
+        <InvestmentsList loading={loading} investments={filteredInvestments} />
       </div>
     </DashboardLayout>
   );
