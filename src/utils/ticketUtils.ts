@@ -30,7 +30,7 @@ export const createSupportTicket = async (userId: string, subject: string, messa
       message: data.message || '',
       status: data.status as 'open' | 'in-progress' | 'resolved' | 'closed' | 'replied',
       priority: data.priority as 'low' | 'medium' | 'high',
-      category: data.category || 'general',
+      category: data.category || 'general', // Default to 'general' if category is missing
       created_at: data.created_at,
       updated_at: data.updated_at,
       ai_response: data.ai_response,
