@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,15 +14,25 @@ import WithdrawalHistory from "@/components/dashboard/withdraw/WithdrawalHistory
 // Development mode flag - set to true to bypass authentication and use dummy data
 const DEVELOPMENT_MODE = true;
 
+// Define the withdrawal history item type
+interface WithdrawalHistoryItem {
+  id: string;
+  date: Date;
+  amount: number;
+  fee: number;
+  netAmount: number;
+  status: 'pending' | 'processing' | 'completed' | 'rejected';
+}
+
 // Sample withdrawal history
-const SAMPLE_WITHDRAWAL_HISTORY = [
+const SAMPLE_WITHDRAWAL_HISTORY: WithdrawalHistoryItem[] = [
   {
     id: "WD-284651",
     date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
     amount: 1500,
     fee: 37.5,
     netAmount: 1462.5,
-    status: 'completed' as const,
+    status: 'completed',
   },
   {
     id: "WD-175432",
@@ -31,7 +40,7 @@ const SAMPLE_WITHDRAWAL_HISTORY = [
     amount: 2800,
     fee: 70,
     netAmount: 2730,
-    status: 'completed' as const,
+    status: 'completed',
   },
   {
     id: "WD-098734",
@@ -39,7 +48,7 @@ const SAMPLE_WITHDRAWAL_HISTORY = [
     amount: 950,
     fee: 23.75,
     netAmount: 926.25,
-    status: 'completed' as const,
+    status: 'completed',
   },
 ];
 
@@ -53,7 +62,7 @@ const Withdraw = () => {
   const [calculating, setCalculating] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [withdrawalHistory, setWithdrawalHistory] = useState(SAMPLE_WITHDRAWAL_HISTORY);
+  const [withdrawalHistory, setWithdrawalHistory] = useState<WithdrawalHistoryItem[]>(SAMPLE_WITHDRAWAL_HISTORY);
 
   useEffect(() => {
     if (user) {

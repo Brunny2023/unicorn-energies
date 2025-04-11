@@ -2,7 +2,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Investment } from "@/types/investment";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import InvestmentDetailSummary from "./InvestmentDetailSummary";
 import InvestmentDetailTimeline from "./InvestmentDetailTimeline";
@@ -15,7 +15,7 @@ interface InvestmentDetailProps {
 }
 
 const InvestmentDetail: React.FC<InvestmentDetailProps> = ({ investment, onClose }) => {
-  // Calculate days remaining
+  // Helper functions to calculate investment metrics
   const calculateDaysRemaining = (): number => {
     const endDate = new Date(investment.end_date);
     const now = new Date();
@@ -24,7 +24,6 @@ const InvestmentDetail: React.FC<InvestmentDetailProps> = ({ investment, onClose
     return Math.max(0, diffDays);
   };
 
-  // Calculate days elapsed
   const calculateDaysElapsed = (): number => {
     const startDate = new Date(investment.start_date);
     const now = new Date();
@@ -33,27 +32,26 @@ const InvestmentDetail: React.FC<InvestmentDetailProps> = ({ investment, onClose
     return Math.max(0, diffDays);
   };
 
-  // Calculate progress percentage
   const calculateProgress = (): number => {
     const totalDays = investment.duration;
     const daysElapsed = calculateDaysElapsed();
     return Math.min((daysElapsed / totalDays) * 100, 100);
   };
 
-  // Calculate daily profit
   const calculateDailyProfit = (): number => {
     return (Number(investment.amount) * Number(investment.daily_return)) / 100;
   };
 
-  // Calculate total earned so far
   const calculateEarnedSoFar = (): number => {
     return calculateDailyProfit() * calculateDaysElapsed();
   };
 
+  // Calculate metrics
   const daysRemaining = calculateDaysRemaining();
   const progress = calculateProgress();
   const dailyProfit = calculateDailyProfit();
   const earnedSoFar = calculateEarnedSoFar();
+  const isActive = investment.status === 'active';
 
   return (
     <Card className="bg-unicorn-darkPurple/95 border-unicorn-gold/30 text-white shadow-xl">
@@ -67,9 +65,10 @@ const InvestmentDetail: React.FC<InvestmentDetailProps> = ({ investment, onClose
             variant="ghost" 
             size="sm" 
             onClick={onClose}
-            className="text-gray-400 hover:text-white hover:bg-unicorn-purple/20"
+            className="text-gray-400 hover:text-white hover:bg-unicorn-purple/20 flex items-center"
           >
-            Close
+            <ArrowLeft className="mr-1 h-4 w-4" />
+            Back to Investments
           </Button>
         </div>
       </CardHeader>
@@ -98,7 +97,7 @@ const InvestmentDetail: React.FC<InvestmentDetailProps> = ({ investment, onClose
               status={investment.status}
             />
             
-            <InvestmentDetailActions />
+            <InvestmentDetailActions isActive={isActive} />
           </div>
         </div>
       </CardContent>
