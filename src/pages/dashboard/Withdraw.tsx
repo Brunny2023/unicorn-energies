@@ -8,7 +8,7 @@ import { WalletData, WithdrawalRequest } from "@/types/investment";
 import WalletSummary from "@/components/dashboard/withdraw/WalletSummary";
 import WithdrawalHistory from "@/components/dashboard/withdraw/WithdrawalHistory";
 import WithdrawalForm from "@/components/dashboard/withdraw/WithdrawalForm";
-import { getUserWallet } from "@/utils/walletUtils";
+import { fetchWalletData } from "@/utils/walletUtils";
 
 // Define the withdrawal history item type
 interface WithdrawalHistoryItem {
@@ -57,7 +57,7 @@ const Withdraw = () => {
 
   useEffect(() => {
     if (user) {
-      fetchWalletData();
+      fetchUserWalletData();
     } else {
       // In development mode, create dummy wallet data
       setWalletData({
@@ -71,7 +71,7 @@ const Withdraw = () => {
     }
   }, [user]);
 
-  const fetchWalletData = async () => {
+  const fetchUserWalletData = async () => {
     try {
       setLoading(true);
       
@@ -88,7 +88,7 @@ const Withdraw = () => {
         return;
       }
 
-      const data = await getUserWallet(user.id);
+      const data = await fetchWalletData(user.id);
       
       if (!data) {
         // Fallback to dummy data in case of error
@@ -159,7 +159,7 @@ const Withdraw = () => {
             <WithdrawalForm 
               walletData={walletData}
               loading={loading}
-              fetchWalletData={fetchWalletData}
+              fetchWalletData={fetchUserWalletData}
               onSuccessfulWithdrawal={addWithdrawalToHistory}
             />
           </div>

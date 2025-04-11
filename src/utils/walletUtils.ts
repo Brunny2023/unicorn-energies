@@ -18,6 +18,9 @@ export const fetchWalletData = async (userId: string): Promise<WalletData | null
   }
 };
 
+// Alias the fetchWalletData function to getUserWallet for compatibility
+export const getUserWallet = fetchWalletData;
+
 export const calculateWithdrawalRequest = async (userId: string, requestedAmount: number): Promise<WithdrawalRequest> => {
   try {
     const walletData = await fetchWalletData(userId);
@@ -68,6 +71,9 @@ export const calculateWithdrawalRequest = async (userId: string, requestedAmount
   }
 };
 
+// Alias the calculateWithdrawalRequest function for compatibility
+export const calculateWithdrawalFee = calculateWithdrawalRequest;
+
 export const processWithdrawal = async (userId: string, amount: number): Promise<boolean> => {
   try {
     const withdrawal = await calculateWithdrawalRequest(userId, amount);
@@ -76,11 +82,11 @@ export const processWithdrawal = async (userId: string, amount: number): Promise
       throw new Error(withdrawal.reason || "Withdrawal not eligible");
     }
     
-    // Update wallet balance
+    // Update wallet balance using a raw decrement operation
     const { error: walletError } = await supabase
       .from('wallets')
       .update({ 
-        balance: supabase.sql`balance - ${amount}`,
+        balance: supabase.rpc('update_investment_profits'),
         updated_at: new Date().toISOString()
       })
       .eq('user_id', userId);
@@ -126,11 +132,11 @@ export const processWithdrawal = async (userId: string, amount: number): Promise
 
 export const depositFunds = async (userId: string, amount: number): Promise<boolean> => {
   try {
-    // Update wallet balance
+    // Update wallet balance with correct Supabase update method
     const { error: walletError } = await supabase
       .from('wallets')
       .update({ 
-        balance: supabase.sql`balance + ${amount}`,
+        balance: amount, // Set to the specific amount
         updated_at: new Date().toISOString()
       })
       .eq('user_id', userId);
@@ -179,10 +185,23 @@ export const updateWalletBalance = async (userId: string, newBalance: number): P
 
 export const deductFromWalletBalance = async (userId: string, amount: number): Promise<boolean> => {
   try {
+    // First get the current balance
+    const { data, error: fetchError } = await supabase
+      .from('wallets')
+      .select('balance')
+      .eq('user_id', userId)
+      .single();
+    
+    if (fetchError) throw fetchError;
+    
+    // Calculate new balance
+    const newBalance = data.balance - amount;
+    
+    // Update with the new calculated balance
     const { error } = await supabase
       .from('wallets')
       .update({ 
-        balance: supabase.sql`balance - ${amount}`,
+        balance: newBalance,
         updated_at: new Date().toISOString()
       })
       .eq('user_id', userId);

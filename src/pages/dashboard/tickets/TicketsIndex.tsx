@@ -9,46 +9,6 @@ import TicketHeader from "@/components/tickets/TicketHeader";
 import TicketFilters from "@/components/tickets/TicketFilters";
 import TicketList from "@/components/tickets/TicketList";
 
-// Development mode flag
-const DEVELOPMENT_MODE = true;
-
-// Sample tickets for development
-const DUMMY_TICKETS: Ticket[] = [
-  {
-    id: "ticket-1",
-    user_id: "dev-user-id",
-    subject: "Withdrawal Delay",
-    message: "My withdrawal has been pending for 3 days. Can you please check the status?",
-    status: "open",
-    priority: "high",
-    created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    category: "withdrawal",
-    updated_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: "ticket-2",
-    user_id: "dev-user-id",
-    subject: "Investment Plan Question",
-    message: "I'd like to understand the difference between Goldfish and Dolphin plans.",
-    status: "replied",
-    priority: "medium",
-    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-    category: "investment",
-    updated_at: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: "ticket-3",
-    user_id: "dev-user-id",
-    subject: "Technical Issue with Dashboard",
-    message: "The investment charts are not loading correctly on my account.",
-    status: "closed",
-    priority: "low",
-    created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
-    category: "technical",
-    updated_at: new Date(Date.now() - 13 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-];
-
 const TicketsIndex = () => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -66,19 +26,18 @@ const TicketsIndex = () => {
     try {
       setLoading(true);
       
-      if (DEVELOPMENT_MODE) {
-        // Simulate API call delay
+      // For development mode
+      if (!user || !user.id) {
+        // Use dummy data
         setTimeout(() => {
-          setTickets(DUMMY_TICKETS);
+          setTickets(getDummyTickets());
           setLoading(false);
         }, 1000);
         return;
       }
       
-      if (user && user.id) {
-        const fetchedTickets = await getUserTickets(user.id);
-        setTickets(fetchedTickets);
-      }
+      const fetchedTickets = await getUserTickets(user.id);
+      setTickets(fetchedTickets);
     } catch (error) {
       console.error("Error fetching tickets:", error);
       toast({
@@ -88,7 +47,7 @@ const TicketsIndex = () => {
       });
       
       // Fallback to dummy data in case of error
-      setTickets(DUMMY_TICKETS);
+      setTickets(getDummyTickets());
     } finally {
       setLoading(false);
     }
@@ -98,7 +57,8 @@ const TicketsIndex = () => {
     // Apply text search
     const matchesSearch = searchQuery === "" || 
       ticket.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ticket.category.toLowerCase().includes(searchQuery.toLowerCase());
+      ticket.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      ticket.message.toLowerCase().includes(searchQuery.toLowerCase());
     
     // Apply status filter
     const matchesStatus = statusFilter === "all" || ticket.status === statusFilter;
@@ -133,6 +93,45 @@ const TicketsIndex = () => {
       </div>
     </DashboardLayout>
   );
+};
+
+// Helper function to generate dummy tickets for development
+const getDummyTickets = (): Ticket[] => {
+  return [
+    {
+      id: "ticket-1",
+      user_id: "dev-user-id",
+      subject: "Withdrawal Delay",
+      message: "My withdrawal has been pending for 3 days. Can you please check the status?",
+      status: "open",
+      priority: "high",
+      category: "withdrawal",
+      created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      updated_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+      id: "ticket-2",
+      user_id: "dev-user-id",
+      subject: "Investment Plan Question",
+      message: "I'd like to understand the difference between Goldfish and Dolphin plans.",
+      status: "replied",
+      priority: "medium",
+      category: "investment",
+      created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      updated_at: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+      id: "ticket-3",
+      user_id: "dev-user-id",
+      subject: "Technical Issue with Dashboard",
+      message: "The investment charts are not loading correctly on my account.",
+      status: "closed",
+      priority: "low",
+      category: "technical",
+      created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+      updated_at: new Date(Date.now() - 13 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+  ];
 };
 
 export default TicketsIndex;

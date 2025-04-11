@@ -56,17 +56,31 @@ export const createInvestment = async (
     if (error) throw error;
     
     // Update wallet balance (deduct invested amount)
-    // Fix the incorrect RPC function call
-    const { error: walletError } = await supabase
+    // Get current wallet balance
+    const { data: walletData, error: walletFetchError } = await supabase
+      .from('wallets')
+      .select('balance')
+      .eq('user_id', userId)
+      .single();
+      
+    if (walletFetchError) {
+      console.error("Error fetching wallet balance:", walletFetchError);
+      return data as Investment;
+    }
+    
+    // Update balance with new calculated value
+    const newBalance = walletData.balance - amount;
+    
+    const { error: walletUpdateError } = await supabase
       .from('wallets')
       .update({ 
-        balance: supabase.rpc('update_investment_profits'), // Fixed function name
+        balance: newBalance,
         updated_at: new Date().toISOString()
       })
       .eq('user_id', userId);
       
-    if (walletError) {
-      console.error("Error updating wallet balance:", walletError);
+    if (walletUpdateError) {
+      console.error("Error updating wallet balance:", walletUpdateError);
     }
     
     return data as Investment;
