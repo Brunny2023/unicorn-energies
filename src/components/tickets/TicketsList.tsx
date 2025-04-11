@@ -1,19 +1,82 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { MessageSquare, ChevronRight, Plus } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
-import { getUserTickets } from '@/utils/investmentUtils';
-import { Ticket } from '@/types/investment'; 
+
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Plus, MessageSquare, ChevronRight } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+
+// Development mode flag
+const DEVELOPMENT_MODE = true;
+
+// Sample dummy tickets for development
+const DUMMY_TICKETS = [
+  {
+    id: "ticket-1",
+    user_id: "dev-user-id",
+    subject: "Withdrawal Issue",
+    message: "I'm having trouble with my recent withdrawal...",
+    status: "open",
+    priority: "high",
+    created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: "ticket-2",
+    user_id: "dev-user-id",
+    subject: "Investment Question",
+    message: "Can you explain how the Gold plan works?",
+    status: "closed",
+    priority: "medium",
+    created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+    ai_response: "The Gold plan offers a daily return of 0.5% for 30 days..."
+  },
+  {
+    id: "ticket-3",
+    user_id: "dev-user-id",
+    subject: "Account Verification",
+    message: "I need to verify my account for larger withdrawals.",
+    status: "in_progress",
+    priority: "medium",
+    created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+  }
+];
+
+interface Ticket {
+  id: string;
+  user_id: string;
+  subject: string;
+  message: string;
+  status: string;
+  priority: string;
+  created_at: string;
+  updated_at: string;
+  ai_response?: string;
+  ai_responded_at?: string;
+}
 
 const TicketsList = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // In development mode, use dummy data
+    if (DEVELOPMENT_MODE) {
+      setTimeout(() => {
+        setTickets(DUMMY_TICKETS);
+        setLoading(false);
+      }, 1000); // Add a small delay to simulate loading
+      return;
+    }
+
+    // For production, fetch real data
     if (user) {
       fetchTickets();
     }
@@ -22,108 +85,141 @@ const TicketsList = () => {
   const fetchTickets = async () => {
     try {
       setLoading(true);
-      const data = await getUserTickets(user?.id as string);
-      setTickets(data);
-      setLoading(false);
+      const { data, error } = await supabase
+        .from('tickets')
+        .select('*')
+        .eq('user_id', user?.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setTickets(data || []);
     } catch (error) {
-      console.error("Error fetching tickets:", error);
+      console.error('Error fetching tickets:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load support tickets",
+        variant: "destructive",
+      });
+    } finally {
       setLoading(false);
     }
   };
 
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  };
+
   const getStatusBadge = (status: string) => {
-    switch (status) {
+    switch (status.toLowerCase()) {
       case 'open':
-        return <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20">Open</Badge>;
-      case 'in-progress':
-        return <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20">In Progress</Badge>;
-      case 'resolved':
-        return <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20">Resolved</Badge>;
+        return <Badge className="bg-blue-500 hover:bg-blue-600">Open</Badge>;
+      case 'in_progress':
+        return <Badge className="bg-yellow-500 hover:bg-yellow-600">In Progress</Badge>;
       case 'closed':
-        return <Badge variant="outline" className="bg-gray-500/10 text-gray-500 border-gray-500/20">Closed</Badge>;
+        return <Badge className="bg-gray-500 hover:bg-gray-600">Closed</Badge>;
       default:
-        return null;
+        return <Badge>{status}</Badge>;
     }
   };
 
   const getPriorityBadge = (priority: string) => {
-    switch (priority) {
+    switch (priority.toLowerCase()) {
       case 'high':
-        return <Badge variant="outline" className="bg-red-500/10 text-red-500 border-red-500/20">High</Badge>;
+        return <Badge className="bg-red-500 hover:bg-red-600">High</Badge>;
       case 'medium':
-        return <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20">Medium</Badge>;
+        return <Badge className="bg-yellow-500 hover:bg-yellow-600">Medium</Badge>;
       case 'low':
-        return <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20">Low</Badge>;
+        return <Badge className="bg-green-500 hover:bg-green-600">Low</Badge>;
       default:
-        return null;
+        return <Badge>{priority}</Badge>;
     }
   };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-white">Support Tickets</h2>
-        <Link to="/dashboard/tickets/new">
-          <Button className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black">
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-3xl font-bold text-white">Support Tickets</h2>
+        <Button asChild className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black">
+          <Link to="/dashboard/tickets/new">
             <Plus className="h-4 w-4 mr-2" /> New Ticket
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
 
       <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
-        <CardContent className="p-0">
+        <CardHeader>
+          <CardTitle className="text-white">Your Tickets</CardTitle>
+          <CardDescription className="text-gray-400">
+            View and manage your support requests
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
           {loading ? (
-            <div className="p-6">
-              <div className="flex flex-col space-y-4">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="animate-pulse">
-                    <div className="h-24 bg-gray-700/50 rounded"></div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : tickets.length > 0 ? (
-            <div className="divide-y divide-unicorn-gold/30">
-              {tickets.map((ticket) => (
-                <div key={ticket.id} className="p-4 hover:bg-unicorn-purple/10 transition-colors">
-                  <Link to={`/dashboard/tickets/${ticket.id}`}>
-                    <div className="flex flex-col md:flex-row md:items-center justify-between">
-                      <div className="flex items-start">
-                        <div className="mr-4 mt-1">
-                          <MessageSquare className="h-5 w-5 text-unicorn-gold" />
-                        </div>
-                        <div>
-                          <div className="font-medium text-white text-lg mb-1">
-                            {ticket.subject}
-                          </div>
-                          <div className="text-sm text-gray-400 mb-2">
-                            Created on {new Date(ticket.created_at).toLocaleDateString()}
-                          </div>
-                          <div className="flex space-x-2">
-                            {getStatusBadge(ticket.status)}
-                            {getPriorityBadge(ticket.priority)}
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="mt-4 md:mt-0 flex items-center text-gray-400">
-                        <span className="text-sm mr-2">{ticket.ai_response ? 'Responded' : 'Awaiting response'}</span>
-                        <ChevronRight className="h-5 w-5" />
-                      </div>
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div 
+                  key={i} 
+                  className="p-4 border border-unicorn-gold/20 rounded-lg animate-pulse"
+                >
+                  <div className="flex justify-between mb-2">
+                    <div className="h-6 bg-unicorn-gold/20 rounded w-1/3"></div>
+                    <div className="flex space-x-2">
+                      <div className="h-6 bg-unicorn-gold/20 rounded w-16"></div>
+                      <div className="h-6 bg-unicorn-gold/20 rounded w-16"></div>
                     </div>
-                  </Link>
+                  </div>
+                  <div className="h-4 bg-unicorn-gold/10 rounded w-full mb-4"></div>
+                  <div className="flex justify-between">
+                    <div className="h-4 bg-unicorn-gold/10 rounded w-1/4"></div>
+                    <div className="h-8 bg-unicorn-gold/10 rounded w-24"></div>
+                  </div>
                 </div>
               ))}
             </div>
+          ) : tickets.length === 0 ? (
+            <div className="text-center py-8">
+              <MessageSquare className="h-12 w-12 text-gray-500 mx-auto mb-4" />
+              <p className="text-gray-400 mb-4">You don't have any support tickets yet.</p>
+              <Button asChild className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black">
+                <Link to="/dashboard/tickets/new">Create Your First Ticket</Link>
+              </Button>
+            </div>
           ) : (
-            <div className="p-6 text-center">
-              <MessageSquare className="h-10 w-10 text-unicorn-gold/40 mx-auto mb-3" />
-              <p className="text-gray-400 mb-4">No support tickets yet</p>
-              <Link to="/dashboard/tickets/new">
-                <Button className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black">
-                  Create Your First Ticket
-                </Button>
-              </Link>
+            <div className="space-y-4">
+              {tickets.map((ticket) => (
+                <div 
+                  key={ticket.id}
+                  className="p-4 border border-unicorn-gold/20 rounded-lg bg-unicorn-darkPurple/50 hover:bg-unicorn-darkPurple/70 transition-colors"
+                >
+                  <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2 mb-2">
+                    <h3 className="text-lg font-semibold text-white">{ticket.subject}</h3>
+                    <div className="flex space-x-2">
+                      {getStatusBadge(ticket.status)}
+                      {getPriorityBadge(ticket.priority)}
+                    </div>
+                  </div>
+                  <p className="text-gray-400 mb-4 line-clamp-1">{ticket.message}</p>
+                  <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                    <div className="text-sm text-gray-500">
+                      Created on {formatDate(ticket.created_at)}
+                    </div>
+                    <Button 
+                      asChild
+                      variant="outline" 
+                      size="sm"
+                      className="text-unicorn-gold border-unicorn-gold hover:bg-unicorn-gold/20"
+                    >
+                      <Link to={`/dashboard/tickets/${ticket.id}`}>
+                        View Details <ChevronRight className="ml-1 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </CardContent>

@@ -1,70 +1,29 @@
-
-export type WalletData = {
+export interface WalletData {
   id: string;
   balance: number;
   accrued_profits: number;
   withdrawal_fee_percentage: number;
   user_id: string;
-  created_at?: string;
-  updated_at?: string;
-};
+}
 
-export type Investment = {
-  id: string;
-  plan_id: string;
-  user_id: string;
-  amount: number;
-  daily_return: number;
-  duration: number;
-  start_date: string;
-  end_date: string;
-  total_return: number;
-  status: 'active' | 'completed' | 'cancelled';
-  created_at: string;
-};
-
-export type Transaction = {
-  id: string;
-  user_id: string;
-  amount: number;
-  type: string;
-  status: string;
-  description?: string;
-  created_at: string;
-};
-
-export type Plan = {
-  id: string;
-  name: string;
-  minAmount: number;
-  maxAmount: number;
-  dailyReturn: number;
-  duration: number;
-};
-
-export type CalculationResults = {
-  dailyProfit: number;
-  totalProfit: number;
-  totalReturn: number;
-} | null;
-
-export type WithdrawalRequest = {
+export interface WithdrawalRequest {
+  eligible: boolean;
+  reason?: string;
   amount: number;
   fee: number;
   netAmount: number;
-  eligible: boolean;
-  reason?: string;
-};
+}
 
-export type Ticket = {
+export interface Investment {
   id: string;
   user_id: string;
-  subject: string;
-  message: string;
-  status: 'open' | 'in-progress' | 'resolved' | 'closed';
-  priority: 'low' | 'medium' | 'high';
+  plan_id: string;
+  amount: number;
+  daily_return: number;
+  duration: number;
+  total_return: number;
+  status: string;
   created_at: string;
-  updated_at: string;
-  ai_response?: string;
-  ai_responded_at?: string;
-};
+  start_date: string;
+  end_date: string;
+}
