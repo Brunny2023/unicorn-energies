@@ -163,7 +163,7 @@ export const getAllTickets = async (): Promise<Ticket[]> => {
       priority: ticket.priority as 'low' | 'medium' | 'high',
       category: determineCategory(ticket), // Add category detection
       created_at: ticket.created_at,
-      updated_at: data.updated_at,
+      updated_at: ticket.updated_at, // Fixed: using ticket.updated_at instead of data.updated_at
       ai_response: ticket.ai_response,
       ai_responded_at: ticket.ai_responded_at
     }));
