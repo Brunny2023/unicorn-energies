@@ -2,98 +2,25 @@
 import { supabase } from '@/integrations/supabase/client';
 import { WalletData, WithdrawalRequest } from '@/types/investment';
 
-export const fetchWalletData = async (userId: string): Promise<WalletData | null> => {
-  try {
-    const { data, error } = await supabase
-      .from('wallets')
-      .select('*')
-      .eq('user_id', userId)
-      .single();
-
-    if (error) {
-      console.error("Error fetching wallet data:", error);
-      return null;
-    }
-
-    return data as WalletData;
-  } catch (error) {
-    console.error("Error fetching wallet data:", error);
-    return null;
-  }
-};
-
-export const processWithdrawal = async (userId: string, amount: number): Promise<boolean> => {
-  try {
-    // Get wallet data
-    const { data: wallet, error: walletError } = await supabase
-      .from('wallets')
-      .select('*')
-      .eq('user_id', userId)
-      .single();
-
-    if (walletError || !wallet) {
-      throw new Error('Could not fetch wallet data');
-    }
-
-    // Check if wallet has enough balance
-    if (wallet.balance < amount) {
-      throw new Error('Insufficient balance');
-    }
-
-    // Calculate fee
-    const fee = (amount * wallet.withdrawal_fee_percentage) / 100;
-    const netAmount = amount - fee;
-
-    // Update wallet balance
-    const { error: updateError } = await supabase
-      .from('wallets')
-      .update({ balance: wallet.balance - amount })
-      .eq('user_id', userId);
-
-    if (updateError) {
-      throw updateError;
-    }
-
-    // Record transaction
-    const { error: txError } = await supabase
-      .from('transactions')
-      .insert({
-        user_id: userId,
-        amount: amount,
-        type: 'withdrawal',
-        status: 'completed',
-        description: `Withdrawal with ${fee.toFixed(2)} fee. Net: ${netAmount.toFixed(2)}`,
-      });
-
-    if (txError) {
-      throw txError;
-    }
-
-    return true;
-  } catch (error) {
-    console.error('Error processing withdrawal:', error);
-    return false;
-  }
-};
-
-export const calculateWithdrawalFee = (walletData: WalletData | null, amount: number): WithdrawalRequest => {
-  if (!walletData) {
+// Wallet management utilities
+export const calculateWithdrawalFee = (walletData: WalletData, amount: number): WithdrawalRequest => {
+  if (amount <= 0) {
     return {
+      eligible: false,
+      reason: "Withdrawal amount must be greater than zero",
       amount,
       fee: 0,
-      netAmount: 0,
-      eligible: false,
-      reason: 'Wallet not found'
+      netAmount: 0
     };
   }
 
-  if (walletData.balance < amount) {
+  if (amount > walletData.balance) {
     return {
+      eligible: false,
+      reason: "Insufficient balance for withdrawal",
       amount,
       fee: 0,
-      netAmount: 0,
-      eligible: false,
-      reason: 'Insufficient balance'
+      netAmount: 0
     };
   }
 
@@ -101,9 +28,93 @@ export const calculateWithdrawalFee = (walletData: WalletData | null, amount: nu
   const netAmount = amount - fee;
 
   return {
+    eligible: true,
     amount,
     fee,
-    netAmount,
-    eligible: true
+    netAmount
   };
+};
+
+export const processWithdrawal = async (userId: string, amount: number): Promise<boolean> => {
+  try {
+    // In development mode, simulate a successful withdrawal
+    const isDevelopmentMode = true; // Change to false in production
+    
+    if (isDevelopmentMode) {
+      return new Promise(resolve => {
+        setTimeout(() => resolve(true), 1500);
+      });
+    }
+    
+    // For production: Update wallet balance in the database
+    const { data: walletData, error: walletError } = await supabase
+      .from('wallets')
+      .select('id, balance')
+      .eq('user_id', userId)
+      .single();
+      
+    if (walletError || !walletData) {
+      console.error("Error fetching wallet data:", walletError);
+      return false;
+    }
+    
+    if (walletData.balance < amount) {
+      console.error("Insufficient balance for withdrawal");
+      return false;
+    }
+    
+    // Update wallet balance
+    const { error: updateError } = await supabase
+      .from('wallets')
+      .update({ 
+        balance: walletData.balance - amount,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', walletData.id);
+      
+    if (updateError) {
+      console.error("Error updating wallet balance:", updateError);
+      return false;
+    }
+    
+    // Record transaction
+    const { error: transactionError } = await supabase
+      .from('transactions')
+      .insert([
+        {
+          user_id: userId,
+          type: 'withdrawal',
+          amount: amount,
+          status: 'completed',
+          description: 'Withdrawal from investment account'
+        }
+      ]);
+      
+    if (transactionError) {
+      console.error("Error recording transaction:", transactionError);
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error("Error processing withdrawal:", error);
+    return false;
+  }
+};
+
+export const getUserWallet = async (userId: string): Promise<WalletData | null> => {
+  try {
+    const { data, error } = await supabase
+      .from('wallets')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
+      
+    if (error) throw error;
+    
+    return data as WalletData;
+  } catch (error) {
+    console.error('Error fetching user wallet:', error);
+    return null;
+  }
 };

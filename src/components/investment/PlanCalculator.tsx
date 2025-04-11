@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { calculateInvestmentResults, createInvestment } from "@/utils/investmentUtils";
+import { calculateInvestmentResults } from "@/utils/investmentCalculationUtils";
+import { createInvestment } from "@/utils/investmentUtils";
 import { Plan, CalculationResults } from "@/types/investment";
 import InvestmentForm from './calculator/InvestmentForm';
 import ResultsDisplay from './calculator/ResultsDisplay';
@@ -33,7 +34,7 @@ const PlanCalculator = ({ selectedPlan, plans, onSelectPlan }: PlanCalculatorPro
   const { toast } = useToast();
   const navigate = useNavigate();
   const [investmentAmount, setInvestmentAmount] = useState<number>(selectedPlan ? selectedPlan.minAmount : 0);
-  const [calculationResults, setCalculationResults] = useState<CalculationResults>(null);
+  const [calculationResults, setCalculationResults] = useState<CalculationResults | null>(null);
   const [walletBalance, setWalletBalance] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   
@@ -112,15 +113,6 @@ const PlanCalculator = ({ selectedPlan, plans, onSelectPlan }: PlanCalculatorPro
     
     try {
       setIsSubmitting(true);
-      
-      const planDetails: Plan = {
-        id: selectedPlan.id,
-        name: selectedPlan.name,
-        minAmount: selectedPlan.minAmount,
-        maxAmount: selectedPlan.maxAmount,
-        dailyReturn: selectedPlan.dailyReturn,
-        duration: selectedPlan.duration
-      };
       
       await createInvestment(
         user.id,

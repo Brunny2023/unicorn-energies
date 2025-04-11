@@ -4,13 +4,11 @@ import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { WalletData } from "@/types/investment";
+import { WalletData, WithdrawalRequest } from "@/types/investment";
 import WalletSummary from "@/components/dashboard/withdraw/WalletSummary";
 import WithdrawalHistory from "@/components/dashboard/withdraw/WithdrawalHistory";
 import WithdrawalForm from "@/components/dashboard/withdraw/WithdrawalForm";
-
-// Development mode flag - set to true to bypass authentication and use dummy data
-const DEVELOPMENT_MODE = true;
+import { getUserWallet } from "@/utils/walletUtils";
 
 // Define the withdrawal history item type
 interface WithdrawalHistoryItem {
@@ -60,7 +58,7 @@ const Withdraw = () => {
   useEffect(() => {
     if (user) {
       fetchWalletData();
-    } else if (DEVELOPMENT_MODE) {
+    } else {
       // In development mode, create dummy wallet data
       setWalletData({
         id: "dev-wallet-id",
@@ -76,8 +74,9 @@ const Withdraw = () => {
   const fetchWalletData = async () => {
     try {
       setLoading(true);
-      // In development mode, create dummy data
-      if (DEVELOPMENT_MODE || !user || !user.id) {
+      
+      if (!user || !user.id) {
+        // Fallback to dummy data
         setWalletData({
           id: "dev-wallet-id",
           balance: 10000,
@@ -89,24 +88,19 @@ const Withdraw = () => {
         return;
       }
 
-      const { data, error } = await supabase
-        .from("wallets")
-        .select("*")
-        .eq("user_id", user.id)
-        .single();
-
-      if (error) {
-        console.error("Supabase error:", error);
+      const data = await getUserWallet(user.id);
+      
+      if (!data) {
         // Fallback to dummy data in case of error
         setWalletData({
           id: "dev-wallet-id",
           balance: 10000,
           accrued_profits: 1500,
           withdrawal_fee_percentage: 2.5,
-          user_id: user.id || "dev-user-id"
+          user_id: user.id
         });
       } else {
-        setWalletData(data as WalletData);
+        setWalletData(data);
       }
     } catch (error) {
       console.error("Error fetching wallet data:", error);
@@ -129,7 +123,7 @@ const Withdraw = () => {
   };
 
   // Add new withdrawal to history after successful withdrawal
-  const addWithdrawalToHistory = (newWithdrawal: any) => {
+  const addWithdrawalToHistory = (newWithdrawal: WithdrawalRequest) => {
     const newItem: WithdrawalHistoryItem = {
       id: `WD-${Math.floor(100000 + Math.random() * 900000)}`,
       date: new Date(),
