@@ -8,9 +8,8 @@ import { useToast } from "@/hooks/use-toast";
 import StatsCards from "@/components/dashboard/investments/StatsCards";
 import InvestmentsList from "@/components/dashboard/investments/InvestmentsList";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, TrendingUp, AlertTriangle, Calendar, ChevronDown, Filter } from "lucide-react";
+import { PlusCircle, Filter, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Progress } from "@/components/ui/progress";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -172,29 +171,6 @@ const Investments = () => {
     }
   });
 
-  // Calculate portfolio growth percentage (simplified for demo)
-  const calculateGrowth = () => {
-    if (stats.totalInvested === 0) return 0;
-    return ((stats.totalReturns - stats.totalInvested) / stats.totalInvested) * 100;
-  };
-
-  // Format percentage
-  const formatPercentage = (value: number) => {
-    return `${value.toFixed(2)}%`;
-  };
-
-  // Get next payout date
-  const getNextPayoutDate = () => {
-    // In a real app, this would be calculated based on actual payout schedule
-    const date = new Date();
-    date.setDate(date.getDate() + 1); // Next day for demo
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -252,58 +228,6 @@ const Investments = () => {
               </Button>
             </Link>
           </div>
-        </div>
-        
-        {/* Portfolio Summary */}
-        <div className="bg-unicorn-darkPurple/80 border border-unicorn-gold/30 p-6 rounded-lg">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
-            <div>
-              <h3 className="text-xl font-semibold text-white flex items-center">
-                <TrendingUp className="mr-2 h-5 w-5 text-unicorn-gold" />
-                Portfolio Growth
-              </h3>
-              <p className="text-gray-400 text-sm mt-1">
-                Year-to-date performance of your investment portfolio
-              </p>
-            </div>
-            <div className="mt-4 md:mt-0 px-4 py-2 bg-unicorn-gold/10 border border-unicorn-gold/20 rounded-full">
-              <span className="text-unicorn-gold font-semibold">{formatPercentage(calculateGrowth())}</span>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div className="bg-unicorn-purple/20 p-4 rounded-lg">
-              <div className="text-sm text-gray-400 mb-1">Next Payout</div>
-              <div className="flex items-center">
-                <Calendar className="h-4 w-4 text-unicorn-gold mr-2" />
-                <span className="text-white">{getNextPayoutDate()}</span>
-              </div>
-            </div>
-            <div className="bg-unicorn-purple/20 p-4 rounded-lg">
-              <div className="text-sm text-gray-400 mb-1">Active Plans</div>
-              <div className="text-xl font-semibold text-white">{stats.activeCount}</div>
-            </div>
-            <div className="bg-unicorn-purple/20 p-4 rounded-lg">
-              <div className="text-sm text-gray-400 mb-1">Target Progress</div>
-              <div className="mb-2">
-                <span className="text-sm font-medium text-unicorn-gold">{formatPercentage(Math.min(calculateGrowth(), 100))}</span>
-              </div>
-              <Progress 
-                value={Math.min(calculateGrowth(), 100)} 
-                className="h-2 bg-unicorn-purple/30"
-              />
-            </div>
-          </div>
-          
-          {calculateGrowth() < 10 && (
-            <div className="flex items-start gap-2 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-md">
-              <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-gray-300">
-                Your portfolio is currently growing slower than expected. Consider diversifying 
-                with additional investment plans for better returns.
-              </p>
-            </div>
-          )}
         </div>
         
         {/* Stats Cards */}

@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { Investment, Plan, WalletData, Ticket, WithdrawalRequest } from '@/types/investment';
 
@@ -285,6 +286,7 @@ export const createSupportTicket = async (userId: string, subject: string, messa
           message: message,
           status: 'open',
           priority: priority,
+          category: 'general', // Add default category
         },
       ])
       .select('*')
@@ -301,6 +303,7 @@ export const createSupportTicket = async (userId: string, subject: string, messa
       message: data.message,
       status: data.status as 'open' | 'in-progress' | 'resolved' | 'closed',
       priority: data.priority as 'low' | 'medium' | 'high',
+      category: data.category || 'general',
       created_at: data.created_at,
       updated_at: data.updated_at,
       ai_response: data.ai_response,
@@ -365,6 +368,7 @@ export const getUserTickets = async (userId: string): Promise<Ticket[]> => {
       message: ticket.message,
       status: ticket.status as 'open' | 'in-progress' | 'resolved' | 'closed',
       priority: ticket.priority as 'low' | 'medium' | 'high',
+      category: ticket.category || 'general',
       created_at: ticket.created_at,
       updated_at: ticket.updated_at,
       ai_response: ticket.ai_response,
@@ -394,6 +398,7 @@ export const getTicketDetails = async (ticketId: string): Promise<Ticket | null>
       message: data.message,
       status: data.status as 'open' | 'in-progress' | 'resolved' | 'closed',
       priority: data.priority as 'low' | 'medium' | 'high',
+      category: data.category || 'general',
       created_at: data.created_at,
       updated_at: data.updated_at,
       ai_response: data.ai_response,
@@ -434,9 +439,10 @@ export const getAllTickets = async (): Promise<Ticket[]> => {
       id: ticket.id,
       user_id: ticket.user_id,
       subject: ticket.subject,
-      message: ticket.message,
+      message: data.message,
       status: ticket.status as 'open' | 'in-progress' | 'resolved' | 'closed',
       priority: ticket.priority as 'low' | 'medium' | 'high',
+      category: ticket.category || 'general',
       created_at: ticket.created_at,
       updated_at: ticket.updated_at,
       ai_response: ticket.ai_response,
