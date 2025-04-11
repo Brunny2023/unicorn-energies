@@ -21,17 +21,19 @@ interface WithdrawalRequestProps {
   fetchWalletData: () => Promise<void>;
   toast: any;
   devMode: boolean;
+  onSuccess?: () => void;
 }
 
-const WithdrawalRequest = ({
+const WithdrawalRequest: React.FC<WithdrawalRequestProps> = ({
   withdrawalRequest,
   processing,
   setProcessing,
   setSuccess,
   fetchWalletData,
   toast,
-  devMode
-}: WithdrawalRequestProps) => {
+  devMode,
+  onSuccess
+}) => {
   const { user } = useAuth();
   const captcha = useCaptcha();
 
@@ -67,6 +69,10 @@ const WithdrawalRequest = ({
         // Reset captcha
         if (captcha.resetCaptcha) {
           captcha.resetCaptcha();
+        }
+        // Call onSuccess callback if provided
+        if (onSuccess) {
+          onSuccess();
         }
       } else {
         throw new Error("Withdrawal processing failed");

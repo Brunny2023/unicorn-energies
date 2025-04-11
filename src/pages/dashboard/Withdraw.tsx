@@ -2,9 +2,6 @@
 import React, { useState, useEffect } from "react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,9 +9,39 @@ import { WalletData } from "@/types/investment";
 import WithdrawalCalculator from "@/components/dashboard/withdraw/WithdrawalCalculator";
 import WithdrawalRequest from "@/components/dashboard/withdraw/WithdrawalRequest";
 import WithdrawalSuccess from "@/components/dashboard/withdraw/WithdrawalSuccess";
+import WalletSummary from "@/components/dashboard/withdraw/WalletSummary";
+import WithdrawalHistory from "@/components/dashboard/withdraw/WithdrawalHistory";
 
 // Development mode flag - set to true to bypass authentication and use dummy data
 const DEVELOPMENT_MODE = true;
+
+// Sample withdrawal history
+const SAMPLE_WITHDRAWAL_HISTORY = [
+  {
+    id: "WD-284651",
+    date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+    amount: 1500,
+    fee: 37.5,
+    netAmount: 1462.5,
+    status: 'completed' as const,
+  },
+  {
+    id: "WD-175432",
+    date: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
+    amount: 2800,
+    fee: 70,
+    netAmount: 2730,
+    status: 'completed' as const,
+  },
+  {
+    id: "WD-098734",
+    date: new Date(Date.now() - 32 * 24 * 60 * 60 * 1000),
+    amount: 950,
+    fee: 23.75,
+    netAmount: 926.25,
+    status: 'completed' as const,
+  },
+];
 
 const Withdraw = () => {
   const { user } = useAuth();
@@ -26,6 +53,7 @@ const Withdraw = () => {
   const [calculating, setCalculating] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [withdrawalHistory, setWithdrawalHistory] = useState(SAMPLE_WITHDRAWAL_HISTORY);
 
   useEffect(() => {
     if (user) {
@@ -98,6 +126,21 @@ const Withdraw = () => {
     }
   };
 
+  // Add new withdrawal to history after successful withdrawal
+  const addWithdrawalToHistory = (newWithdrawal: any) => {
+    setWithdrawalHistory(prev => [
+      {
+        id: `WD-${Math.floor(100000 + Math.random() * 900000)}`,
+        date: new Date(),
+        amount: newWithdrawal.amount,
+        fee: newWithdrawal.fee,
+        netAmount: newWithdrawal.netAmount,
+        status: 'pending' as const,
+      },
+      ...prev
+    ]);
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -113,53 +156,7 @@ const Withdraw = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Wallet Stats */}
           <div className="lg:col-span-1">
-            <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30 h-full">
-              <CardHeader>
-                <CardTitle className="text-white">Wallet Summary</CardTitle>
-                <CardDescription className="text-gray-400">
-                  Your current balance and earnings
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {loading ? (
-                  <div className="space-y-4 animate-pulse">
-                    <div className="h-16 bg-unicorn-gold/10 rounded-lg"></div>
-                    <div className="h-16 bg-unicorn-gold/10 rounded-lg"></div>
-                    <div className="h-16 bg-unicorn-gold/10 rounded-lg"></div>
-                  </div>
-                ) : (
-                  <>
-                    <div className="p-4 rounded-lg bg-unicorn-gold/10 border border-unicorn-gold/30">
-                      <div className="text-sm text-gray-400 mb-1">Available Balance</div>
-                      <div className="text-2xl font-bold text-white">
-                        ${walletData?.balance.toLocaleString()}
-                      </div>
-                    </div>
-                    
-                    <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/30">
-                      <div className="text-sm text-gray-400 mb-1">Accrued Profits</div>
-                      <div className="text-2xl font-bold text-green-500">
-                        ${walletData?.accrued_profits.toLocaleString()}
-                      </div>
-                    </div>
-                    
-                    <div className="p-4 rounded-lg bg-unicorn-purple/10 border border-unicorn-purple/30">
-                      <div className="text-sm text-gray-400 mb-1">Withdrawal Fee</div>
-                      <div className="text-2xl font-bold text-unicorn-purple">
-                        {walletData?.withdrawal_fee_percentage}%
-                      </div>
-                    </div>
-                    
-                    <div className="p-4 rounded-lg bg-gray-500/10 border border-gray-500/30">
-                      <div className="text-sm text-gray-400 mb-1">Processing Time</div>
-                      <div className="text-lg font-medium text-white">
-                        1-2 Business Days
-                      </div>
-                    </div>
-                  </>
-                )}
-              </CardContent>
-            </Card>
+            <WalletSummary walletData={walletData} loading={loading} />
           </div>
           
           {/* Withdrawal Form */}
@@ -195,6 +192,9 @@ const Withdraw = () => {
                         fetchWalletData={fetchWalletData}
                         toast={toast}
                         devMode={DEVELOPMENT_MODE}
+                        onSuccess={() => {
+                          addWithdrawalToHistory(withdrawalRequest);
+                        }}
                       />
                     )}
                   </>
@@ -205,74 +205,7 @@ const Withdraw = () => {
         </div>
         
         {/* Withdrawal History */}
-        <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
-          <CardHeader>
-            <CardTitle className="text-white">Withdrawal History</CardTitle>
-            <CardDescription className="text-gray-400">
-              Your recent withdrawal requests and their status
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-gray-400 border-b border-unicorn-gold/20">
-                    <th className="px-4 py-3 text-left">Date</th>
-                    <th className="px-4 py-3 text-left">Transaction ID</th>
-                    <th className="px-4 py-3 text-left">Amount</th>
-                    <th className="px-4 py-3 text-left">Fee</th>
-                    <th className="px-4 py-3 text-left">Net Amount</th>
-                    <th className="px-4 py-3 text-left">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-b border-unicorn-gold/10 hover:bg-unicorn-purple/10">
-                    <td className="px-4 py-3 text-white">
-                      {new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toLocaleDateString()}
-                    </td>
-                    <td className="px-4 py-3 text-gray-300 font-mono">WD-284651</td>
-                    <td className="px-4 py-3 text-white">$1,500.00</td>
-                    <td className="px-4 py-3 text-red-400">$37.50</td>
-                    <td className="px-4 py-3 text-unicorn-gold">$1,462.50</td>
-                    <td className="px-4 py-3">
-                      <span className="px-2 py-1 text-xs rounded-full bg-green-500/20 text-green-500">
-                        Completed
-                      </span>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-unicorn-gold/10 hover:bg-unicorn-purple/10">
-                    <td className="px-4 py-3 text-white">
-                      {new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toLocaleDateString()}
-                    </td>
-                    <td className="px-4 py-3 text-gray-300 font-mono">WD-175432</td>
-                    <td className="px-4 py-3 text-white">$2,800.00</td>
-                    <td className="px-4 py-3 text-red-400">$70.00</td>
-                    <td className="px-4 py-3 text-unicorn-gold">$2,730.00</td>
-                    <td className="px-4 py-3">
-                      <span className="px-2 py-1 text-xs rounded-full bg-green-500/20 text-green-500">
-                        Completed
-                      </span>
-                    </td>
-                  </tr>
-                  <tr className="hover:bg-unicorn-purple/10">
-                    <td className="px-4 py-3 text-white">
-                      {new Date(Date.now() - 32 * 24 * 60 * 60 * 1000).toLocaleDateString()}
-                    </td>
-                    <td className="px-4 py-3 text-gray-300 font-mono">WD-098734</td>
-                    <td className="px-4 py-3 text-white">$950.00</td>
-                    <td className="px-4 py-3 text-red-400">$23.75</td>
-                    <td className="px-4 py-3 text-unicorn-gold">$926.25</td>
-                    <td className="px-4 py-3">
-                      <span className="px-2 py-1 text-xs rounded-full bg-green-500/20 text-green-500">
-                        Completed
-                      </span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
+        <WithdrawalHistory history={withdrawalHistory} loading={false} />
       </div>
     </DashboardLayout>
   );
