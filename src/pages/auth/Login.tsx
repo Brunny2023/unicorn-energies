@@ -40,8 +40,8 @@ const Login = () => {
       description: "Bypassing authentication and navigating to dashboard.",
     });
     
-    // Navigate directly to admin dashboard in dev mode
-    navigate("/admin/dashboard");
+    // Navigate to the dashboard instead of admin/dashboard
+    navigate("/dashboard");
   };
 
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
@@ -144,6 +144,13 @@ const Login = () => {
                       className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold"
                     >
                       Dev Mode Login (Skip Authentication)
+                    </Button>
+                    <Button 
+                      type="button"
+                      onClick={() => navigate("/admin/dashboard")}
+                      className="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold"
+                    >
+                      Dev Mode Admin Login
                     </Button>
                   </div>
                 ) : (
