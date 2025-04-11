@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { Investment, Plan, WalletData, Ticket, WithdrawalRequest } from '@/types/investment';
 

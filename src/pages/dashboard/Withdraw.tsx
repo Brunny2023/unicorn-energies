@@ -1,6 +1,6 @@
+
 import React, { useState, useEffect } from "react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -137,17 +137,16 @@ const Withdraw = () => {
 
   // Add new withdrawal to history after successful withdrawal
   const addWithdrawalToHistory = (newWithdrawal: any) => {
-    setWithdrawalHistory(prev => [
-      {
-        id: `WD-${Math.floor(100000 + Math.random() * 900000)}`,
-        date: new Date(),
-        amount: newWithdrawal.amount,
-        fee: newWithdrawal.fee,
-        netAmount: newWithdrawal.netAmount,
-        status: 'pending' as const,
-      },
-      ...prev
-    ]);
+    const newItem: WithdrawalHistoryItem = {
+      id: `WD-${Math.floor(100000 + Math.random() * 900000)}`,
+      date: new Date(),
+      amount: newWithdrawal.amount,
+      fee: newWithdrawal.fee,
+      netAmount: newWithdrawal.netAmount,
+      status: 'pending' as const,
+    };
+    
+    setWithdrawalHistory(prev => [newItem, ...prev]);
   };
 
   return (
@@ -170,46 +169,43 @@ const Withdraw = () => {
           
           {/* Withdrawal Form */}
           <div className="lg:col-span-2">
-            <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
-              <CardHeader>
-                <CardTitle className="text-white">Make a Withdrawal</CardTitle>
-                <CardDescription className="text-gray-400">
-                  Enter the amount you wish to withdraw from your available balance.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {success ? (
-                  <WithdrawalSuccess />
-                ) : (
-                  <>
-                    <WithdrawalCalculator 
-                      loading={loading}
-                      walletData={walletData}
-                      amount={amount}
-                      setAmount={setAmount}
-                      calculating={calculating}
-                      setCalculating={setCalculating}
-                      setWithdrawalRequest={setWithdrawalRequest}
+            <div className="bg-unicorn-darkPurple/80 border border-unicorn-gold/30 rounded-lg p-6">
+              <h3 className="text-xl font-semibold text-white mb-4">Make a Withdrawal</h3>
+              <p className="text-gray-400 mb-6">
+                Enter the amount you wish to withdraw from your available balance.
+              </p>
+              
+              {success ? (
+                <WithdrawalSuccess />
+              ) : (
+                <>
+                  <WithdrawalCalculator 
+                    loading={loading}
+                    walletData={walletData}
+                    amount={amount}
+                    setAmount={setAmount}
+                    calculating={calculating}
+                    setCalculating={setCalculating}
+                    setWithdrawalRequest={setWithdrawalRequest}
+                    toast={toast}
+                  />
+                  {withdrawalRequest && (
+                    <WithdrawalRequest 
+                      withdrawalRequest={withdrawalRequest}
+                      processing={processing}
+                      setProcessing={setProcessing}
+                      setSuccess={setSuccess}
+                      fetchWalletData={fetchWalletData}
                       toast={toast}
+                      devMode={DEVELOPMENT_MODE}
+                      onSuccess={() => {
+                        addWithdrawalToHistory(withdrawalRequest);
+                      }}
                     />
-                    {withdrawalRequest && (
-                      <WithdrawalRequest 
-                        withdrawalRequest={withdrawalRequest}
-                        processing={processing}
-                        setProcessing={setProcessing}
-                        setSuccess={setSuccess}
-                        fetchWalletData={fetchWalletData}
-                        toast={toast}
-                        devMode={DEVELOPMENT_MODE}
-                        onSuccess={() => {
-                          addWithdrawalToHistory(withdrawalRequest);
-                        }}
-                      />
-                    )}
-                  </>
-                )}
-              </CardContent>
-            </Card>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </div>
         
