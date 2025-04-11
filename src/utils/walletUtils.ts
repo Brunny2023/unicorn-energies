@@ -2,6 +2,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { WalletData, WithdrawalRequest } from '@/types/investment';
 
+// Core wallet data retrieval function
 export const fetchWalletData = async (userId: string): Promise<WalletData | null> => {
   try {
     const { data, error } = await supabase
@@ -21,6 +22,7 @@ export const fetchWalletData = async (userId: string): Promise<WalletData | null
 // Alias the fetchWalletData function to getUserWallet for compatibility
 export const getUserWallet = fetchWalletData;
 
+// Withdrawal calculation utility
 export const calculateWithdrawalRequest = (walletData: WalletData, requestedAmount: number): WithdrawalRequest => {
   try {
     const { balance, withdrawal_fee_percentage } = walletData;
@@ -62,6 +64,7 @@ export const calculateWithdrawalRequest = (walletData: WalletData, requestedAmou
 // For backward compatibility
 export const calculateWithdrawalFee = calculateWithdrawalRequest;
 
+// Process a withdrawal transaction
 export const processWithdrawal = async (userId: string, amount: number): Promise<boolean> => {
   try {
     // Get current wallet data
@@ -128,6 +131,7 @@ export const processWithdrawal = async (userId: string, amount: number): Promise
   }
 };
 
+// Deposit funds into wallet
 export const depositFunds = async (userId: string, amount: number): Promise<boolean> => {
   try {
     // Get current wallet data
@@ -173,6 +177,7 @@ export const depositFunds = async (userId: string, amount: number): Promise<bool
   }
 };
 
+// Update wallet balance
 export const updateWalletBalance = async (userId: string, newBalance: number): Promise<boolean> => {
   try {
     const { error } = await supabase
@@ -191,6 +196,7 @@ export const updateWalletBalance = async (userId: string, newBalance: number): P
   }
 };
 
+// Deduct from wallet balance
 export const deductFromWalletBalance = async (userId: string, amount: number): Promise<boolean> => {
   try {
     // First get the current balance

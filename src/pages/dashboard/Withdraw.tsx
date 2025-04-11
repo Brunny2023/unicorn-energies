@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
 import { WalletData, WithdrawalRequest } from "@/types/investment";
 import WalletSummary from "@/components/dashboard/withdraw/WalletSummary";
 import WithdrawalHistory from "@/components/dashboard/withdraw/WithdrawalHistory";

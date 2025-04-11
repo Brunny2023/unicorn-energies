@@ -56,7 +56,7 @@ export const getUserTickets = async (userId: string): Promise<Ticket[]> => {
     if (error) throw error;
 
     // Transform to match our Ticket type, ensuring category is always populated
-    return data.map(ticket => ({
+    return (data || []).map(ticket => ({
       id: ticket.id,
       user_id: ticket.user_id,
       subject: ticket.subject,
@@ -130,14 +130,14 @@ export const getAllTickets = async (): Promise<Ticket[]> => {
     if (error) throw error;
 
     // Transform to match our Ticket type
-    return data.map(ticket => ({
+    return (data || []).map(ticket => ({
       id: ticket.id,
       user_id: ticket.user_id,
       subject: ticket.subject,
       message: ticket.message || '',
       status: ticket.status as 'open' | 'in-progress' | 'resolved' | 'closed' | 'replied',
       priority: ticket.priority as 'low' | 'medium' | 'high',
-      category: data.category || 'general', // Default to 'general' if category is missing
+      category: ticket.category || 'general', // Default to 'general' if category is missing
       created_at: ticket.created_at,
       updated_at: ticket.updated_at,
       ai_response: ticket.ai_response,

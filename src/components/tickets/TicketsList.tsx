@@ -81,13 +81,13 @@ const TicketsList = () => {
 
       if (error) throw error;
       
-      // Add category if missing
+      // Add category if missing - this fixes the type error since category might be missing in DB
       const ticketsWithCategory = (data || []).map(ticket => ({
         ...ticket,
         category: ticket.category || 'general'
-      })) as Ticket[];
+      }));
       
-      setTickets(ticketsWithCategory);
+      setTickets(ticketsWithCategory as Ticket[]);
     } catch (error) {
       console.error('Error fetching tickets:', error);
       toast({
