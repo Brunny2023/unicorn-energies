@@ -1,10 +1,9 @@
 
 import React from "react";
-import { WalletData } from "@/types/investment";
+import { WalletData, WithdrawalRequest } from "@/types/investment";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CardTitle, CardDescription } from "@/components/ui/card";
-import { calculateWithdrawalRequest } from "@/utils/walletUtils";
 
 interface WithdrawalCalculatorProps {
   loading: boolean;
@@ -54,7 +53,18 @@ const WithdrawalCalculator = ({
       if (!walletData) {
         throw new Error("Wallet data not available");
       }
-      const request = calculateWithdrawalRequest(walletData, numAmount);
+      
+      // Create withdrawal request object directly
+      const fee = (numAmount * (walletData.withdrawal_fee_percentage || 5)) / 100;
+      const netAmount = numAmount - fee;
+      
+      const request: WithdrawalRequest = {
+        eligible: true,
+        amount: numAmount,
+        fee: fee,
+        netAmount: netAmount
+      };
+      
       setWithdrawalRequest(request);
     } catch (error) {
       console.error("Error calculating withdrawal:", error);

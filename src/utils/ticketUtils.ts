@@ -55,7 +55,7 @@ export const getUserTickets = async (userId: string): Promise<Ticket[]> => {
 
     if (error) throw error;
 
-    // Transform to match our Ticket type
+    // Transform to match our Ticket type, ensuring category is always populated
     return data.map(ticket => ({
       id: ticket.id,
       user_id: ticket.user_id,
@@ -63,7 +63,7 @@ export const getUserTickets = async (userId: string): Promise<Ticket[]> => {
       message: ticket.message || '',
       status: ticket.status as 'open' | 'in-progress' | 'resolved' | 'closed' | 'replied',
       priority: ticket.priority as 'low' | 'medium' | 'high',
-      category: ticket.category || 'general',
+      category: ticket.category || 'general', // Default to 'general' if category is missing
       created_at: ticket.created_at,
       updated_at: ticket.updated_at,
       ai_response: ticket.ai_response,
@@ -93,7 +93,7 @@ export const getTicketDetails = async (ticketId: string): Promise<Ticket | null>
       message: data.message || '',
       status: data.status as 'open' | 'in-progress' | 'resolved' | 'closed' | 'replied',
       priority: data.priority as 'low' | 'medium' | 'high',
-      category: data.category || 'general',
+      category: data.category || 'general', // Default to 'general' if category is missing
       created_at: data.created_at,
       updated_at: data.updated_at,
       ai_response: data.ai_response,
@@ -137,7 +137,7 @@ export const getAllTickets = async (): Promise<Ticket[]> => {
       message: ticket.message || '',
       status: ticket.status as 'open' | 'in-progress' | 'resolved' | 'closed' | 'replied',
       priority: ticket.priority as 'low' | 'medium' | 'high',
-      category: ticket.category || 'general',
+      category: data.category || 'general', // Default to 'general' if category is missing
       created_at: ticket.created_at,
       updated_at: ticket.updated_at,
       ai_response: ticket.ai_response,

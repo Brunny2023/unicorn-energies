@@ -21,20 +21,8 @@ export const fetchWalletData = async (userId: string): Promise<WalletData | null
 // Alias the fetchWalletData function to getUserWallet for compatibility
 export const getUserWallet = fetchWalletData;
 
-export const calculateWithdrawalRequest = async (userId: string, requestedAmount: number): Promise<WithdrawalRequest> => {
+export const calculateWithdrawalRequest = (walletData: WalletData, requestedAmount: number): WithdrawalRequest => {
   try {
-    const walletData = await fetchWalletData(userId);
-    
-    if (!walletData) {
-      return {
-        eligible: false,
-        reason: "Wallet data not found",
-        amount: 0,
-        fee: 0,
-        netAmount: 0
-      };
-    }
-    
     const { balance, withdrawal_fee_percentage } = walletData;
     
     // Check if user has sufficient balance
@@ -71,22 +59,32 @@ export const calculateWithdrawalRequest = async (userId: string, requestedAmount
   }
 };
 
-// Alias the calculateWithdrawalRequest function for compatibility
+// For backward compatibility
 export const calculateWithdrawalFee = calculateWithdrawalRequest;
 
 export const processWithdrawal = async (userId: string, amount: number): Promise<boolean> => {
   try {
-    const withdrawal = await calculateWithdrawalRequest(userId, amount);
+    // Get current wallet data
+    const walletData = await fetchWalletData(userId);
+    
+    if (!walletData) {
+      throw new Error("Wallet data not found");
+    }
+    
+    const withdrawal = calculateWithdrawalRequest(walletData, amount);
     
     if (!withdrawal.eligible) {
       throw new Error(withdrawal.reason || "Withdrawal not eligible");
     }
     
-    // Update wallet balance using a raw decrement operation
+    // Calculate new balance
+    const newBalance = walletData.balance - amount;
+    
+    // Update wallet balance
     const { error: walletError } = await supabase
       .from('wallets')
       .update({ 
-        balance: supabase.rpc('update_investment_profits'),
+        balance: newBalance,
         updated_at: new Date().toISOString()
       })
       .eq('user_id', userId);
@@ -117,7 +115,7 @@ export const processWithdrawal = async (userId: string, amount: number): Promise
           type: 'fee',
           amount: withdrawal.fee,
           status: 'completed',
-          description: `Withdrawal fee (${withdrawal.fee / amount * 100}%)`
+          description: `Withdrawal fee (${(withdrawal.fee / amount * 100).toFixed(2)}%)`
         }
       ]);
       
@@ -132,11 +130,21 @@ export const processWithdrawal = async (userId: string, amount: number): Promise
 
 export const depositFunds = async (userId: string, amount: number): Promise<boolean> => {
   try {
-    // Update wallet balance with correct Supabase update method
+    // Get current wallet data
+    const walletData = await fetchWalletData(userId);
+    
+    if (!walletData) {
+      throw new Error("Wallet data not found");
+    }
+    
+    // Calculate new balance
+    const newBalance = walletData.balance + amount;
+    
+    // Update wallet balance
     const { error: walletError } = await supabase
       .from('wallets')
       .update({ 
-        balance: amount, // Set to the specific amount
+        balance: newBalance,
         updated_at: new Date().toISOString()
       })
       .eq('user_id', userId);
