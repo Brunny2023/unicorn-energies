@@ -29,7 +29,6 @@ export interface Investment {
   end_date: string;
 }
 
-// Adding the missing types that are being referenced
 export interface Plan {
   id: string;
   name: string;
@@ -55,6 +54,10 @@ export interface Ticket {
   category: string;
   last_reply_at?: string;
   closed_at?: string;
+  message?: string;
+  ai_response?: string;
+  ai_responded_at?: string;
+  updated_at?: string;
 }
 
 export interface TicketMessage {

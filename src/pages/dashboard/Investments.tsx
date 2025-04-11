@@ -8,9 +8,17 @@ import { useToast } from "@/hooks/use-toast";
 import StatsCards from "@/components/dashboard/investments/StatsCards";
 import InvestmentsList from "@/components/dashboard/investments/InvestmentsList";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, TrendingUp, AlertTriangle } from "lucide-react";
+import { PlusCircle, TrendingUp, AlertTriangle, Calendar, ChevronDown, Filter } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Progress } from "@/components/ui/progress";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 // Development mode flag
 const DEVELOPMENT_MODE = true;
@@ -82,6 +90,7 @@ const Investments = () => {
     totalReturns: 0,
   });
   const [activeTab, setActiveTab] = useState<'all' | 'active' | 'pending' | 'completed'>('all');
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest' | 'amount-high' | 'amount-low'>('newest');
 
   useEffect(() => {
     // In development mode, use dummy data
@@ -147,6 +156,22 @@ const Investments = () => {
     return inv.status === activeTab;
   });
 
+  // Sort investments
+  const sortedInvestments = [...filteredInvestments].sort((a, b) => {
+    switch (sortOrder) {
+      case 'newest':
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      case 'oldest':
+        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      case 'amount-high':
+        return Number(b.amount) - Number(a.amount);
+      case 'amount-low':
+        return Number(a.amount) - Number(b.amount);
+      default:
+        return 0;
+    }
+  });
+
   // Calculate portfolio growth percentage (simplified for demo)
   const calculateGrowth = () => {
     if (stats.totalInvested === 0) return 0;
@@ -156,6 +181,18 @@ const Investments = () => {
   // Format percentage
   const formatPercentage = (value: number) => {
     return `${value.toFixed(2)}%`;
+  };
+
+  // Get next payout date
+  const getNextPayoutDate = () => {
+    // In a real app, this would be calculated based on actual payout schedule
+    const date = new Date();
+    date.setDate(date.getDate() + 1); // Next day for demo
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'short',
+      day: 'numeric'
+    });
   };
 
   return (
@@ -169,7 +206,45 @@ const Investments = () => {
             </p>
           </div>
           
-          <div className="mt-4 md:mt-0">
+          <div className="mt-4 md:mt-0 flex gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="border-unicorn-gold/50 text-unicorn-gold hover:bg-unicorn-gold/10">
+                  <Filter className="mr-2 h-4 w-4" />
+                  Sort
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-unicorn-darkPurple border-unicorn-gold/30 text-white">
+                <DropdownMenuLabel>Sort Investments</DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-unicorn-gold/20" />
+                <DropdownMenuItem 
+                  className={`cursor-pointer ${sortOrder === 'newest' ? 'bg-unicorn-purple/20 text-unicorn-gold' : ''}`}
+                  onClick={() => setSortOrder('newest')}
+                >
+                  Newest First
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  className={`cursor-pointer ${sortOrder === 'oldest' ? 'bg-unicorn-purple/20 text-unicorn-gold' : ''}`}
+                  onClick={() => setSortOrder('oldest')}
+                >
+                  Oldest First
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  className={`cursor-pointer ${sortOrder === 'amount-high' ? 'bg-unicorn-purple/20 text-unicorn-gold' : ''}`}
+                  onClick={() => setSortOrder('amount-high')}
+                >
+                  Highest Amount
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  className={`cursor-pointer ${sortOrder === 'amount-low' ? 'bg-unicorn-purple/20 text-unicorn-gold' : ''}`}
+                  onClick={() => setSortOrder('amount-low')}
+                >
+                  Lowest Amount
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            
             <Link to="/investment-plans">
               <Button className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black">
                 <PlusCircle className="mr-2 h-4 w-4" />
@@ -196,18 +271,32 @@ const Investments = () => {
             </div>
           </div>
           
-          <div className="mb-2 flex justify-between items-center">
-            <span className="text-sm text-gray-400">Progress to Target (100%)</span>
-            <span className="text-sm font-medium text-unicorn-gold">{formatPercentage(Math.min(calculateGrowth(), 100))}</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div className="bg-unicorn-purple/20 p-4 rounded-lg">
+              <div className="text-sm text-gray-400 mb-1">Next Payout</div>
+              <div className="flex items-center">
+                <Calendar className="h-4 w-4 text-unicorn-gold mr-2" />
+                <span className="text-white">{getNextPayoutDate()}</span>
+              </div>
+            </div>
+            <div className="bg-unicorn-purple/20 p-4 rounded-lg">
+              <div className="text-sm text-gray-400 mb-1">Active Plans</div>
+              <div className="text-xl font-semibold text-white">{stats.activeCount}</div>
+            </div>
+            <div className="bg-unicorn-purple/20 p-4 rounded-lg">
+              <div className="text-sm text-gray-400 mb-1">Target Progress</div>
+              <div className="mb-2">
+                <span className="text-sm font-medium text-unicorn-gold">{formatPercentage(Math.min(calculateGrowth(), 100))}</span>
+              </div>
+              <Progress 
+                value={Math.min(calculateGrowth(), 100)} 
+                className="h-2 bg-unicorn-purple/30"
+              />
+            </div>
           </div>
           
-          <Progress 
-            value={Math.min(calculateGrowth(), 100)} 
-            className="h-2 bg-unicorn-purple/30"
-          />
-          
           {calculateGrowth() < 10 && (
-            <div className="mt-4 flex items-start gap-2 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-md">
+            <div className="flex items-start gap-2 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-md">
               <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0 mt-0.5" />
               <p className="text-sm text-gray-300">
                 Your portfolio is currently growing slower than expected. Consider diversifying 
@@ -254,7 +343,7 @@ const Investments = () => {
         </div>
         
         {/* Investments List */}
-        <InvestmentsList loading={loading} investments={filteredInvestments} />
+        <InvestmentsList loading={loading} investments={sortedInvestments} />
       </div>
     </DashboardLayout>
   );
