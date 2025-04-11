@@ -55,6 +55,7 @@ const TicketsList = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log("TicketsList component mounted, user:", user?.id);
     // In development mode, use dummy data
     if (DEVELOPMENT_MODE) {
       console.log("Loading dummy tickets data");
@@ -68,18 +69,24 @@ const TicketsList = () => {
     // For production, fetch real data
     if (user) {
       fetchTickets();
+    } else {
+      console.log("No user found, not fetching tickets");
+      setLoading(false);
     }
   }, [user]);
 
   const fetchTickets = async () => {
     try {
+      console.log("Fetching tickets for user:", user?.id);
       setLoading(true);
       
       if (!user?.id) {
+        console.error("User ID is required but not found");
         throw new Error("User ID is required");
       }
       
       const ticketData = await getUserTickets(user.id);
+      console.log("Tickets fetched:", ticketData.length);
       setTickets(ticketData);
     } catch (error) {
       console.error('Error fetching tickets:', error);

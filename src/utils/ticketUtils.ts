@@ -4,6 +4,8 @@ import { Ticket } from '@/types/investment';
 
 export const createSupportTicket = async (userId: string, subject: string, message: string, priority: string, category: string = 'general'): Promise<Ticket | null> => {
   try {
+    console.log('Creating support ticket:', { userId, subject, message, priority, category });
+    
     const { data, error } = await supabase
       .from('tickets')
       .insert([
@@ -19,9 +21,13 @@ export const createSupportTicket = async (userId: string, subject: string, messa
       .single();
 
     if (error) {
+      console.error('Supabase error creating ticket:', error);
       throw error;
     }
+    
+    console.log('Ticket created successfully:', data);
 
+    // Transform to match our Ticket type
     return {
       id: data.id,
       user_id: data.user_id,
@@ -54,7 +60,10 @@ export const getUserTickets = async (userId: string): Promise<Ticket[]> => {
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase error fetching tickets:', error);
+      throw error;
+    }
     
     console.log('Tickets fetched:', data?.length || 0);
 
@@ -88,7 +97,10 @@ export const getTicketDetails = async (ticketId: string): Promise<Ticket | null>
       .eq('id', ticketId)
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase error fetching ticket details:', error);
+      throw error;
+    }
     
     console.log('Ticket details fetched successfully');
     
@@ -114,7 +126,7 @@ export const getTicketDetails = async (ticketId: string): Promise<Ticket | null>
 
 export const updateTicket = async (ticketId: string, updateData: Partial<Ticket>): Promise<boolean> => {
   try {
-    console.log('Updating ticket:', ticketId);
+    console.log('Updating ticket:', ticketId, updateData);
     
     // Extract only the fields that exist in the database
     const dbUpdateData = {
@@ -122,6 +134,8 @@ export const updateTicket = async (ticketId: string, updateData: Partial<Ticket>
       message: updateData.message,
       status: updateData.status,
       priority: updateData.priority,
+      ai_response: updateData.ai_response,
+      ai_responded_at: updateData.ai_responded_at,
       // Category is handled locally, not in DB
     };
 
@@ -130,7 +144,10 @@ export const updateTicket = async (ticketId: string, updateData: Partial<Ticket>
       .update(dbUpdateData)
       .eq('id', ticketId);
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase error updating ticket:', error);
+      throw error;
+    }
     
     console.log('Ticket updated successfully');
     return true;
@@ -149,7 +166,10 @@ export const getAllTickets = async (): Promise<Ticket[]> => {
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase error fetching all tickets:', error);
+      throw error;
+    }
     
     console.log('All tickets fetched:', data?.length || 0);
 
