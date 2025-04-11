@@ -7,7 +7,7 @@ import { WalletData, WithdrawalRequest } from "@/types/investment";
 import WalletSummary from "@/components/dashboard/withdraw/WalletSummary";
 import WithdrawalHistory from "@/components/dashboard/withdraw/WithdrawalHistory";
 import WithdrawalForm from "@/components/dashboard/withdraw/WithdrawalForm";
-import { fetchWalletData } from "@/utils/walletUtils";
+import { fetchWalletData } from "@/utils/wallet";
 
 // Define the withdrawal history item type
 interface WithdrawalHistoryItem {

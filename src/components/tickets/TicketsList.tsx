@@ -85,9 +85,9 @@ const TicketsList = () => {
       const ticketsWithCategory = (data || []).map(ticket => ({
         ...ticket,
         category: ticket.category || 'general'
-      }));
+      })) as Ticket[];
       
-      setTickets(ticketsWithCategory as Ticket[]);
+      setTickets(ticketsWithCategory);
     } catch (error) {
       console.error('Error fetching tickets:', error);
       toast({
