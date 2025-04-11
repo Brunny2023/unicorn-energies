@@ -1,5 +1,6 @@
 
 import React from "react";
+import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
 // Development mode flag - set to true to bypass authentication
@@ -13,7 +14,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
     return <>{children}</>;
   }
 
-  // Regular authentication check for production
+  // Show loading state
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-unicorn-darkPurple/90">
@@ -22,7 +23,13 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
     );
   }
 
-  return user ? <>{children}</> : null;
+  // If not authenticated, redirect to login
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
+
+  // User is authenticated, show the route
+  return <>{children}</>;
 };
 
 export default ProtectedRoute;
