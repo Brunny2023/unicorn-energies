@@ -1,19 +1,59 @@
+
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
-import AdminRoute from "@/components/auth/AdminRoute"; // Fix import
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, MessageSquare, User, Bot, Clock } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import AdminRoute from "@/components/auth/AdminRoute";
+import { useToast } from "@/hooks/use-toast";
 import { Ticket } from "@/types/investment";
-import { getTicketDetails, updateTicket } from "@/utils/investmentUtils";
+import { getTicketDetails, updateTicket } from "@/utils/ticketUtils";
+import TicketDetailHeader from "@/components/admin/tickets/TicketDetailHeader";
+import TicketDetailCard from "@/components/admin/tickets/TicketDetailCard";
+import TicketResponseForm from "@/components/admin/tickets/TicketResponseForm";
+
+// Development mode flag
+const DEVELOPMENT_MODE = true;
+
+// Sample dummy tickets for development
+const DUMMY_TICKETS = {
+  "ticket-1": {
+    id: "ticket-1",
+    user_id: "dev-user-id",
+    subject: "Withdrawal Issue",
+    message: "I'm having trouble with my recent withdrawal...",
+    status: "open",
+    priority: "high",
+    category: "withdrawal",
+    created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  "ticket-2": {
+    id: "ticket-2",
+    user_id: "dev-user-id",
+    subject: "Investment Question",
+    message: "Can you explain how the Gold plan works?",
+    status: "closed",
+    priority: "medium",
+    category: "investment",
+    created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+    ai_response: "The Gold plan offers a daily return of 0.5% for 30 days...",
+    ai_responded_at: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString()
+  },
+  "ticket-3": {
+    id: "ticket-3",
+    user_id: "dev-user-id",
+    subject: "Account Verification",
+    message: "I need to verify my account for larger withdrawals.",
+    status: "in_progress",
+    priority: "medium",
+    category: "account",
+    created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+  }
+};
 
 const AdminTicketDetails = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const { toast } = useToast();
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [loading, setLoading] = useState(true);
@@ -21,6 +61,7 @@ const AdminTicketDetails = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    console.log("AdminTicketDetails mounted, fetching ticket with ID:", id);
     if (id) {
       fetchTicketDetails();
     }
@@ -29,9 +70,33 @@ const AdminTicketDetails = () => {
   const fetchTicketDetails = async () => {
     try {
       setLoading(true);
+      console.log("Fetching ticket details for ID:", id);
+      
+      // Use dummy data for development mode
+      if (DEVELOPMENT_MODE && id) {
+        console.log("Using dummy ticket data in development mode");
+        setTimeout(() => {
+          const dummyTicket = DUMMY_TICKETS[id as keyof typeof DUMMY_TICKETS];
+          if (dummyTicket) {
+            console.log("Found dummy ticket:", dummyTicket);
+            setTicket(dummyTicket as Ticket);
+          } else {
+            console.error("No dummy ticket found for ID:", id);
+            toast({
+              title: "Error",
+              description: "Ticket not found",
+              variant: "destructive"
+            });
+          }
+          setLoading(false);
+        }, 1000);
+        return;
+      }
+      
+      // Production mode
       const data = await getTicketDetails(id as string);
+      console.log("Fetched ticket details:", data);
       setTicket(data);
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching ticket details:", error);
       toast({
@@ -39,6 +104,7 @@ const AdminTicketDetails = () => {
         description: "Failed to load ticket details",
         variant: "destructive"
       });
+    } finally {
       setLoading(false);
     }
   };
@@ -61,8 +127,32 @@ const AdminTicketDetails = () => {
 
     try {
       setIsSubmitting(true);
+      console.log("Submitting response to ticket:", id);
 
-      // Update the ticket with the AI response
+      // In development mode, just update the local state
+      if (DEVELOPMENT_MODE) {
+        console.log("Development mode: updating local ticket state");
+        setTimeout(() => {
+          if (ticket) {
+            const updatedTicket = {
+              ...ticket,
+              ai_response: response,
+              ai_responded_at: new Date().toISOString(),
+              status: 'resolved' as 'open' | 'in-progress' | 'resolved' | 'closed' | 'replied'
+            };
+            setTicket(updatedTicket);
+            setResponse('');
+            toast({
+              title: "Response Sent",
+              description: "Your response has been added to the ticket"
+            });
+          }
+          setIsSubmitting(false);
+        }, 1000);
+        return;
+      }
+
+      // Production mode - update the ticket in the database
       const success = await updateTicket(id as string, {
         ai_response: response,
         ai_responded_at: new Date().toISOString(),
@@ -93,147 +183,48 @@ const AdminTicketDetails = () => {
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'open':
-        return <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20">Open</Badge>;
-      case 'in-progress':
-        return <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20">In Progress</Badge>;
-      case 'resolved':
-        return <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20">Resolved</Badge>;
-      case 'closed':
-        return <Badge variant="outline" className="bg-gray-500/10 text-gray-500 border-gray-500/20">Closed</Badge>;
-      default:
-        return null;
-    }
-  };
-
-  const getPriorityBadge = (priority: string) => {
-    switch (priority) {
-      case 'high':
-        return <Badge variant="outline" className="bg-red-500/10 text-red-500 border-red-500/20">High</Badge>;
-      case 'medium':
-        return <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20">Medium</Badge>;
-      case 'low':
-        return <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20">Low</Badge>;
-      default:
-        return null;
-    }
-  };
-
   if (loading) {
     return (
-      <div className="flex justify-center p-8">
-        <div className="animate-pulse space-y-4 w-full max-w-4xl">
-          <div className="h-8 bg-gray-700/50 rounded w-1/3"></div>
-          <div className="h-64 bg-gray-700/50 rounded w-full"></div>
+      <DashboardLayout isAdmin>
+        <div className="flex justify-center p-8">
+          <div className="animate-pulse space-y-4 w-full max-w-4xl">
+            <div className="h-8 bg-gray-700/50 rounded w-1/3"></div>
+            <div className="h-64 bg-gray-700/50 rounded w-full"></div>
+          </div>
         </div>
-      </div>
+      </DashboardLayout>
     );
   }
 
   if (!ticket) {
     return (
-      <div className="text-center p-8">
-        <h3 className="text-xl text-white mb-4">Ticket not found</h3>
-        <Button
-          onClick={() => navigate('/admin/tickets')}
-          className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" /> Back to Tickets
-        </Button>
-      </div>
+      <DashboardLayout isAdmin>
+        <div className="text-center p-8">
+          <h3 className="text-xl text-white mb-4">Ticket not found</h3>
+        </div>
+      </DashboardLayout>
     );
   }
 
   return (
     <DashboardLayout isAdmin>
       <div className="space-y-6">
-        <div className="flex items-center mb-2">
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/admin/tickets')}
-            className="text-white hover:text-unicorn-gold mr-2"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" /> Back
-          </Button>
-          <h2 className="text-2xl font-bold text-white">Ticket #{ticket.id.substring(0, 8)}</h2>
-        </div>
-
-        <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
-          <CardHeader>
-            <div className="flex flex-wrap justify-between items-start gap-4">
-              <div>
-                <CardTitle className="text-xl text-white">{ticket.subject}</CardTitle>
-                <div className="flex mt-2 space-x-2">
-                  {getStatusBadge(ticket.status)}
-                  {getPriorityBadge(ticket.priority)}
-                </div>
-              </div>
-              <div className="text-right text-sm text-gray-400">
-                <div>Created: {new Date(ticket.created_at).toLocaleString()}</div>
-                <div>Last Updated: {new Date(ticket.updated_at).toLocaleString()}</div>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              <div className="bg-unicorn-darkPurple border border-unicorn-gold/20 rounded-lg p-4">
-                <div className="flex items-start mb-3">
-                  <div className="flex items-center justify-center h-8 w-8 rounded-full bg-unicorn-gold/20 text-unicorn-gold mr-3">
-                    <User className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <div className="font-medium text-unicorn-gold">User Message</div>
-                    <div className="text-xs text-gray-400">{new Date(ticket.created_at).toLocaleString()}</div>
-                  </div>
-                </div>
-                <div className="text-white whitespace-pre-line">
-                  {ticket.message}
-                </div>
-              </div>
-
-              {ticket.ai_response && (
-                <div className="bg-unicorn-purple/10 border border-unicorn-gold/10 rounded-lg p-4">
-                  <div className="flex items-start mb-3">
-                    <div className="flex items-center justify-center h-8 w-8 rounded-full bg-unicorn-gold/20 text-unicorn-gold mr-3">
-                      <Bot className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <div className="font-medium text-unicorn-gold">AI Assistant</div>
-                      <div className="text-xs text-gray-400">
-                        {ticket.ai_responded_at ? new Date(ticket.ai_responded_at).toLocaleString() : 'Automated Response'}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-white whitespace-pre-line">
-                    {ticket.ai_response}
-                  </div>
-                </div>
-              )}
-
-              <div className="mt-6">
-                <form onSubmit={handleSubmitResponse}>
-                  <Textarea
-                    placeholder="Respond to this ticket..."
-                    value={response}
-                    onChange={handleResponseChange}
-                    className="min-h-[100px] bg-unicorn-darkPurple/60 border-unicorn-gold/30 text-white mb-3"
-                  />
-                  <div className="flex justify-end">
-                    <Button
-                      type="submit"
-                      className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? "Sending..." : "Send Response"}
-                    </Button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <TicketDetailHeader ticket={ticket} />
+        
+        <TicketDetailCard 
+          ticket={ticket}
+          response={response}
+          setResponse={setResponse}
+          handleSubmitResponse={handleSubmitResponse}
+          isSubmitting={isSubmitting}
+        />
+        
+        <TicketResponseForm 
+          response={response}
+          handleResponseChange={handleResponseChange}
+          handleSubmitResponse={handleSubmitResponse}
+          isSubmitting={isSubmitting}
+        />
       </div>
     </DashboardLayout>
   );

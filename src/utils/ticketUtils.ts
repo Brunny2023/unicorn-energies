@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Ticket } from '@/types/investment';
 
@@ -183,7 +182,7 @@ export const getAllTickets = async (): Promise<Ticket[]> => {
       priority: ticket.priority as 'low' | 'medium' | 'high',
       category: determineCategory(ticket), // Add category detection
       created_at: ticket.created_at,
-      updated_at: ticket.updated_at, // Fixed: using ticket.updated_at instead of data.updated_at
+      updated_at: ticket.updated_at,
       ai_response: ticket.ai_response,
       ai_responded_at: ticket.ai_responded_at
     }));
@@ -195,7 +194,12 @@ export const getAllTickets = async (): Promise<Ticket[]> => {
 
 // Helper function to determine the category based on ticket content
 function determineCategory(ticket: any): string {
-  // Detect category from subject or message content
+  // If the ticket already has a category, use it
+  if (ticket.category) {
+    return ticket.category;
+  }
+  
+  // Otherwise detect category from subject or message content
   const text = (ticket.subject + ' ' + (ticket.message || '')).toLowerCase();
   
   if (text.includes('withdraw') || text.includes('payment')) {

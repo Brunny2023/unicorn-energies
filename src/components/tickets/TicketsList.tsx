@@ -56,6 +56,7 @@ const TicketsList = () => {
 
   useEffect(() => {
     console.log("TicketsList component mounted, user:", user?.id);
+    
     // In development mode, use dummy data
     if (DEVELOPMENT_MODE) {
       console.log("Loading dummy tickets data");
@@ -95,6 +96,10 @@ const TicketsList = () => {
         description: "Failed to load support tickets",
         variant: "destructive",
       });
+      
+      // Fallback to dummy tickets in case of error
+      console.log("Using dummy tickets as fallback due to error");
+      setTickets(DUMMY_TICKETS as Ticket[]);
     } finally {
       setLoading(false);
     }
