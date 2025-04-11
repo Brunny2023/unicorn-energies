@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { getUserTickets } from "@/utils/ticketUtils";
 import TicketsListHeader from "./TicketsListHeader";
 import TicketsListContent from "./TicketsListContent";
 import { Ticket } from "@/types/investment";
@@ -73,21 +73,13 @@ const TicketsList = () => {
   const fetchTickets = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('tickets')
-        .select('*')
-        .eq('user_id', user?.id)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
       
-      // Add category if missing - this fixes the type error since category might be missing in DB
-      const ticketsWithCategory = (data || []).map(ticket => ({
-        ...ticket,
-        category: ticket.category || 'general'
-      })) as Ticket[];
+      if (!user?.id) {
+        throw new Error("User ID is required");
+      }
       
-      setTickets(ticketsWithCategory);
+      const ticketData = await getUserTickets(user.id);
+      setTickets(ticketData);
     } catch (error) {
       console.error('Error fetching tickets:', error);
       toast({

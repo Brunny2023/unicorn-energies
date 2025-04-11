@@ -11,6 +11,7 @@ import TicketDetailsHeader from "./TicketDetailsHeader";
 import TicketDetailsContent from "./TicketDetailsContent";
 import TicketDetailsLoading from "./TicketDetailsLoading";
 import TicketDetailsNotFound from "./TicketDetailsNotFound";
+import { getTicketDetails } from "@/utils/ticketUtils";
 
 // Development mode flag
 const DEVELOPMENT_MODE = true;
@@ -67,11 +68,7 @@ const TicketDetails = () => {
       setTimeout(() => {
         const dummyTicket = DUMMY_TICKETS[id as keyof typeof DUMMY_TICKETS];
         if (dummyTicket) {
-          // Ensure category is set for dummy tickets too
-          setTicket({
-            ...dummyTicket,
-            category: dummyTicket.category || 'general'
-          } as Ticket);
+          setTicket(dummyTicket as Ticket);
         } else {
           toast({
             title: "Error",
@@ -93,20 +90,19 @@ const TicketDetails = () => {
   const fetchTicket = async (ticketId: string) => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('tickets')
-        .select('*')
-        .eq('id', ticketId)
-        .eq('user_id', user?.id)
-        .single();
-
-      if (error) throw error;
       
-      // Add category if missing
-      setTicket({
-        ...data,
-        category: data.category || 'general'
-      } as Ticket);
+      // Use the utility function to get ticket details
+      const ticketData = await getTicketDetails(ticketId);
+      
+      if (ticketData) {
+        setTicket(ticketData);
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to load ticket details",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error('Error fetching ticket:', error);
       toast({

@@ -13,7 +13,7 @@ export const createSupportTicket = async (userId: string, subject: string, messa
           message: message,
           status: 'open',
           priority: priority,
-          category: category,
+          // Note: category is custom and handled in our app, not in DB
         },
       ])
       .select('*')
@@ -30,7 +30,7 @@ export const createSupportTicket = async (userId: string, subject: string, messa
       message: data.message || '',
       status: data.status as 'open' | 'in-progress' | 'resolved' | 'closed' | 'replied',
       priority: data.priority as 'low' | 'medium' | 'high',
-      category: data.category || 'general', // Default to 'general' if category is missing
+      category: category, // Use the input category instead
       created_at: data.created_at,
       updated_at: data.updated_at,
       ai_response: data.ai_response,
@@ -63,7 +63,7 @@ export const getUserTickets = async (userId: string): Promise<Ticket[]> => {
       message: ticket.message || '',
       status: ticket.status as 'open' | 'in-progress' | 'resolved' | 'closed' | 'replied',
       priority: ticket.priority as 'low' | 'medium' | 'high',
-      category: ticket.category || 'general', // Default to 'general' if category is missing
+      category: determineCategory(ticket), // Add category detection
       created_at: ticket.created_at,
       updated_at: ticket.updated_at,
       ai_response: ticket.ai_response,
@@ -93,7 +93,7 @@ export const getTicketDetails = async (ticketId: string): Promise<Ticket | null>
       message: data.message || '',
       status: data.status as 'open' | 'in-progress' | 'resolved' | 'closed' | 'replied',
       priority: data.priority as 'low' | 'medium' | 'high',
-      category: data.category || 'general', // Default to 'general' if category is missing
+      category: determineCategory(data), // Add category detection
       created_at: data.created_at,
       updated_at: data.updated_at,
       ai_response: data.ai_response,
@@ -107,9 +107,18 @@ export const getTicketDetails = async (ticketId: string): Promise<Ticket | null>
 
 export const updateTicket = async (ticketId: string, updateData: Partial<Ticket>): Promise<boolean> => {
   try {
+    // Extract only the fields that exist in the database
+    const dbUpdateData = {
+      subject: updateData.subject,
+      message: updateData.message,
+      status: updateData.status,
+      priority: updateData.priority,
+      // Category is handled locally, not in DB
+    };
+
     const { error } = await supabase
       .from('tickets')
-      .update(updateData)
+      .update(dbUpdateData)
       .eq('id', ticketId);
 
     if (error) throw error;
@@ -137,7 +146,7 @@ export const getAllTickets = async (): Promise<Ticket[]> => {
       message: ticket.message || '',
       status: ticket.status as 'open' | 'in-progress' | 'resolved' | 'closed' | 'replied',
       priority: ticket.priority as 'low' | 'medium' | 'high',
-      category: ticket.category || 'general', // Default to 'general' if category is missing
+      category: determineCategory(ticket), // Add category detection
       created_at: ticket.created_at,
       updated_at: ticket.updated_at,
       ai_response: ticket.ai_response,
@@ -148,3 +157,22 @@ export const getAllTickets = async (): Promise<Ticket[]> => {
     return [];
   }
 };
+
+// Helper function to determine the category based on ticket content
+function determineCategory(ticket: any): string {
+  // Detect category from subject or message content
+  const text = (ticket.subject + ' ' + (ticket.message || '')).toLowerCase();
+  
+  if (text.includes('withdraw') || text.includes('payment')) {
+    return 'withdrawal';
+  } else if (text.includes('invest') || text.includes('plan') || text.includes('return')) {
+    return 'investment';
+  } else if (text.includes('account') || text.includes('profile') || text.includes('verify')) {
+    return 'account';
+  } else if (text.includes('technical') || text.includes('error') || text.includes('bug')) {
+    return 'technical';
+  }
+  
+  // Default category
+  return 'general';
+}
