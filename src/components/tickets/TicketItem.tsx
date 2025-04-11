@@ -16,6 +16,7 @@ const TicketItem: React.FC<TicketItemProps> = ({ ticket }) => {
       case 'replied':
         return 'text-blue-500';
       case 'in-progress':
+      case 'in_progress':
         return 'text-purple-500';
       case 'resolved':
       case 'closed':
@@ -66,7 +67,7 @@ const TicketItem: React.FC<TicketItemProps> = ({ ticket }) => {
           </div>
         </div>
         <span className="text-xs uppercase px-2 py-1 rounded-full border border-unicorn-gold/20 text-unicorn-gold">
-          {ticket.category}
+          {ticket.category || 'general'}
         </span>
       </div>
     </Link>
