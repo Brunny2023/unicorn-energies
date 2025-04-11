@@ -118,3 +118,41 @@ export const getUserWallet = async (userId: string): Promise<WalletData | null> 
     return null;
   }
 };
+
+// Helper function to update wallet balance (decrement)
+export const decrementWalletBalance = async (userId: string, amount: number): Promise<boolean> => {
+  try {
+    const { data: walletData, error: walletError } = await supabase
+      .from('wallets')
+      .select('id, balance')
+      .eq('user_id', userId)
+      .single();
+      
+    if (walletError || !walletData) {
+      console.error("Error fetching wallet data:", walletError);
+      return false;
+    }
+    
+    // Calculate new balance
+    const newBalance = Math.max(0, walletData.balance - amount);
+    
+    // Update wallet balance
+    const { error: updateError } = await supabase
+      .from('wallets')
+      .update({ 
+        balance: newBalance,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', walletData.id);
+      
+    if (updateError) {
+      console.error("Error updating wallet balance:", updateError);
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error("Error decrementing wallet balance:", error);
+    return false;
+  }
+};

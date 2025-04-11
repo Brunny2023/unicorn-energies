@@ -60,7 +60,7 @@ const Navbar = () => {
               <button className="text-white hover:text-unicorn-gold transition-colors px-3 py-2 flex items-center font-medium">
                 Investments <ChevronDown className="ml-1 h-4 w-4" />
               </button>
-              <div className="absolute left-0 mt-2 w-48 bg-unicorn-darkPurple/90 backdrop-blur-lg border border-unicorn-gold/20 shadow-lg rounded-md hidden group-hover:block">
+              <div className="absolute left-0 mt-2 w-48 bg-unicorn-darkPurple/90 backdrop-blur-lg border border-unicorn-gold/20 shadow-lg rounded-md hidden group-hover:block z-50">
                 <Link to="/investment-plans" className="block px-4 py-2 text-white hover:bg-unicorn-purple/30 hover:text-unicorn-gold font-medium">Investment Plans</Link>
                 <Link to="/calculator" className="block px-4 py-2 text-white hover:bg-unicorn-purple/30 hover:text-unicorn-gold font-medium">Profit Calculator</Link>
               </div>
@@ -80,7 +80,7 @@ const Navbar = () => {
                     </span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 bg-unicorn-darkPurple/90 backdrop-blur-lg border border-unicorn-gold/30 text-white" align="end" forceMount>
+                <DropdownMenuContent className="w-56 bg-unicorn-darkPurple/90 backdrop-blur-lg border border-unicorn-gold/30 text-white z-50" align="end" forceMount>
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium text-white">Account</p>
@@ -137,7 +137,7 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <nav className="md:hidden pt-4 pb-3 space-y-1">
+          <nav className="md:hidden pt-4 pb-3 space-y-1 z-50">
             <Link to="/" className="block py-2 px-4 text-white hover:bg-unicorn-purple/30 hover:text-unicorn-gold rounded-md font-medium">Home</Link>
             <Link to="/about" className="block py-2 px-4 text-white hover:bg-unicorn-purple/30 hover:text-unicorn-gold rounded-md font-medium">About Us</Link>
             <Link to="/investment-plans" className="block py-2 px-4 text-white hover:bg-unicorn-purple/30 hover:text-unicorn-gold rounded-md font-medium">Investment Plans</Link>
