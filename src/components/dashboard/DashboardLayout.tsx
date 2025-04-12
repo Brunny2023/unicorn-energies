@@ -1,12 +1,13 @@
 
 import React, { ReactNode } from "react";
+import { Outlet } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import StarsBackground from "@/components/ui/StarsBackground";
 import DashboardHeader from "./layout/DashboardHeader";
 import DashboardSidebar from "./layout/DashboardSidebar";
 
 interface DashboardLayoutProps {
-  children: ReactNode;
+  children?: ReactNode;
   isAdmin?: boolean;
 }
 
@@ -40,7 +41,7 @@ const DashboardLayout = ({ children, isAdmin = false }: DashboardLayoutProps) =>
 
       {/* Main Content */}
       <main className="flex-1 md:pl-64 p-6 overflow-auto">
-        {children}
+        {children || <Outlet />}
       </main>
     </div>
   );

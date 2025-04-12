@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { useToast } from "@/hooks/use-toast";
@@ -139,38 +138,36 @@ const Withdraw = () => {
   };
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h2 className="text-3xl font-bold text-white">Withdraw Funds</h2>
-            <p className="text-gray-400 mt-1">
-              Request a withdrawal from your investment account
-            </p>
-          </div>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-3xl font-bold text-white">Withdraw Funds</h2>
+          <p className="text-gray-400 mt-1">
+            Request a withdrawal from your investment account
+          </p>
         </div>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Wallet Stats */}
-          <div className="lg:col-span-1">
-            <WalletSummary walletData={walletData} loading={loading} />
-          </div>
-          
-          {/* Withdrawal Form */}
-          <div className="lg:col-span-2">
-            <WithdrawalForm 
-              walletData={walletData}
-              loading={loading}
-              fetchWalletData={fetchUserWalletData}
-              onSuccessfulWithdrawal={addWithdrawalToHistory}
-            />
-          </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Wallet Stats */}
+        <div className="lg:col-span-1">
+          <WalletSummary walletData={walletData} loading={loading} />
         </div>
         
-        {/* Withdrawal History */}
-        <WithdrawalHistory history={withdrawalHistory} loading={false} />
+        {/* Withdrawal Form */}
+        <div className="lg:col-span-2">
+          <WithdrawalForm 
+            walletData={walletData}
+            loading={loading}
+            fetchWalletData={fetchUserWalletData}
+            onSuccessfulWithdrawal={addWithdrawalToHistory}
+          />
+        </div>
       </div>
-    </DashboardLayout>
+      
+      {/* Withdrawal History */}
+      <WithdrawalHistory history={withdrawalHistory} loading={false} />
+    </div>
   );
 };
 

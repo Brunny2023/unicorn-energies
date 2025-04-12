@@ -1,6 +1,4 @@
-
 import { useState } from "react";
-import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { useUserTickets } from "@/hooks/tickets";
 import TicketHeader from "@/components/tickets/TicketHeader";
 import TicketFilters from "@/components/tickets/TicketFilters";
@@ -29,34 +27,32 @@ const TicketsIndex = () => {
   });
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        <TicketHeader />
-        
-        {/* Filters */}
-        <TicketFilters 
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-          priorityFilter={priorityFilter}
-          setPriorityFilter={setPriorityFilter}
-        />
-        
-        {/* Tickets List */}
-        <TicketList 
-          loading={loading} 
-          tickets={tickets} 
-          filteredTickets={filteredTickets} 
-        />
+    <div className="space-y-6">
+      <TicketHeader />
+      
+      {/* Filters */}
+      <TicketFilters 
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+        priorityFilter={priorityFilter}
+        setPriorityFilter={setPriorityFilter}
+      />
+      
+      {/* Tickets List */}
+      <TicketList 
+        loading={loading} 
+        tickets={tickets} 
+        filteredTickets={filteredTickets} 
+      />
 
-        {error && (
-          <div className="bg-red-500/10 border border-red-500/30 rounded p-4 text-red-500">
-            {error}
-          </div>
-        )}
-      </div>
-    </DashboardLayout>
+      {error && (
+        <div className="bg-red-500/10 border border-red-500/30 rounded p-4 text-red-500">
+          {error}
+        </div>
+      )}
+    </div>
   );
 };
 

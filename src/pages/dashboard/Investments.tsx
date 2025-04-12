@@ -1,6 +1,4 @@
-
 import { useState, useEffect } from "react";
-import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { getUserInvestments } from "@/utils/investmentUtils";
 import { Investment } from "@/types/investment";
@@ -93,26 +91,24 @@ const Investments = () => {
   });
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        {/* Header with title and actions */}
-        <InvestmentHeader sortOrder={sortOrder} setSortOrder={setSortOrder} />
-        
-        {/* Stats Cards */}
-        <StatsCards 
-          loading={loading} 
-          activeCount={stats.activeCount} 
-          totalInvested={stats.totalInvested} 
-          totalReturns={stats.totalReturns} 
-        />
-        
-        {/* Tab Filters */}
-        <InvestmentTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-        
-        {/* Investments List */}
-        <InvestmentsList loading={loading} investments={sortedInvestments} />
-      </div>
-    </DashboardLayout>
+    <div className="space-y-6">
+      {/* Header with title and actions */}
+      <InvestmentHeader sortOrder={sortOrder} setSortOrder={setSortOrder} />
+      
+      {/* Stats Cards */}
+      <StatsCards 
+        loading={loading} 
+        activeCount={stats.activeCount} 
+        totalInvested={stats.totalInvested} 
+        totalReturns={stats.totalReturns} 
+      />
+      
+      {/* Tab Filters */}
+      <InvestmentTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+      
+      {/* Investments List */}
+      <InvestmentsList loading={loading} investments={sortedInvestments} />
+    </div>
   );
 };
 

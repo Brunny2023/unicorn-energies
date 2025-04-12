@@ -1,7 +1,6 @@
 
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { useTicketDetails } from "@/hooks/tickets";
 import TicketDetails from "@/components/tickets/TicketDetails";
 
@@ -18,14 +17,11 @@ const TicketView = () => {
   }, [id, ticket, loading, error]);
 
   return (
-    <DashboardLayout>
-      <TicketDetails 
-        ticket={ticket} 
-        loading={loading} 
-        error={error} 
-      />
-      {loading && <div className="sr-only" aria-live="polite" aria-busy="true">Loading ticket details...</div>}
-    </DashboardLayout>
+    <TicketDetails 
+      ticket={ticket} 
+      loading={loading} 
+      error={error} 
+    />
   );
 };
 

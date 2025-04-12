@@ -21,6 +21,7 @@ import NotFound from "./pages/NotFound";
 
 // Dashboard Pages
 import Dashboard from "./pages/dashboard/Dashboard";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import Investments from "./pages/dashboard/Investments";
 import Withdraw from "./pages/dashboard/Withdraw";
 import TicketsIndex from "./pages/dashboard/tickets/TicketsIndex";
@@ -67,13 +68,15 @@ function App() {
           <Route path="/faq" element={<Faq />} />
           <Route path="/contact" element={<Contact />} />
 
-          {/* Dashboard Routes */}
-          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="/dashboard/investments" element={<ProtectedRoute><Investments /></ProtectedRoute>} />
-          <Route path="/dashboard/withdraw" element={<ProtectedRoute><Withdraw /></ProtectedRoute>} />
-          <Route path="/dashboard/tickets" element={<ProtectedRoute><TicketsIndex /></ProtectedRoute>} />
-          <Route path="/dashboard/tickets/new" element={<ProtectedRoute><NewTicket /></ProtectedRoute>} />
-          <Route path="/dashboard/tickets/:id" element={<ProtectedRoute><TicketView /></ProtectedRoute>} />
+          {/* Dashboard Routes - Updated to use nested routes */}
+          <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+            <Route index element={<Dashboard />} />
+            <Route path="investments" element={<Investments />} />
+            <Route path="withdraw" element={<Withdraw />} />
+            <Route path="tickets" element={<TicketsIndex />} />
+            <Route path="tickets/new" element={<NewTicket />} />
+            <Route path="tickets/:id" element={<TicketView />} />
+          </Route>
 
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
