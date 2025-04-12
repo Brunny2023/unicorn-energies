@@ -42,6 +42,11 @@ const Navbar = () => {
     setMobileMenuOpen(false);
   }, [location.pathname]);
 
+  // Don't render navbar on dashboard pages
+  if (location.pathname.startsWith('/dashboard') || location.pathname.startsWith('/admin')) {
+    return null;
+  }
+
   return (
     <header className="sticky top-0 z-50 bg-unicorn-darkPurple/80 backdrop-blur-lg border-b border-unicorn-gold/20 shadow-lg">
       <div className="container mx-auto px-4 py-4">

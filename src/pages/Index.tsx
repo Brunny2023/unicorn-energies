@@ -12,6 +12,7 @@ import ProfitCalculatorSection from "@/components/home/ProfitCalculatorSection";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
 import WhyChooseUsSection from "@/components/home/WhyChooseUsSection";
 import CtaSection from "@/components/home/CtaSection";
+import Navbar from "@/components/layout/Navbar";
 import { setupConsoleFilters } from "@/utils/consoleErrorFilter";
 
 const Index = () => {
@@ -26,7 +27,8 @@ const Index = () => {
     <div className="min-h-screen relative overflow-hidden">
       <StarsBackground />
       
-      {/* Navigation is in the Navbar component, which is rendered in App.tsx */}
+      {/* Explicitly include the Navbar component here */}
+      <Navbar />
       
       <HeroBanner />
       <AboutSection />
