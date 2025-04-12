@@ -5,7 +5,7 @@ import { Ticket } from '@/types/investment';
 import { 
   getTicketDetails, 
   updateTicket 
-} from '@/utils/ticket/api';
+} from '@/utils/ticket/api/index';
 
 /**
  * Hook for managing a single ticket

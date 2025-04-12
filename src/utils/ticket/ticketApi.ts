@@ -1,3 +1,3 @@
 
 // Barrel file to maintain backwards compatibility
-export * from './api';
+export * from './api/index';

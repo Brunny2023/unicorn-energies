@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
-import { useTicketDetails, useAdminTickets } from "@/hooks/useTickets";
+import { useTicketDetails, useAdminTickets } from "@/hooks/tickets";
 import TicketDetailHeader from "@/components/admin/tickets/TicketDetailHeader";
 import TicketDetailCard from "@/components/admin/tickets/detail/TicketDetailCard";
 import TicketResponseForm from "@/components/admin/tickets/TicketResponseForm";

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
-import { useAdminTickets } from "@/hooks/useTickets";
+import { useAdminTickets } from "@/hooks/tickets";
 import TicketsHeader from "@/components/admin/tickets/TicketsHeader";
 import TicketsFilters from "@/components/admin/tickets/TicketsFilters";
 import TicketsTable from "@/components/admin/tickets/TicketsTable";

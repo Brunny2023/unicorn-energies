@@ -6,7 +6,7 @@ import { Ticket } from '@/types/investment';
 import { 
   getUserTickets, 
   createSupportTicket
-} from '@/utils/ticket/api';
+} from '@/utils/ticket/api/index';
 
 /**
  * Hook for managing user tickets

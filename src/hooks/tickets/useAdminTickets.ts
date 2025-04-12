@@ -5,7 +5,7 @@ import { Ticket } from '@/types/investment';
 import { 
   getAllTickets, 
   updateTicket 
-} from '@/utils/ticket/api';
+} from '@/utils/ticket/api/index';
 
 /**
  * Hook for admin ticket management
