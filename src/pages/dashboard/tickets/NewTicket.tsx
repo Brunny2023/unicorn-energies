@@ -7,6 +7,7 @@ import { ArrowLeft } from "lucide-react";
 import NewTicketForm from "@/components/tickets/NewTicketForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useUserTickets } from "@/hooks/tickets";
+import { Ticket } from "@/types/investment";
 
 const NewTicket = () => {
   const { createTicket } = useUserTickets();
@@ -17,7 +18,7 @@ const NewTicket = () => {
     message: string,
     priority: string,
     category: string
-  ) => {
+  ): Promise<Ticket | null> => {
     return await createTicket(subject, message, priority, category);
   };
 

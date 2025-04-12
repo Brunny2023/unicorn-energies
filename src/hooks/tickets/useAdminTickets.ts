@@ -7,9 +7,9 @@ import {
   getAllTickets, 
   updateTicket 
 } from '@/utils/ticket/api/index';
-
-type TicketStatus = "open" | "in-progress" | "resolved" | "closed" | "replied";
-type TicketPriority = "high" | "medium" | "low";
+import { useTicketResponse } from './useTicketResponse';
+import { useTicketStatusManager } from './useTicketStatusManager';
+import { useTicketPriorityManager } from './useTicketPriorityManager';
 
 /**
  * Hook for admin ticket management
@@ -23,6 +23,11 @@ export const useAdminTickets = () => {
   const [filterStatus, setFilterStatus] = useState<string | null>(null);
   const [filterPriority, setFilterPriority] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Use the sub-hooks for specific ticket management features
+  const { respondToTicket } = useTicketResponse(tickets, setTickets, toast);
+  const { updateTicketStatus } = useTicketStatusManager(tickets, setTickets, toast);
+  const { updateTicketPriority } = useTicketPriorityManager(tickets, setTickets, toast);
 
   useEffect(() => {
     fetchAllTickets();
@@ -71,122 +76,6 @@ export const useAdminTickets = () => {
       setTickets([]);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const respondToTicket = async (ticketId: string, response: string) => {
-    try {
-      if (!response.trim()) {
-        throw new Error("Response cannot be empty");
-      }
-      
-      const updateData: Partial<Ticket> = {
-        admin_response: response,
-        status: "responded" as TicketStatus,
-        updated_at: new Date().toISOString()
-      };
-      
-      const success = await updateTicket(ticketId, updateData);
-      
-      if (!success) {
-        throw new Error("Failed to update ticket");
-      }
-      
-      // Update the ticket in the local state
-      setTickets(prevTickets => 
-        prevTickets.map(ticket => 
-          ticket.id === ticketId 
-            ? { ...ticket, ...updateData } 
-            : ticket
-        )
-      );
-      
-      toast({
-        title: "Success",
-        description: "Response sent successfully",
-      });
-      
-      return true;
-    } catch (err) {
-      console.error('Error responding to ticket:', err);
-      toast({
-        title: "Error",
-        description: "Failed to send response",
-        variant: "destructive",
-      });
-      return false;
-    }
-  };
-
-  const updateTicketStatus = async (ticketId: string, status: TicketStatus) => {
-    try {
-      const updateData: Partial<Ticket> = { status };
-      
-      const success = await updateTicket(ticketId, updateData);
-      
-      if (!success) {
-        throw new Error("Failed to update ticket status");
-      }
-      
-      // Update the ticket in the local state
-      setTickets(prevTickets => 
-        prevTickets.map(ticket => 
-          ticket.id === ticketId 
-            ? { ...ticket, status, updated_at: new Date().toISOString() } 
-            : ticket
-        )
-      );
-      
-      toast({
-        title: "Success",
-        description: `Ticket status updated to ${status}`,
-      });
-      
-      return true;
-    } catch (err) {
-      console.error('Error updating ticket status:', err);
-      toast({
-        title: "Error",
-        description: "Failed to update ticket status",
-        variant: "destructive",
-      });
-      return false;
-    }
-  };
-
-  const updateTicketPriority = async (ticketId: string, priority: TicketPriority) => {
-    try {
-      const updateData: Partial<Ticket> = { priority };
-      
-      const success = await updateTicket(ticketId, updateData);
-      
-      if (!success) {
-        throw new Error("Failed to update ticket priority");
-      }
-      
-      // Update the ticket in the local state
-      setTickets(prevTickets => 
-        prevTickets.map(ticket => 
-          ticket.id === ticketId 
-            ? { ...ticket, priority, updated_at: new Date().toISOString() } 
-            : ticket
-        )
-      );
-      
-      toast({
-        title: "Success",
-        description: `Ticket priority updated to ${priority}`,
-      });
-      
-      return true;
-    } catch (err) {
-      console.error('Error updating ticket priority:', err);
-      toast({
-        title: "Error",
-        description: "Failed to update ticket priority",
-        variant: "destructive",
-      });
-      return false;
     }
   };
 

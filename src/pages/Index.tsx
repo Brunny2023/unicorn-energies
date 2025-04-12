@@ -1,3 +1,4 @@
+
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import HeroBanner from "@/components/home/HeroBanner";
@@ -10,7 +11,7 @@ import TestimonialsSection from "@/components/home/TestimonialsSection";
 import CtaSection from "@/components/home/CtaSection";
 import StarsBackground from "@/components/ui/StarsBackground";
 import { useEffect } from "react";
-import { setupConsoleFilters } from "@/utils/consoleErrorFilter";
+import initConsoleFilter from "@/utils/consoleErrorFilter";
 
 // Add CSS for animations with faster star movements - using pure CSS without external resources
 const styles = `
@@ -129,13 +130,15 @@ const styles = `
 `;
 
 const Index = () => {
-  // Suppress Chrome extension errors in console that we can't control
+  // Initialize console filter to suppress Chrome extension errors
   useEffect(() => {
-    // Use our console filter utility
-    const cleanupConsoleFilters = setupConsoleFilters();
+    // Use the default export from consoleErrorFilter
+    initConsoleFilter();
     
-    // Cleanup when component unmounts
-    return cleanupConsoleFilters;
+    // Cleanup is not needed as the filter is applied globally
+    return () => {
+      // No cleanup needed
+    };
   }, []);
 
   return (
