@@ -156,6 +156,46 @@
     @apply transition-transform duration-300 hover:translate-y-[-5px] hover:shadow-lg;
   }
   
+  /* Star animations for hero section */
+  .shooting-star {
+    @apply absolute h-0.5 w-0 bg-white opacity-0;
+    top: 50%;
+    left: 0;
+    box-shadow: 0 0 5px 1px white;
+    animation: shootingStar 3s ease-in-out infinite;
+  }
+  
+  @keyframes shootingStar {
+    0% {
+      opacity: 0;
+      width: 0;
+      transform: translateX(0) translateY(0) rotate(45deg);
+    }
+    1% {
+      opacity: 1;
+      width: 10px;
+    }
+    5% {
+      width: 40px;
+      transform: translateX(20vw) translateY(20vh) rotate(45deg);
+    }
+    10% {
+      width: 0;
+      opacity: 0;
+      transform: translateX(30vw) translateY(30vh) rotate(45deg);
+    }
+    100% {
+      opacity: 0;
+      width: 0;
+      transform: translateX(30vw) translateY(30vh) rotate(45deg);
+    }
+  }
+  
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+  
   /* Animated elements */
   .floating {
     animation: floating 3s ease-in-out infinite;
@@ -173,5 +213,42 @@
   @keyframes glowPulse {
     0%, 100% { box-shadow: 0 0 5px rgba(243, 215, 127, 0.3); }
     50% { box-shadow: 0 0 20px rgba(243, 215, 127, 0.8); }
+  }
+  
+  /* Add animation for twinkling stars */
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+  
+  .animate-twinkle {
+    animation: twinkle 2s ease-in-out infinite;
+  }
+  
+  .animate-float {
+    animation: floating 3s ease-in-out infinite;
+  }
+  
+  .animate-pulse-glow {
+    animation: glowPulse 2s ease-in-out infinite;
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 1s ease-out forwards;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.8s ease-out forwards;
+    opacity: 0;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
   }
 }

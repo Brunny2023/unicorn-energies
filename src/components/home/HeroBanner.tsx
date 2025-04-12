@@ -5,7 +5,34 @@ import { ArrowRight, Sparkles } from 'lucide-react';
 
 const HeroBanner = () => {
   return (
-    <section className="relative py-20 md:py-32 overflow-hidden bg-gradient-to-br from-unicorn-black via-unicorn-darkPurple to-[#374146]">
+    <section className="relative py-20 md:py-32 overflow-hidden">
+      {/* Stars effect for the hero section */}
+      <div className="absolute inset-0 bg-gradient-to-br from-unicorn-black via-unicorn-darkPurple to-[#374146]">
+        {/* Individual animated stars */}
+        <div className="stars-container absolute inset-0">
+          {Array.from({ length: 50 }).map((_, i) => (
+            <div
+              key={i}
+              className="absolute rounded-full bg-white animate-twinkle"
+              style={{
+                width: `${Math.random() * 3 + 1}px`,
+                height: `${Math.random() * 3 + 1}px`,
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                opacity: Math.random() * 0.7 + 0.3,
+                animationDelay: `${Math.random() * 3}s`,
+                animationDuration: `${Math.random() * 3 + 2}s`,
+              }}
+            />
+          ))}
+          
+          {/* Shooting stars */}
+          <div className="shooting-star" style={{ animationDuration: '2.5s' }}></div>
+          <div className="shooting-star" style={{ animationDelay: '1.5s', animationDuration: '3s' }}></div>
+          <div className="shooting-star" style={{ animationDelay: '3s', animationDuration: '2.2s' }}></div>
+        </div>
+      </div>
+      
       {/* Oil-themed glow effects */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-[#2F4858]/20 rounded-full blur-3xl"></div>
       <div className="absolute top-[30%] right-[20%] w-56 h-56 bg-[#D4B24C]/10 rounded-full blur-2xl"></div>

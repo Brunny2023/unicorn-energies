@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, CheckCircle, CreditCard, Bitcoin, DollarSign, Key, Shield } from "lucide-react";
+import { AlertCircle, CheckCircle, CreditCard, Bitcoin, DollarSign, Key, Shield, Globe, Wallet } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const PaymentConnectionsContainer = () => {
@@ -177,6 +177,129 @@ const PaymentConnectionsContainer = () => {
                 </form>
               </CardContent>
             </Card>
+            
+            {/* Flutterwave - New Card */}
+            <Card className="bg-unicorn-darkPurple/60 border-unicorn-gold/30">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Globe className="h-5 w-5 text-unicorn-gold" />
+                  Flutterwave
+                </CardTitle>
+                <CardDescription>Connect Flutterwave to accept payments across Africa.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.currentTarget);
+                  handleSaveKeys('flutterwave', {
+                    publicKey: formData.get('flutterwavePublicKey'),
+                    secretKey: formData.get('flutterwaveSecretKey'),
+                    encryptionKey: formData.get('flutterwaveEncryptionKey'),
+                  });
+                }}>
+                  <div className="grid gap-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="flutterwavePublicKey">Public Key</Label>
+                      <Input
+                        id="flutterwavePublicKey"
+                        name="flutterwavePublicKey"
+                        placeholder="FLWPUBK-..."
+                        className="bg-unicorn-darkPurple/30 border-unicorn-gold/20"
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="flutterwaveSecretKey">Secret Key</Label>
+                      <Input
+                        id="flutterwaveSecretKey"
+                        name="flutterwaveSecretKey"
+                        type="password"
+                        placeholder="FLWSECK-..."
+                        className="bg-unicorn-darkPurple/30 border-unicorn-gold/20"
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="flutterwaveEncryptionKey">Encryption Key</Label>
+                      <Input
+                        id="flutterwaveEncryptionKey"
+                        name="flutterwaveEncryptionKey"
+                        type="password"
+                        placeholder="Encryption Key"
+                        className="bg-unicorn-darkPurple/30 border-unicorn-gold/20"
+                      />
+                    </div>
+                    <div className="flex justify-end">
+                      <Button 
+                        type="submit" 
+                        className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black"
+                        disabled={saveStatus.status === 'saving'}
+                      >
+                        {saveStatus.status === 'saving' ? (
+                          <>Saving...</>
+                        ) : (
+                          <>Save Flutterwave Keys</>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+            
+            {/* Selar.co - New Card */}
+            <Card className="bg-unicorn-darkPurple/60 border-unicorn-gold/30">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Globe className="h-5 w-5 text-unicorn-gold" />
+                  Selar.co
+                </CardTitle>
+                <CardDescription>Connect Selar.co to sell and accept payments.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.currentTarget);
+                  handleSaveKeys('selar', {
+                    apiKey: formData.get('selarApiKey'),
+                    merchantId: formData.get('selarMerchantId'),
+                  });
+                }}>
+                  <div className="grid gap-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="selarApiKey">API Key</Label>
+                      <Input
+                        id="selarApiKey"
+                        name="selarApiKey"
+                        type="password"
+                        placeholder="Selar API Key"
+                        className="bg-unicorn-darkPurple/30 border-unicorn-gold/20"
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="selarMerchantId">Merchant ID</Label>
+                      <Input
+                        id="selarMerchantId"
+                        name="selarMerchantId"
+                        placeholder="Merchant ID"
+                        className="bg-unicorn-darkPurple/30 border-unicorn-gold/20"
+                      />
+                    </div>
+                    <div className="flex justify-end">
+                      <Button 
+                        type="submit" 
+                        className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black"
+                        disabled={saveStatus.status === 'saving'}
+                      >
+                        {saveStatus.status === 'saving' ? (
+                          <>Saving...</>
+                        ) : (
+                          <>Save Selar Keys</>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
           </div>
         </TabsContent>
         
@@ -237,11 +360,77 @@ const PaymentConnectionsContainer = () => {
                 </form>
               </CardContent>
             </Card>
-
+            
+            {/* CoinPayments - New Card */}
             <Card className="bg-unicorn-darkPurple/60 border-unicorn-gold/30">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Shield className="h-5 w-5 text-unicorn-gold" />
+                  <Bitcoin className="h-5 w-5 text-unicorn-gold" />
+                  CoinPayments
+                </CardTitle>
+                <CardDescription>Accept multiple cryptocurrencies through CoinPayments.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.currentTarget);
+                  handleSaveKeys('coinpayments', {
+                    publicKey: formData.get('coinpaymentsPublicKey'),
+                    privateKey: formData.get('coinpaymentsPrivateKey'),
+                    merchantId: formData.get('coinpaymentsMerchantId'),
+                  });
+                }}>
+                  <div className="grid gap-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="coinpaymentsPublicKey">Public Key</Label>
+                      <Input
+                        id="coinpaymentsPublicKey"
+                        name="coinpaymentsPublicKey"
+                        placeholder="CoinPayments Public Key"
+                        className="bg-unicorn-darkPurple/30 border-unicorn-gold/20"
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="coinpaymentsPrivateKey">Private Key</Label>
+                      <Input
+                        id="coinpaymentsPrivateKey"
+                        name="coinpaymentsPrivateKey"
+                        type="password"
+                        placeholder="CoinPayments Private Key"
+                        className="bg-unicorn-darkPurple/30 border-unicorn-gold/20"
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="coinpaymentsMerchantId">Merchant ID</Label>
+                      <Input
+                        id="coinpaymentsMerchantId"
+                        name="coinpaymentsMerchantId"
+                        placeholder="CoinPayments Merchant ID"
+                        className="bg-unicorn-darkPurple/30 border-unicorn-gold/20"
+                      />
+                    </div>
+                    <div className="flex justify-end">
+                      <Button 
+                        type="submit" 
+                        className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black"
+                        disabled={saveStatus.status === 'saving'}
+                      >
+                        {saveStatus.status === 'saving' ? (
+                          <>Saving...</>
+                        ) : (
+                          <>Save CoinPayments Keys</>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-unicorn-darkPurple/60 border-unicorn-gold/30 md:col-span-2">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Wallet className="h-5 w-5 text-unicorn-gold" />
                   Custom Wallet Addresses
                 </CardTitle>
                 <CardDescription>Configure your own crypto wallet addresses to receive payments directly.</CardDescription>
@@ -253,9 +442,13 @@ const PaymentConnectionsContainer = () => {
                   handleSaveKeys('wallets', {
                     btcAddress: formData.get('btcAddress'),
                     ethAddress: formData.get('ethAddress'),
+                    usdtTrc20: formData.get('usdtTrc20Address'),
+                    usdtBep20: formData.get('usdtBep20Address'),
+                    usdtErc20: formData.get('usdtErc20Address'),
+                    moneroAddress: formData.get('moneroAddress'),
                   });
                 }}>
-                  <div className="grid gap-4">
+                  <div className="grid gap-6 md:grid-cols-2">
                     <div className="grid gap-2">
                       <Label htmlFor="btcAddress">Bitcoin Address</Label>
                       <Input
@@ -274,7 +467,43 @@ const PaymentConnectionsContainer = () => {
                         className="bg-unicorn-darkPurple/30 border-unicorn-gold/20"
                       />
                     </div>
-                    <div className="flex justify-end">
+                    <div className="grid gap-2">
+                      <Label htmlFor="usdtTrc20Address">USDT TRC20 Address</Label>
+                      <Input
+                        id="usdtTrc20Address"
+                        name="usdtTrc20Address"
+                        placeholder="USDT TRC20 Address"
+                        className="bg-unicorn-darkPurple/30 border-unicorn-gold/20"
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="usdtBep20Address">USDT BEP20 Address</Label>
+                      <Input
+                        id="usdtBep20Address"
+                        name="usdtBep20Address"
+                        placeholder="USDT BEP20 Address"
+                        className="bg-unicorn-darkPurple/30 border-unicorn-gold/20"
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="usdtErc20Address">USDT ERC20 Address</Label>
+                      <Input
+                        id="usdtErc20Address"
+                        name="usdtErc20Address"
+                        placeholder="USDT ERC20 Address"
+                        className="bg-unicorn-darkPurple/30 border-unicorn-gold/20"
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="moneroAddress">Monero (XMR) Address</Label>
+                      <Input
+                        id="moneroAddress"
+                        name="moneroAddress"
+                        placeholder="Monero Address"
+                        className="bg-unicorn-darkPurple/30 border-unicorn-gold/20"
+                      />
+                    </div>
+                    <div className="md:col-span-2 flex justify-end">
                       <Button 
                         type="submit" 
                         className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black"

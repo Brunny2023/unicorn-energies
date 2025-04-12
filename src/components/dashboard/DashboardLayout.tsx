@@ -41,11 +41,13 @@ const DashboardLayout = ({ children, isAdmin = false }: DashboardLayoutProps) =>
           isAdmin={isAdmin} 
         />
 
-        {/* Main Content */}
-        <main className="flex-1 md:ml-64 p-6 mt-0 overflow-auto">
-          {/* The Outlet component renders the matched child route */}
-          <Outlet />
-          {children}
+        {/* Main Content - updated to align content properly */}
+        <main className="flex-1 md:ml-64 p-6 mt-0 overflow-auto flex justify-center">
+          <div className="w-full max-w-7xl">
+            {/* The Outlet component renders the matched child route */}
+            <Outlet />
+            {children}
+          </div>
         </main>
       </div>
     </div>
