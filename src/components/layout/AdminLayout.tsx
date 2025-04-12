@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { UserCog, LineChart, Clock, Users, Wallet, LogOut } from 'lucide-react';
+import { UserCog, LineChart, Clock, Users, Wallet, LogOut, CreditCard } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import StarsBackground from '@/components/ui/StarsBackground';
 
@@ -23,6 +23,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     { path: '/admin', label: 'Dashboard', icon: <LineChart className="w-5 h-5" /> },
     { path: '/admin/transactions', label: 'Transactions', icon: <Wallet className="w-5 h-5" /> },
     { path: '/admin/users', label: 'Users', icon: <Users className="w-5 h-5" /> },
+    { path: '/admin/payment-connections', label: 'Payment Connections', icon: <CreditCard className="w-5 h-5" /> },
     { path: '/admin/tickets', label: 'Support Tickets', icon: <Clock className="w-5 h-5" /> },
   ];
 

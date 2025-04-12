@@ -34,6 +34,7 @@ import AdminUsers from "./pages/admin/Users";
 import AdminTransactions from "./pages/admin/Transactions";
 import AdminTickets from "./pages/admin/Tickets";
 import AdminTicketDetails from "./pages/admin/TicketDetails";
+import PaymentConnections from "./pages/admin/PaymentConnections";
 
 // Utility for console error filtering
 import "./utils/consoleErrorFilter";
@@ -83,6 +84,7 @@ function App() {
           <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
           <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
           <Route path="/admin/transactions" element={<AdminRoute><AdminTransactions /></AdminRoute>} />
+          <Route path="/admin/payment-connections" element={<AdminRoute><PaymentConnections /></AdminRoute>} />
           <Route path="/admin/tickets" element={<AdminRoute><AdminTickets /></AdminRoute>} />
           <Route path="/admin/tickets/:id" element={<AdminRoute><AdminTicketDetails /></AdminRoute>} />
 
