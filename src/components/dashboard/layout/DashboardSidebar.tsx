@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   X,
@@ -16,21 +16,27 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 
+interface User {
+  email?: string;
+  id?: string;
+}
+
 interface DashboardSidebarProps {
   isMenuOpen: boolean;
   closeMenu: () => void;
-  location: any;
-  user: any;
-  isAdmin: boolean;
+  user: User;
+  isAdmin?: boolean;
 }
 
 const DashboardSidebar = ({ 
   isMenuOpen, 
   closeMenu, 
-  location, 
   user, 
-  isAdmin 
+  isAdmin = false
 }: DashboardSidebarProps) => {
+  // Use useLocation hook internally instead of accepting location as a prop
+  const location = useLocation();
+  
   const menuItems = [
     {
       label: "Dashboard",
@@ -85,7 +91,7 @@ const DashboardSidebar = ({
     <aside
       className={`fixed z-40 top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-unicorn-darkPurple/90 border-r border-unicorn-gold/30 overflow-y-auto transition-transform transform md:translate-x-0 ${
         isMenuOpen ? "translate-x-0" : "-translate-x-full"
-      } md:relative md:top-0 md:block`}
+      } md:relative md:top-0 md:block shadow-lg`}
     >
       <div className="flex items-center justify-between p-4 md:p-6">
         <Link to="/" className="hidden md:flex items-center text-2xl font-bold text-white">
@@ -98,7 +104,7 @@ const DashboardSidebar = ({
       </div>
 
       <div className="hidden md:block px-6 py-3">
-        <div className="p-3 rounded-lg bg-unicorn-gold/10 border border-unicorn-gold/20">
+        <div className="p-3 rounded-lg bg-unicorn-gold/10 border border-unicorn-gold/20 transition-all hover:bg-unicorn-gold/15">
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10 border border-unicorn-gold/50">
               <AvatarFallback className="bg-unicorn-purple text-white">
@@ -126,20 +132,20 @@ const DashboardSidebar = ({
                 key={item.label}
                 to={item.path}
                 className={`flex items-center px-6 py-3 text-white hover:bg-unicorn-purple/20 transition-colors ${
-                  location.pathname === item.path ? "bg-unicorn-purple/30 font-semibold" : ""
+                  location.pathname === item.path ? "bg-unicorn-purple/30 font-semibold border-l-4 border-unicorn-gold" : ""
                 }`}
                 onClick={closeMenu}
               >
-                <item.icon className="h-4 w-4 mr-2" />
+                <item.icon className="h-4 w-4 mr-3" />
                 {item.label}
-                {location.pathname === item.path && <ChevronRight className="ml-auto h-4 w-4" />}
+                {location.pathname === item.path && <ChevronRight className="ml-auto h-4 w-4 text-unicorn-gold" />}
               </Link>
             )
         )}
       </nav>
 
       <div className="px-6 py-6 mt-auto">
-        <div className="p-4 rounded-lg bg-unicorn-gold/5 border border-unicorn-gold/10">
+        <div className="p-4 rounded-lg bg-unicorn-gold/5 border border-unicorn-gold/10 transition-all hover:bg-unicorn-gold/10">
           <div className="flex items-start gap-3">
             <div className="p-2 bg-unicorn-gold/10 rounded-full">
               <CreditCard className="h-5 w-5 text-unicorn-gold" />
