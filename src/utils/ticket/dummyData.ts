@@ -35,7 +35,7 @@ export const getAllDummyTickets = (): Ticket[] => {
       user_id: "dev-user-id",
       subject: "Account Verification",
       message: "I need to verify my account for larger withdrawals.",
-      status: "in_progress",
+      status: "in-progress",
       priority: "medium",
       category: "account",
       created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),

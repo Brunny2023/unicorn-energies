@@ -1,50 +1,16 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
-import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/hooks/use-toast";
-import { Ticket } from "@/types/investment";
-import { getUserTickets } from "@/utils/ticket";
+import { useUserTickets } from "@/hooks/useTickets";
 import TicketHeader from "@/components/tickets/TicketHeader";
 import TicketFilters from "@/components/tickets/TicketFilters";
 import TicketList from "@/components/tickets/TicketList";
 
 const TicketsIndex = () => {
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const [tickets, setTickets] = useState<Ticket[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { tickets, loading, error } = useUserTickets();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [priorityFilter, setPriorityFilter] = useState<string>("all");
-  
-  useEffect(() => {
-    fetchTickets();
-  }, [user]);
-
-  const fetchTickets = async () => {
-    try {
-      setLoading(true);
-      
-      if (user && user.id) {
-        console.log("Fetching tickets for user:", user.id);
-        const fetchedTickets = await getUserTickets(user.id);
-        console.log("Tickets fetched:", fetchedTickets.length);
-        setTickets(fetchedTickets);
-      } else {
-        console.log("No user found or user has no ID");
-      }
-    } catch (error) {
-      console.error("Error fetching tickets:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to load tickets. Please try again."
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
   
   const filteredTickets = tickets.filter(ticket => {
     // Apply text search
@@ -83,6 +49,12 @@ const TicketsIndex = () => {
           tickets={tickets} 
           filteredTickets={filteredTickets} 
         />
+
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/30 rounded p-4 text-red-500">
+            {error}
+          </div>
+        )}
       </div>
     </DashboardLayout>
   );

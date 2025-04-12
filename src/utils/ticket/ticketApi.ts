@@ -2,6 +2,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Ticket } from '@/types/investment';
 import { transformTicketData } from './ticketTransform';
+import { getAllDummyTickets, getDummyUserTickets } from './dummyData';
 
 // Development mode flag
 export const DEVELOPMENT_MODE = true;
