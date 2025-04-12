@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { Ticket } from "@/types/investment";
 import { updateTicket } from "./api/updateTicket";
@@ -64,7 +65,7 @@ export const aiTicketService = {
         ai_response: aiResponse,
         ai_responded_at: new Date().toISOString(),
         // Don't change the status if it's already resolved or closed
-        status: ['resolved', 'closed'].includes(ticket.status) ? ticket.status : 'in_progress',
+        status: ['resolved', 'closed'].includes(ticket.status) ? ticket.status : 'in-progress',
       });
 
       return success;

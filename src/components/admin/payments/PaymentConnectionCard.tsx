@@ -8,7 +8,7 @@ interface PaymentConnectionCardProps {
   description: string;
   icon: ReactNode;
   children: ReactNode;
-  onSubmit: (e: React.FormEvent) => void;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   isLoading: boolean;
   buttonText: string;
   fullWidth?: boolean;

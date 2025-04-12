@@ -1,10 +1,10 @@
 
 import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, CheckCircle, CreditCard, Bitcoin } from "lucide-react";
+import { AlertContainer } from "./alerts/AlertContainer";
 import FiatPaymentSection from "./sections/FiatPaymentSection";
 import CryptoPaymentSection from "./sections/CryptoPaymentSection";
+import { CreditCard, Bitcoin } from "lucide-react";
 
 const PaymentConnectionsContainer = () => {
   const [activeTab, setActiveTab] = useState("fiat");
@@ -35,21 +35,7 @@ const PaymentConnectionsContainer = () => {
         <h2 className="text-3xl font-bold text-white">Payment Connections</h2>
       </div>
 
-      {saveStatus.status === 'success' && (
-        <Alert className="bg-green-500/20 border-green-500 text-white">
-          <CheckCircle className="h-4 w-4 text-green-500" />
-          <AlertTitle>Success</AlertTitle>
-          <AlertDescription>{saveStatus.message}</AlertDescription>
-        </Alert>
-      )}
-
-      {saveStatus.status === 'error' && (
-        <Alert className="bg-red-500/20 border-red-500 text-white">
-          <AlertCircle className="h-4 w-4 text-red-500" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{saveStatus.message}</AlertDescription>
-        </Alert>
-      )}
+      <AlertContainer saveStatus={saveStatus} />
 
       <Tabs defaultValue="fiat" className="w-full" onValueChange={setActiveTab}>
         <TabsList className="grid grid-cols-2 w-[400px] mb-4">

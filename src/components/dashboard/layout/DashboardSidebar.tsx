@@ -1,3 +1,4 @@
+
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -23,11 +24,11 @@ interface SidebarProps {
 
 const DashboardSidebar = ({ isMenuOpen, closeMenu, user, isAdmin = false }: SidebarProps) => {
   const location = useLocation();
-  const { logout } = useAuth();
+  const { signOut } = useAuth();
 
   const handleLogout = async () => {
     try {
-      await logout();
+      await signOut();
       closeMenu();
     } catch (error) {
       console.error("Logout failed:", error);
