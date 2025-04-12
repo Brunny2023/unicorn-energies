@@ -16,7 +16,6 @@ const Dashboard = () => {
   
   return (
     <div className="w-full">
-      <h1 className="text-2xl font-bold text-white mb-6">Dashboard Overview</h1>
       <DashboardContent />
     </div>
   );
