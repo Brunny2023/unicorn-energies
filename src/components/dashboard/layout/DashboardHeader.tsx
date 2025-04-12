@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -14,7 +13,7 @@ import {
   HelpCircle,
   LogOut,
 } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -64,10 +63,13 @@ const DashboardHeader = ({ toggleMenu, user }: DashboardHeaderProps) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
+  const userDisplayName = user?.full_name || user?.email?.split('@')[0] || "User";
+  const userEmail = user?.email || "user@example.com";
+  const userProfileImage = user?.profile_image || null;
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-unicorn-gold/30 bg-unicorn-darkPurple/95 backdrop-blur-sm">
       <div className="flex h-16 items-center px-4 md:px-6">
-        {/* Mobile Menu Button */}
         <Button
           variant="ghost"
           className="mr-2 text-white md:hidden"
@@ -76,13 +78,16 @@ const DashboardHeader = ({ toggleMenu, user }: DashboardHeaderProps) => {
           <Menu className="h-6 w-6" />
         </Button>
         
-        {/* Logo - Only visible on mobile when sidebar is hidden */}
         <Link to="/" className="md:hidden flex items-center text-2xl font-bold text-white">
-          UnicornVest
+          UnicornEnergies
         </Link>
         
+        <div className="hidden md:flex items-center ml-4">
+          <span className="text-gray-300 text-sm">{formatTimeGreeting()},</span>
+          <span className="text-white font-medium ml-1 text-sm">{userDisplayName}</span>
+        </div>
+        
         <div className="ml-auto flex items-center gap-4">
-          {/* Theme Toggle */}
           <Button 
             variant="ghost" 
             size="icon"
@@ -92,12 +97,13 @@ const DashboardHeader = ({ toggleMenu, user }: DashboardHeaderProps) => {
             {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </Button>
           
-          {/* Notifications */}
           <NotificationsDropdown />
           
-          {/* User Menu */}
           <UserDropdown 
             user={user} 
+            userDisplayName={userDisplayName}
+            userEmail={userEmail}
+            userProfileImage={userProfileImage}
             formatTimeGreeting={formatTimeGreeting}
             getInitials={getInitials}
             handleSignOut={handleSignOut}
@@ -146,22 +152,35 @@ const NotificationsDropdown = () => {
   );
 };
 
-const UserDropdown = ({ user, formatTimeGreeting, getInitials, handleSignOut }: any) => {
+const UserDropdown = ({ user, userDisplayName, userEmail, userProfileImage, formatTimeGreeting, getInitials, handleSignOut }: any) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="rounded-full" aria-label="User menu">
+        <Button variant="ghost" size="icon" className="rounded-full relative" aria-label="User menu">
           <Avatar className="h-8 w-8 border border-unicorn-gold/50">
+            <AvatarImage src={userProfileImage} alt={userDisplayName} />
             <AvatarFallback className="bg-unicorn-purple text-white">
-              {user?.email ? getInitials(user.email) : "U"}
+              {getInitials(userDisplayName)}
             </AvatarFallback>
           </Avatar>
+          <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-unicorn-darkPurple"></span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56 bg-unicorn-darkPurple/95 border-unicorn-gold/30 text-white">
+      <DropdownMenuContent align="end" className="w-64 bg-unicorn-darkPurple/95 border-unicorn-gold/30 text-white">
         <DropdownMenuLabel>
-          <div className="font-normal text-xs text-gray-400">{formatTimeGreeting()}</div>
-          <div className="font-semibold">{user?.email || "User"}</div>
+          <div className="flex items-center gap-3 mb-1">
+            <Avatar className="h-10 w-10 border border-unicorn-gold/50">
+              <AvatarImage src={userProfileImage} alt={userDisplayName} />
+              <AvatarFallback className="bg-unicorn-purple text-white">
+                {getInitials(userDisplayName)}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <div className="font-semibold">{userDisplayName}</div>
+              <div className="text-xs text-gray-400">{userEmail}</div>
+            </div>
+          </div>
+          <div className="font-normal text-xs text-gray-400 mt-1">{formatTimeGreeting()}</div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="bg-unicorn-gold/20" />
         <DropdownMenuItem className="cursor-pointer">

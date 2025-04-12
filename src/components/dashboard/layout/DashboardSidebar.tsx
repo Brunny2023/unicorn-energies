@@ -77,6 +77,11 @@ const DashboardSidebar = ({ isMenuOpen, closeMenu, user, isAdmin = false }: Side
       path: "/dashboard/transactions",
       icon: <CreditCard className="w-5 h-5" />
     },
+    {
+      name: "Withdraw",
+      path: "/dashboard/withdraw",
+      icon: <Banknote className="w-5 h-5" />
+    }
   ];
 
   // Admin navigation items

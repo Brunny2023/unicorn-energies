@@ -1,3 +1,4 @@
+
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -23,6 +24,7 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import Investments from "./pages/dashboard/Investments";
 import Withdraw from "./pages/dashboard/Withdraw";
+import Transactions from "./pages/dashboard/Transactions";
 import TicketsIndex from "./pages/dashboard/tickets/TicketsIndex";
 import NewTicket from "./pages/dashboard/tickets/NewTicket";
 import TicketView from "./pages/dashboard/tickets/TicketView";
@@ -74,6 +76,7 @@ const App = () => {
             <Route index element={<Dashboard />} />
             <Route path="investments" element={<Investments />} />
             <Route path="withdraw" element={<Withdraw />} />
+            <Route path="transactions" element={<Transactions />} />
             <Route path="tickets" element={<TicketsIndex />} />
             <Route path="tickets/new" element={<NewTicket />} />
             <Route path="tickets/:id" element={<TicketView />} />
