@@ -27,7 +27,21 @@ const IGNORED_ERROR_PATTERNS = [
   /message channel closed/i,
   
   // Firebase/Firestore specific
-  /BloomFilter error/i
+  /BloomFilter error/i,
+  /Firestore.*WebChannelConnection/i,
+  /firestore.googleapis.com/i,
+  
+  // Analytics/tracking blockers
+  /plausible.io/i,
+  
+  // Feature detection errors
+  /Unrecognized feature/i,
+  
+  // Recorder state errors
+  /No response for request-get-recorder-state/i,
+  
+  // Unknown message types
+  /Unknown message type/i
 ];
 
 // Store original console methods
@@ -80,8 +94,13 @@ console.warn = function(...args) {
   }
 };
 
+// Export a default function for initializing the filter
 export default function initConsoleFilter() {
-  // This function is intentionally empty as the filtering
-  // is applied when this file is imported
   console.log("Console error filter initialized");
+}
+
+// Export named function for direct use
+export function setupConsoleFilters() {
+  console.log("Console error filters setup completed");
+  return true;
 }

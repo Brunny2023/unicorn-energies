@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Ticket } from '@/types/investment';
 import { 
@@ -8,7 +8,7 @@ import {
 } from '@/utils/ticket/api/index';
 
 /**
- * Hook for managing a single ticket
+ * Hook for managing a single ticket with optimized performance
  */
 export const useTicketDetails = (ticketId: string | undefined) => {
   const { toast } = useToast();
@@ -16,13 +16,8 @@ export const useTicketDetails = (ticketId: string | undefined) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (ticketId) {
-      fetchTicket(ticketId);
-    }
-  }, [ticketId]);
-
-  const fetchTicket = async (id: string) => {
+  // Use useCallback to memoize the fetch function
+  const fetchTicket = useCallback(async (id: string) => {
     try {
       setLoading(true);
       setError(null);
@@ -46,29 +41,42 @@ export const useTicketDetails = (ticketId: string | undefined) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
 
-  const updateTicketDetails = async (updateData: Partial<Ticket>) => {
-    try {
-      setLoading(true);
+  // Effect to fetch ticket when ID changes
+  useEffect(() => {
+    if (ticketId) {
+      fetchTicket(ticketId);
+    } else {
+      // Reset state when no ticket ID is provided
+      setTicket(null);
+      setLoading(false);
       setError(null);
-      
+    }
+  }, [ticketId, fetchTicket]);
+
+  // Optimized update function with type safety
+  const updateTicketDetails = useCallback(async (updateData: Partial<Ticket>) => {
+    try {
       if (!ticketId) {
         throw new Error("Ticket ID is required");
       }
       
+      setLoading(true);
       const success = await updateTicket(ticketId, updateData);
       
       if (!success) {
         throw new Error("Failed to update ticket");
       }
       
+      // Optimistic update to avoid refetching
       if (ticket) {
-        setTicket({
+        const updatedTicket = {
           ...ticket,
           ...updateData,
           updated_at: new Date().toISOString()
-        });
+        };
+        setTicket(updatedTicket);
       }
       
       toast({
@@ -79,7 +87,6 @@ export const useTicketDetails = (ticketId: string | undefined) => {
       return true;
     } catch (err) {
       console.error('Error updating ticket:', err);
-      setError('Failed to update ticket');
       toast({
         title: "Error",
         description: "Failed to update ticket",
@@ -89,13 +96,21 @@ export const useTicketDetails = (ticketId: string | undefined) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [ticketId, ticket, toast]);
+
+  // Memoized refresh function
+  const refreshTicket = useCallback(() => {
+    if (ticketId) {
+      fetchTicket(ticketId);
+    }
+  }, [ticketId, fetchTicket]);
 
   return {
     ticket,
     loading,
     error,
     fetchTicket,
-    updateTicketDetails
+    updateTicketDetails,
+    refreshTicket
   };
 };

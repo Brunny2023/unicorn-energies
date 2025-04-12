@@ -11,6 +11,9 @@ import { useTicketResponse } from './useTicketResponse';
 import { useTicketStatusManager } from './useTicketStatusManager';
 import { useTicketPriorityManager } from './useTicketPriorityManager';
 
+type TicketStatus = "open" | "in-progress" | "resolved" | "closed" | "replied";
+type TicketPriority = "high" | "medium" | "low";
+
 /**
  * Hook for admin ticket management
  */
@@ -79,14 +82,64 @@ export const useAdminTickets = () => {
     }
   };
 
+  // Adding type safety to ticket admin operations
+  const respondToTicketAsAdmin = async (ticketId: string, adminResponse: string) => {
+    try {
+      const updateData: Partial<Ticket> = {
+        ai_response: adminResponse,
+        status: "replied" as TicketStatus,
+        updated_at: new Date().toISOString()
+      };
+      
+      const success = await updateTicket(ticketId, updateData);
+      
+      if (!success) {
+        throw new Error("Failed to update ticket with admin response");
+      }
+      
+      setTickets(prevTickets => 
+        prevTickets.map(ticket => 
+          ticket.id === ticketId 
+            ? { ...ticket, ...updateData } 
+            : ticket
+        )
+      );
+      
+      toast({
+        title: "Success",
+        description: "Admin response sent successfully",
+      });
+      
+      return true;
+    } catch (err) {
+      console.error('Error sending admin response:', err);
+      toast({
+        title: "Error",
+        description: "Failed to send admin response",
+        variant: "destructive",
+      });
+      return false;
+    }
+  };
+
+  // Type-safe status update
+  const setTicketStatus = async (ticketId: string, newStatus: TicketStatus) => {
+    return await updateTicketStatus(ticketId, newStatus);
+  };
+
+  // Type-safe priority update
+  const setTicketPriority = async (ticketId: string, newPriority: TicketPriority) => {
+    return await updateTicketPriority(ticketId, newPriority);
+  };
+
   return {
     tickets,
     loading,
     error,
     fetchAllTickets,
-    respondToTicket,
-    updateTicketStatus,
-    updateTicketPriority,
+    respondToTicket: respondToTicketAsAdmin,
+    updateTicketStatus: setTicketStatus,
+    updateTicketPriority: setTicketPriority,
     setFilterStatus,
     setFilterPriority,
     setSearchQuery,
