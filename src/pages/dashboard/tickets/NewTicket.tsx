@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import NewTicketForm from "@/components/tickets/NewTicketForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useUserTickets } from "@/hooks/useTickets";
+import { useUserTickets } from "@/hooks/tickets";
 
 const NewTicket = () => {
   const { createTicket } = useUserTickets();

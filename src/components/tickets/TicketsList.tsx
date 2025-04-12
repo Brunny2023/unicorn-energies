@@ -1,6 +1,6 @@
 
 import React, { useEffect } from "react";
-import { useUserTickets } from "@/hooks/useTickets";
+import { useUserTickets } from "@/hooks/tickets";
 import TicketsListHeader from "./TicketsListHeader";
 import TicketsListContent from "./TicketsListContent";
 

@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
-import { useUserTickets } from "@/hooks/useTickets";
+import { useUserTickets } from "@/hooks/tickets";
 import TicketHeader from "@/components/tickets/TicketHeader";
 import TicketFilters from "@/components/tickets/TicketFilters";
 import TicketList from "@/components/tickets/TicketList";
