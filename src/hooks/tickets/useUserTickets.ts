@@ -19,82 +19,73 @@ export const useUserTickets = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (user?.id) {
-      fetchTickets();
-    } else {
-      setLoading(false);
+    if (user) {
+      fetchUserTickets();
     }
   }, [user]);
 
-  const fetchTickets = async () => {
+  const fetchUserTickets = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      if (!user?.id) {
-        throw new Error("User ID is required");
+      if (!user || !user.id) {
+        throw new Error("User not authenticated");
       }
       
-      console.log("Fetching tickets for user:", user.id);
-      const ticketData = await getUserTickets(user.id);
-      console.log("Tickets fetched:", ticketData.length);
-      setTickets(ticketData);
+      const fetchedTickets = await getUserTickets(user.id);
+      console.log("Fetched user tickets:", fetchedTickets);
+      
+      if (Array.isArray(fetchedTickets)) {
+        setTickets(fetchedTickets);
+      } else {
+        console.error("Unexpected response format:", fetchedTickets);
+        setTickets([]);
+      }
     } catch (err) {
       console.error('Error fetching tickets:', err);
       setError('Failed to load tickets');
       toast({
         title: "Error",
-        description: "Failed to load support tickets",
+        description: "Failed to load tickets",
         variant: "destructive",
       });
+      setTickets([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const createTicket = async (
-    subject: string, 
-    message: string, 
-    priority: string, 
-    category: string = 'general'
-  ) => {
+  const createTicket = async (subject: string, message: string) => {
     try {
       setLoading(true);
-      setError(null);
       
-      if (!user?.id) {
-        throw new Error("User ID is required");
+      if (!user || !user.id) {
+        throw new Error("User not authenticated");
       }
       
-      const newTicket = await createSupportTicket(
-        user.id,
-        subject,
-        message,
-        priority,
-        category
-      );
+      const newTicket = await createSupportTicket(user.id, subject, message);
       
-      if (!newTicket) {
+      if (newTicket) {
+        setTickets(prevTickets => [newTicket, ...prevTickets]);
+        
+        toast({
+          title: "Success",
+          description: "Ticket created successfully",
+        });
+        
+        return true;
+      } else {
         throw new Error("Failed to create ticket");
       }
-      
-      setTickets(prev => [newTicket, ...prev]);
-      
-      toast({
-        title: "Success",
-        description: "Support ticket created successfully",
-      });
-      
-      return newTicket;
     } catch (err) {
       console.error('Error creating ticket:', err);
-      setError('Failed to create ticket');
       toast({
         title: "Error",
-        description: "Failed to create support ticket",
+        description: "Failed to create ticket",
         variant: "destructive",
       });
-      return null;
+      return false;
     } finally {
       setLoading(false);
     }
@@ -104,7 +95,7 @@ export const useUserTickets = () => {
     tickets,
     loading,
     error,
-    fetchTickets,
+    fetchUserTickets,
     createTicket
   };
 };

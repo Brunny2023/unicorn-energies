@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { Ticket } from '@/types/investment';
 import { 
@@ -11,81 +12,174 @@ import {
  * Hook for admin ticket management
  */
 export const useAdminTickets = () => {
+  const { user } = useAuth();
   const { toast } = useToast();
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [filterStatus, setFilterStatus] = useState<string | null>(null);
+  const [filterPriority, setFilterPriority] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchAllTickets();
-  }, []);
+  }, [filterStatus, filterPriority, searchQuery]);
 
   const fetchAllTickets = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      console.log("Admin: Fetching all tickets");
-      const allTicketsData = await getAllTickets();
-      console.log("Admin: All tickets fetched:", allTicketsData.length);
-      setTickets(allTicketsData);
+      if (!user?.id) {
+        throw new Error("User not authenticated");
+      }
+      
+      const allTickets = await getAllTickets();
+      console.log("Fetched all tickets:", allTickets);
+      
+      // Apply filters if they exist
+      let filteredTickets = [...allTickets];
+      
+      if (filterStatus) {
+        filteredTickets = filteredTickets.filter(ticket => ticket.status === filterStatus);
+      }
+      
+      if (filterPriority) {
+        filteredTickets = filteredTickets.filter(ticket => ticket.priority === filterPriority);
+      }
+      
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        filteredTickets = filteredTickets.filter(ticket => 
+          ticket.subject.toLowerCase().includes(query) || 
+          ticket.message.toLowerCase().includes(query)
+        );
+      }
+      
+      setTickets(filteredTickets);
     } catch (err) {
-      console.error('Error fetching all tickets:', err);
+      console.error('Error fetching tickets:', err);
       setError('Failed to load tickets');
       toast({
         title: "Error",
-        description: "Failed to load all tickets",
+        description: "Failed to load tickets",
         variant: "destructive",
       });
+      setTickets([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const respondToTicket = async (
-    ticketId: string, 
-    response: string, 
-    newStatus: 'resolved' | 'closed' = 'resolved'
-  ) => {
+  const respondToTicket = async (ticketId: string, response: string) => {
     try {
-      setLoading(true);
-      setError(null);
+      if (!response.trim()) {
+        throw new Error("Response cannot be empty");
+      }
       
       const updateData = {
-        ai_response: response,
-        ai_responded_at: new Date().toISOString(),
-        status: newStatus
+        admin_response: response,
+        status: 'responded',
+        updated_at: new Date().toISOString()
       };
       
       const success = await updateTicket(ticketId, updateData);
       
       if (!success) {
-        throw new Error("Failed to respond to ticket");
+        throw new Error("Failed to update ticket");
       }
       
-      setTickets(prev => prev.map(ticket => 
-        ticket.id === ticketId 
-          ? { ...ticket, ...updateData, updated_at: new Date().toISOString() } 
-          : ticket
-      ));
+      // Update the ticket in the local state
+      setTickets(prevTickets => 
+        prevTickets.map(ticket => 
+          ticket.id === ticketId 
+            ? { ...ticket, ...updateData } 
+            : ticket
+        )
+      );
       
       toast({
         title: "Success",
-        description: "Response added to ticket",
+        description: "Response sent successfully",
       });
       
       return true;
     } catch (err) {
       console.error('Error responding to ticket:', err);
-      setError('Failed to respond to ticket');
       toast({
         title: "Error",
-        description: "Failed to respond to ticket",
+        description: "Failed to send response",
         variant: "destructive",
       });
       return false;
-    } finally {
-      setLoading(false);
+    }
+  };
+
+  const updateTicketStatus = async (ticketId: string, status: string) => {
+    try {
+      const success = await updateTicket(ticketId, { status });
+      
+      if (!success) {
+        throw new Error("Failed to update ticket status");
+      }
+      
+      // Update the ticket in the local state
+      setTickets(prevTickets => 
+        prevTickets.map(ticket => 
+          ticket.id === ticketId 
+            ? { ...ticket, status, updated_at: new Date().toISOString() } 
+            : ticket
+        )
+      );
+      
+      toast({
+        title: "Success",
+        description: `Ticket status updated to ${status}`,
+      });
+      
+      return true;
+    } catch (err) {
+      console.error('Error updating ticket status:', err);
+      toast({
+        title: "Error",
+        description: "Failed to update ticket status",
+        variant: "destructive",
+      });
+      return false;
+    }
+  };
+
+  const updateTicketPriority = async (ticketId: string, priority: string) => {
+    try {
+      const success = await updateTicket(ticketId, { priority });
+      
+      if (!success) {
+        throw new Error("Failed to update ticket priority");
+      }
+      
+      // Update the ticket in the local state
+      setTickets(prevTickets => 
+        prevTickets.map(ticket => 
+          ticket.id === ticketId 
+            ? { ...ticket, priority, updated_at: new Date().toISOString() } 
+            : ticket
+        )
+      );
+      
+      toast({
+        title: "Success",
+        description: `Ticket priority updated to ${priority}`,
+      });
+      
+      return true;
+    } catch (err) {
+      console.error('Error updating ticket priority:', err);
+      toast({
+        title: "Error",
+        description: "Failed to update ticket priority",
+        variant: "destructive",
+      });
+      return false;
     }
   };
 
@@ -94,6 +188,14 @@ export const useAdminTickets = () => {
     loading,
     error,
     fetchAllTickets,
-    respondToTicket
+    respondToTicket,
+    updateTicketStatus,
+    updateTicketPriority,
+    setFilterStatus,
+    setFilterPriority,
+    setSearchQuery,
+    filterStatus,
+    filterPriority,
+    searchQuery
   };
 };

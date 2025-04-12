@@ -10,6 +10,7 @@ import TicketDetailsLoading from "@/components/tickets/TicketDetailsLoading";
 import TicketDetailsNotFound from "@/components/tickets/TicketDetailsNotFound";
 
 const AdminTicketDetails = () => {
+  console.log("Rendering AdminTicketDetails component"); // Diagnostic log
   const { id } = useParams<{ id: string }>();
   const { ticket, loading, error } = useTicketDetails(id);
   const { respondToTicket } = useAdminTickets();

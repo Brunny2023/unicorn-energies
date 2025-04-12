@@ -48,6 +48,7 @@ const SAMPLE_WITHDRAWAL_HISTORY: WithdrawalHistoryItem[] = [
 ];
 
 const Withdraw = () => {
+  console.log("Rendering Withdraw component"); // Diagnostic log
   const { user } = useAuth();
   const { toast } = useToast();
   const [walletData, setWalletData] = useState<WalletData | null>(null);
@@ -55,10 +56,12 @@ const Withdraw = () => {
   const [withdrawalHistory, setWithdrawalHistory] = useState<WithdrawalHistoryItem[]>(SAMPLE_WITHDRAWAL_HISTORY);
 
   useEffect(() => {
+    console.log("Withdraw useEffect triggered, user:", user?.id); // Diagnostic log
     if (user) {
       fetchUserWalletData();
     } else {
       // In development mode, create dummy wallet data
+      console.log("Using dummy wallet data"); // Diagnostic log
       setWalletData({
         id: "dev-wallet-id",
         balance: 10000,
