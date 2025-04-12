@@ -28,6 +28,11 @@ const Navbar = () => {
   const { user, signOut, isAdmin } = useAuth();
   const location = useLocation();
 
+  useEffect(() => {
+    // Debug auth state
+    console.log("Navbar auth state:", { user, isAuthenticated: !!user, isAdmin });
+  }, [user, isAdmin]);
+
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
@@ -162,10 +167,10 @@ const Navbar = () => {
               </div>
             ) : (
               <div className="pt-2 grid grid-cols-2 gap-2">
-                <Link to="/login" className="col-span-1">
+                <Link to="/login">
                   <Button variant="outline" className="w-full border-unicorn-gold text-unicorn-gold font-bold">Login</Button>
                 </Link>
-                <Link to="/register" className="col-span-1">
+                <Link to="/register">
                   <Button className="w-full bg-unicorn-gold text-unicorn-black font-bold">Register</Button>
                 </Link>
               </div>

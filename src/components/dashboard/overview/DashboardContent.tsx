@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 // Sample data for development mode
 const DEVELOPMENT_MODE = true;
 
+// Sample data for dashboard (used in development mode)
 const SAMPLE_DATA = {
   wallet: {
     balance: 12500,
@@ -64,6 +65,9 @@ const SAMPLE_DATA = {
   }
 };
 
+/**
+ * Main content area for the dashboard overview
+ */
 const DashboardContent = () => {
   console.log("DashboardContent component loaded");
   
@@ -84,10 +88,11 @@ const DashboardContent = () => {
   useEffect(() => {
     console.log("DashboardContent useEffect triggered, user:", user);
     
+    // Always load at least the sample data in development mode
     if (DEVELOPMENT_MODE) {
       console.log("Loading sample data in dev mode");
       // Simulate loading
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         setWalletData(SAMPLE_DATA.wallet);
         setTransactions(SAMPLE_DATA.transactions);
         setInvestmentStats(SAMPLE_DATA.investments);
@@ -95,7 +100,8 @@ const DashboardContent = () => {
         setLoading(false);
         console.log("Sample data loaded");
       }, 1000);
-      return;
+      
+      return () => clearTimeout(timer);
     }
 
     if (user) {

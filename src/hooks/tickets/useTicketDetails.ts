@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Ticket } from '@/types/investment';
 import { 
@@ -112,12 +112,24 @@ export const useTicketDetails = (ticketId: string | undefined) => {
     }
   }, [ticketId, fetchTicket]);
 
+  // Memoize status to prevent unnecessary re-renders
+  const ticketStatus = useMemo(() => {
+    return {
+      isLoading: loading,
+      isError: !!error,
+      errorMessage: error,
+      isEmpty: !loading && !error && !ticket,
+      isSuccess: !loading && !error && !!ticket
+    };
+  }, [loading, error, ticket]);
+
   return {
     ticket,
     loading,
     error,
     fetchTicket,
     updateTicketDetails,
-    refreshTicket
+    refreshTicket,
+    ticketStatus
   };
 };
