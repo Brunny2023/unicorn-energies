@@ -18,6 +18,8 @@ export const useTicketDetails = (ticketId: string | undefined) => {
 
   // Use useCallback to memoize the fetch function
   const fetchTicket = useCallback(async (id: string) => {
+    if (!id) return;
+    
     try {
       setLoading(true);
       setError(null);
@@ -57,11 +59,16 @@ export const useTicketDetails = (ticketId: string | undefined) => {
 
   // Optimized update function with type safety
   const updateTicketDetails = useCallback(async (updateData: Partial<Ticket>) => {
+    if (!ticketId || !ticket) {
+      toast({
+        title: "Error",
+        description: "Cannot update: Ticket not loaded",
+        variant: "destructive",
+      });
+      return false;
+    }
+    
     try {
-      if (!ticketId) {
-        throw new Error("Ticket ID is required");
-      }
-      
       setLoading(true);
       const success = await updateTicket(ticketId, updateData);
       
@@ -70,14 +77,14 @@ export const useTicketDetails = (ticketId: string | undefined) => {
       }
       
       // Optimistic update to avoid refetching
-      if (ticket) {
-        const updatedTicket = {
-          ...ticket,
+      setTicket(prevTicket => {
+        if (!prevTicket) return null;
+        return {
+          ...prevTicket,
           ...updateData,
           updated_at: new Date().toISOString()
         };
-        setTicket(updatedTicket);
-      }
+      });
       
       toast({
         title: "Success",
