@@ -42,7 +42,8 @@ export const useDashboardData = () => {
       systemBalance: 750000,
     };
     
-    const sampleTransactions = [
+    // Make sure sample transactions include the required 'description' property
+    const sampleTransactions: TransactionItem[] = [
       {
         id: "tx-1",
         user_id: "user-1",
@@ -50,6 +51,7 @@ export const useDashboardData = () => {
         amount: 5000,
         status: "completed",
         created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        description: "Sample deposit transaction",
       },
       {
         id: "tx-2",
@@ -58,6 +60,7 @@ export const useDashboardData = () => {
         amount: 2000,
         status: "pending",
         created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+        description: "Sample withdrawal transaction",
       },
     ];
     
