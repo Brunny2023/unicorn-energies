@@ -1,5 +1,4 @@
-
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AdminRoute from "./components/auth/AdminRoute";
@@ -35,6 +34,7 @@ import AdminTransactions from "./pages/admin/Transactions";
 import AdminTickets from "./pages/admin/Tickets";
 import AdminTicketDetails from "./pages/admin/TicketDetails";
 import PaymentConnections from "./pages/admin/PaymentConnections";
+import BroadcastMessages from "./pages/admin/BroadcastMessages";
 
 // Utility for console error filtering
 import "./utils/consoleErrorFilter";
@@ -51,7 +51,7 @@ declare global {
   var turnstile: TurnstileInterface;
 }
 
-function App() {
+const App = () => {
   return (
     <div className="relative">
       <AuthProvider>
@@ -80,13 +80,16 @@ function App() {
           </Route>
 
           {/* Admin Routes */}
-          <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-          <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-          <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
-          <Route path="/admin/transactions" element={<AdminRoute><AdminTransactions /></AdminRoute>} />
-          <Route path="/admin/payment-connections" element={<AdminRoute><PaymentConnections /></AdminRoute>} />
-          <Route path="/admin/tickets" element={<AdminRoute><AdminTickets /></AdminRoute>} />
-          <Route path="/admin/tickets/:id" element={<AdminRoute><AdminTicketDetails /></AdminRoute>} />
+          <Route path="/admin" element={<AdminRoute><Outlet /></AdminRoute>}>
+            <Route index element={<Navigate to="/admin/dashboard" replace />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="tickets" element={<AdminTickets />} />
+            <Route path="tickets/:id" element={<AdminTicketDetails />} />
+            <Route path="users" element={<AdminUsers />} />
+            <Route path="transactions" element={<AdminTransactions />} />
+            <Route path="payment-connections" element={<PaymentConnections />} />
+            <Route path="broadcast" element={<BroadcastMessages />} />
+          </Route>
 
           {/* Catch All */}
           <Route path="/404" element={<NotFound />} />
@@ -96,6 +99,6 @@ function App() {
       <Toaster />
     </div>
   );
-}
+};
 
 export default App;

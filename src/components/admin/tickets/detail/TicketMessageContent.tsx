@@ -1,48 +1,41 @@
 
 import React from "react";
 import { User, Bot } from "lucide-react";
-import { Ticket } from "@/types/investment";
 
 interface TicketMessageContentProps {
-  ticket: Ticket;
+  title: string;
+  content: string;
+  authorType: "user" | "ai" | "admin";
+  timestamp?: string;
 }
 
-const TicketMessageContent = ({ ticket }: TicketMessageContentProps) => {
+const TicketMessageContent: React.FC<TicketMessageContentProps> = ({ 
+  title, 
+  content, 
+  authorType,
+  timestamp
+}) => {
   return (
-    <div className="space-y-6">
-      <div className="bg-unicorn-darkPurple border border-unicorn-gold/20 rounded-lg p-4">
-        <div className="flex items-start mb-3">
-          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-unicorn-gold/20 text-unicorn-gold mr-3">
-            <User className="h-5 w-5" />
-          </div>
-          <div>
-            <div className="font-medium text-unicorn-gold">User Message</div>
-            <div className="text-xs text-gray-400">{new Date(ticket.created_at).toLocaleString()}</div>
-          </div>
+    <div className={`
+      ${authorType === 'user' ? 'bg-unicorn-darkPurple border-unicorn-gold/20' : ''}
+      ${authorType === 'ai' ? 'bg-unicorn-purple/10 border-unicorn-gold/10' : ''}
+      ${authorType === 'admin' ? 'bg-unicorn-gold/10 border-unicorn-gold/20' : ''}
+      border rounded-lg p-4
+    `}>
+      <div className="flex items-start mb-3">
+        <div className="flex items-center justify-center h-8 w-8 rounded-full bg-unicorn-gold/20 text-unicorn-gold mr-3">
+          {authorType === 'user' && <User className="h-5 w-5" />}
+          {authorType === 'ai' && <Bot className="h-5 w-5" />}
+          {authorType === 'admin' && <User className="h-5 w-5" />}
         </div>
-        <div className="text-white whitespace-pre-line">
-          {ticket.message}
+        <div>
+          <div className="font-medium text-unicorn-gold">{title}</div>
+          {timestamp && <div className="text-xs text-gray-400">{timestamp}</div>}
         </div>
       </div>
-
-      {ticket.ai_response && (
-        <div className="bg-unicorn-purple/10 border border-unicorn-gold/10 rounded-lg p-4">
-          <div className="flex items-start mb-3">
-            <div className="flex items-center justify-center h-8 w-8 rounded-full bg-unicorn-gold/20 text-unicorn-gold mr-3">
-              <Bot className="h-5 w-5" />
-            </div>
-            <div>
-              <div className="font-medium text-unicorn-gold">AI Assistant</div>
-              <div className="text-xs text-gray-400">
-                {ticket.ai_responded_at ? new Date(ticket.ai_responded_at).toLocaleString() : 'Automated Response'}
-              </div>
-            </div>
-          </div>
-          <div className="text-white whitespace-pre-line">
-            {ticket.ai_response}
-          </div>
-        </div>
-      )}
+      <div className="text-white whitespace-pre-line">
+        {content}
+      </div>
     </div>
   );
 };

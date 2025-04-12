@@ -1,7 +1,7 @@
 
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight, Sparkles, TrendingUp, Shield, BarChart } from 'lucide-react';
 
 const HeroBanner = () => {
   return (
@@ -39,7 +39,7 @@ const HeroBanner = () => {
       <div className="absolute bottom-[20%] left-[25%] w-40 h-40 bg-[#4A3F35]/20 rounded-full blur-xl"></div>
       
       <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-3xl mx-auto text-center">
+        <div className="max-w-4xl mx-auto text-center">
           <div className="flex justify-center mb-6">
             <img 
               src="/lovable-uploads/81643525-55e2-47f0-994e-cc903455b959.png" 
@@ -51,8 +51,42 @@ const HeroBanner = () => {
             <span className="bg-gradient-to-r from-[#F3D77F] via-[#D4AD3A] to-[#9A7D2E] bg-clip-text text-transparent">Premium</span> Energy Investments
           </h1>
           <p className="text-xl md:text-2xl mb-8 text-gray-200 animate-slide-up">
-            UnicornEnergies offers carefully vetted investment opportunities in the energy sector, designed to provide steady returns with minimized risk.
+            Harness the power of cutting-edge energy markets with UnicornEnergies' exclusive investment portfolios. Our carefully vetted opportunities deliver industry-leading returns while supporting the future of sustainable energy.
           </p>
+          
+          {/* Investment highlights */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div className="bg-unicorn-darkPurple/50 border border-unicorn-gold/30 rounded-lg p-6 transform transition-all hover:scale-105">
+              <div className="flex justify-center mb-4">
+                <div className="w-12 h-12 rounded-full bg-unicorn-gold/20 flex items-center justify-center">
+                  <TrendingUp className="h-6 w-6 text-unicorn-gold" />
+                </div>
+              </div>
+              <h3 className="text-xl font-semibold text-unicorn-gold mb-2">High ROI</h3>
+              <p className="text-gray-300">Average returns of 12-18% annually across our diverse energy portfolio</p>
+            </div>
+            
+            <div className="bg-unicorn-darkPurple/50 border border-unicorn-gold/30 rounded-lg p-6 transform transition-all hover:scale-105">
+              <div className="flex justify-center mb-4">
+                <div className="w-12 h-12 rounded-full bg-unicorn-gold/20 flex items-center justify-center">
+                  <Shield className="h-6 w-6 text-unicorn-gold" />
+                </div>
+              </div>
+              <h3 className="text-xl font-semibold text-unicorn-gold mb-2">Risk Managed</h3>
+              <p className="text-gray-300">Vetted investment opportunities with strategic risk mitigation protocols</p>
+            </div>
+            
+            <div className="bg-unicorn-darkPurple/50 border border-unicorn-gold/30 rounded-lg p-6 transform transition-all hover:scale-105">
+              <div className="flex justify-center mb-4">
+                <div className="w-12 h-12 rounded-full bg-unicorn-gold/20 flex items-center justify-center">
+                  <BarChart className="h-6 w-6 text-unicorn-gold" />
+                </div>
+              </div>
+              <h3 className="text-xl font-semibold text-unicorn-gold mb-2">Diversified Assets</h3>
+              <p className="text-gray-300">Balanced portfolios across traditional and renewable energy markets</p>
+            </div>
+          </div>
+          
           <div className="flex flex-col sm:flex-row justify-center gap-4 animate-slide-up" style={{ animationDelay: "0.2s" }}>
             <Link to="/investment-plans">
               <Button size="lg" className="bg-[#D4AD3A] hover:bg-[#9A7D2E] text-unicorn-black font-bold px-8 py-6 text-lg group">
