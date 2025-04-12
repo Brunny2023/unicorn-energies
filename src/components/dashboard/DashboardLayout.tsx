@@ -41,7 +41,8 @@ const DashboardLayout = ({ children, isAdmin = false }: DashboardLayoutProps) =>
 
       {/* Main Content */}
       <main className="flex-1 md:pl-64 p-6 overflow-auto">
-        {children || <Outlet />}
+        {/* The Outlet component is what renders the matched child route */}
+        <Outlet />
       </main>
     </div>
   );

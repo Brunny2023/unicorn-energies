@@ -87,6 +87,9 @@ const DashboardSidebar = ({
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
+  // Console log the current path to debug routing issues
+  console.log("Current path:", location.pathname);
+
   return (
     <aside
       className={`fixed z-40 top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-unicorn-darkPurple/90 border-r border-unicorn-gold/30 overflow-y-auto transition-transform transform md:translate-x-0 ${
