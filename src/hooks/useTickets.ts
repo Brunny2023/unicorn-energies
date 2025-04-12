@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -7,7 +8,7 @@ import {
   createSupportTicket, 
   getTicketDetails, 
   updateTicket,
-  getAllTickets as fetchAllTickets
+  getAllTickets
 } from '@/utils/ticket';
 
 /**
@@ -223,9 +224,9 @@ export const useAdminTickets = () => {
       setError(null);
       
       console.log("Admin: Fetching all tickets");
-      const allTickets = await fetchAllTickets();
-      console.log("Admin: All tickets fetched:", allTickets.length);
-      setTickets(allTickets);
+      const allTicketsData = await getAllTickets();
+      console.log("Admin: All tickets fetched:", allTicketsData.length);
+      setTickets(allTicketsData);
     } catch (err) {
       console.error('Error fetching all tickets:', err);
       setError('Failed to load tickets');

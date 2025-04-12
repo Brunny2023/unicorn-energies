@@ -19,7 +19,11 @@ const TicketView = () => {
 
   return (
     <DashboardLayout>
-      <TicketDetails />
+      <TicketDetails 
+        ticket={ticket} 
+        loading={loading} 
+        error={error} 
+      />
       {loading && <div className="sr-only" aria-live="polite" aria-busy="true">Loading ticket details...</div>}
     </DashboardLayout>
   );

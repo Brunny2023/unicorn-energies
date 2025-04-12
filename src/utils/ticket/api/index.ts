@@ -1,6 +1,7 @@
 
-export * from './createTicket';
-export * from './getUserTickets';
-export * from './getTicketDetails';
-export * from './updateTicket';
-export * from './getAllTickets';
+// Export all ticket API functions
+export { getTicketDetails } from './getTicketDetails';
+export { getUserTickets } from './getUserTickets';
+export { createSupportTicket } from './createTicket';
+export { updateTicket } from './updateTicket';
+export { getAllTickets } from './getAllTickets';

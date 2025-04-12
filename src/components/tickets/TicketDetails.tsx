@@ -1,25 +1,27 @@
 
 import React, { useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { useTicketDetails } from "@/hooks/useTickets";
+import { Ticket } from "@/types/investment";
 import TicketDetailsHeader from "./TicketDetailsHeader";
 import TicketDetailsContent from "./TicketDetailsContent";
 import TicketDetailsLoading from "./TicketDetailsLoading";
 import TicketDetailsNotFound from "./TicketDetailsNotFound";
 
-const TicketDetails = () => {
-  const { id } = useParams<{ id: string }>();
-  const { ticket, loading, error } = useTicketDetails(id);
-  
+interface TicketDetailsProps {
+  ticket: Ticket | null;
+  loading: boolean;
+  error: string | null;
+}
+
+const TicketDetails: React.FC<TicketDetailsProps> = ({ ticket, loading, error }) => {
   useEffect(() => {
     console.log("TicketDetails component loaded");
-    console.log("Ticket ID from params:", id);
-    console.log("Ticket data:", ticket);
-    console.log("Loading state:", loading);
-    console.log("Error state:", error);
-  }, [id, ticket, loading, error]);
+    console.log("Props received - ticket:", ticket);
+    console.log("Props received - loading:", loading);
+    console.log("Props received - error:", error);
+  }, [ticket, loading, error]);
 
   return (
     <div className="space-y-6">
