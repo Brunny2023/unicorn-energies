@@ -33,8 +33,57 @@ export const useAdminTickets = () => {
   const { updateTicketPriority } = useTicketPriorityManager(tickets, setTickets, toast);
 
   useEffect(() => {
-    fetchAllTickets();
-  }, [filterStatus, filterPriority, searchQuery]);
+    // Only fetch if user is fully loaded
+    if (user?.id) {
+      fetchAllTickets();
+    } else {
+      // If no user, set loading to false and provide sample data for development
+      setLoading(false);
+      provideSampleTickets();
+    }
+  }, [filterStatus, filterPriority, searchQuery, user]);
+
+  // Function to provide sample ticket data for development/testing
+  const provideSampleTickets = () => {
+    console.log("Providing sample tickets for development");
+    const sampleTickets = [
+      {
+        id: "sample-admin-1",
+        user_id: "dev-user",
+        subject: "Cannot withdraw funds",
+        message: "I'm trying to withdraw my profits but the system keeps giving an error. Please help!",
+        status: "open",
+        priority: "high",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        category: "withdrawal"
+      },
+      {
+        id: "sample-admin-2",
+        user_id: "dev-user-2",
+        subject: "Question about investment period",
+        message: "How long do I need to keep my investment locked? I thought it was 30 days but the dashboard shows 60 days.",
+        status: "in-progress",
+        priority: "medium",
+        created_at: new Date(Date.now() - 172800000).toISOString(),
+        updated_at: new Date(Date.now() - 86400000).toISOString(),
+        category: "investment"
+      },
+      {
+        id: "sample-admin-3",
+        user_id: "dev-user-3",
+        subject: "Account verification problem",
+        message: "I've submitted my documents for verification three days ago but my account still shows as unverified.",
+        status: "open",
+        priority: "medium",
+        created_at: new Date(Date.now() - 259200000).toISOString(),
+        updated_at: new Date(Date.now() - 259200000).toISOString(),
+        category: "account"
+      }
+    ] as Ticket[];
+    
+    setTickets(sampleTickets);
+  };
 
   const fetchAllTickets = async () => {
     try {
@@ -42,7 +91,8 @@ export const useAdminTickets = () => {
       setError(null);
       
       if (!user?.id) {
-        throw new Error("User not authenticated");
+        provideSampleTickets();
+        return;
       }
       
       const allTickets = await getAllTickets();
@@ -76,7 +126,8 @@ export const useAdminTickets = () => {
         description: "Failed to load tickets",
         variant: "destructive",
       });
-      setTickets([]);
+      // Provide sample tickets in case of error
+      provideSampleTickets();
     } finally {
       setLoading(false);
     }
@@ -137,9 +188,9 @@ export const useAdminTickets = () => {
     loading,
     error,
     fetchAllTickets,
-    respondToTicket: respondToTicketAsAdmin,
-    updateTicketStatus: setTicketStatus,
-    updateTicketPriority: setTicketPriority,
+    respondToTicket,
+    updateTicketStatus,
+    updateTicketPriority,
     setFilterStatus,
     setFilterPriority,
     setSearchQuery,

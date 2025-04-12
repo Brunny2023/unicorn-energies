@@ -6,13 +6,13 @@ import { useTicketDetails, useAdminTickets } from "@/hooks/tickets";
 import TicketDetailHeader from "@/components/admin/tickets/TicketDetailHeader";
 import TicketDetailCard from "@/components/admin/tickets/detail/TicketDetailCard";
 import TicketResponseForm from "@/components/admin/tickets/TicketResponseForm";
-import TicketDetailsLoading from "@/components/tickets/TicketDetailsLoading";
+import TicketsDetailsLoading from "@/components/tickets/TicketDetailsLoading";
 import TicketDetailsNotFound from "@/components/tickets/TicketDetailsNotFound";
 
 const AdminTicketDetails = () => {
   console.log("Rendering AdminTicketDetails component"); // Diagnostic log
   const { id } = useParams<{ id: string }>();
-  const { ticket, loading, error } = useTicketDetails(id);
+  const { ticket, loading, error, refreshTicket } = useTicketDetails(id);
   const { respondToTicket } = useAdminTickets();
   const [response, setResponse] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,6 +32,8 @@ const AdminTicketDetails = () => {
       setIsSubmitting(true);
       await respondToTicket(id, response);
       setResponse('');
+      // Refresh ticket data after submitting response
+      refreshTicket();
     } finally {
       setIsSubmitting(false);
     }
@@ -40,7 +42,7 @@ const AdminTicketDetails = () => {
   if (loading) {
     return (
       <DashboardLayout isAdmin>
-        <TicketDetailsLoading />
+        <TicketsDetailsLoading />
       </DashboardLayout>
     );
   }
@@ -57,7 +59,7 @@ const AdminTicketDetails = () => {
     <DashboardLayout isAdmin>
       <div className="space-y-6">
         <TicketDetailHeader ticket={ticket} />
-        <TicketDetailCard ticket={ticket} />
+        <TicketDetailCard ticket={ticket} onRefresh={refreshTicket} />
         <TicketResponseForm 
           response={response}
           handleResponseChange={handleResponseChange}

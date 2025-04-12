@@ -5,6 +5,7 @@ import { useAdminTickets } from "@/hooks/tickets";
 import TicketsHeader from "@/components/admin/tickets/TicketsHeader";
 import TicketsFilters from "@/components/admin/tickets/TicketsFilters";
 import TicketsTable from "@/components/admin/tickets/TicketsTable";
+import AIProcessingPanel from "@/components/admin/tickets/AIProcessingPanel";
 
 const AdminTickets = () => {
   const { tickets, loading, error, fetchAllTickets } = useAdminTickets();
@@ -48,6 +49,9 @@ const AdminTickets = () => {
     <DashboardLayout isAdmin>
       <div className="space-y-6">
         <TicketsHeader title="Support Tickets" onRefresh={fetchAllTickets} />
+        
+        {/* AI Processing Panel */}
+        <AIProcessingPanel onRefreshTickets={fetchAllTickets} />
         
         <TicketsFilters 
           searchTerm={searchTerm}
