@@ -33,19 +33,21 @@ const DashboardLayout = ({ children, isAdmin = false }: DashboardLayoutProps) =>
         user={user} 
       />
 
-      <DashboardSidebar 
-        isMenuOpen={isMenuOpen} 
-        closeMenu={closeMenu} 
-        user={user} 
-        isAdmin={isAdmin} 
-      />
+      <div className="flex flex-1 relative z-10">
+        <DashboardSidebar 
+          isMenuOpen={isMenuOpen} 
+          closeMenu={closeMenu} 
+          user={user} 
+          isAdmin={isAdmin} 
+        />
 
-      {/* Main Content */}
-      <main className="flex-1 md:pl-64 p-6 overflow-auto relative z-10">
-        {/* The Outlet component renders the matched child route */}
-        <Outlet />
-        {children}
-      </main>
+        {/* Main Content */}
+        <main className="flex-1 md:ml-64 p-6 mt-0 overflow-auto">
+          {/* The Outlet component renders the matched child route */}
+          <Outlet />
+          {children}
+        </main>
+      </div>
     </div>
   );
 };

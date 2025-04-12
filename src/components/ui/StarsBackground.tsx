@@ -43,7 +43,7 @@ const StarsBackground = () => {
   }, []);
 
   return (
-    <div className="fixed inset-0 z-0 bg-gradient-to-b from-unicorn-black to-unicorn-darkPurple">
+    <div className="absolute inset-0 overflow-hidden bg-gradient-to-b from-unicorn-black to-unicorn-darkPurple">
       {/* Animated gradient overlay - using inline styling to avoid external resources */}
       <div className="absolute inset-0 bg-gradient-radial from-unicorn-purple/20 via-transparent to-transparent animate-pulse-glow"></div>
       

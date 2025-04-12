@@ -25,20 +25,25 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Stars background should be positioned behind all content */}
-      <StarsBackground />
+      {/* Stars background with explicit z-index to ensure it's behind content */}
+      <div className="fixed inset-0 z-0">
+        <StarsBackground />
+      </div>
       
-      {/* Explicitly include the Navbar component here */}
-      <Navbar />
-      
-      <HeroBanner />
-      <AboutSection />
-      <HowItWorksSection />
-      <InvestmentPlansSection />
-      <ProfitCalculatorSection />
-      <TestimonialsSection />
-      <WhyChooseUsSection />
-      <CtaSection />
+      {/* Content with higher z-index to appear above background */}
+      <div className="relative z-10">
+        {/* Explicitly include the Navbar component here */}
+        <Navbar />
+        
+        <HeroBanner />
+        <AboutSection />
+        <HowItWorksSection />
+        <InvestmentPlansSection />
+        <ProfitCalculatorSection />
+        <TestimonialsSection />
+        <WhyChooseUsSection />
+        <CtaSection />
+      </div>
       
       {/* Quick access to dashboard for logged in users */}
       {user && (
