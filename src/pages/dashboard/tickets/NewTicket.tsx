@@ -11,6 +11,16 @@ import { useUserTickets } from "@/hooks/tickets";
 const NewTicket = () => {
   const { createTicket } = useUserTickets();
 
+  // Wrap the createTicket function to match the expected interface
+  const handleCreateTicket = async (
+    subject: string,
+    message: string,
+    priority: string,
+    category: string
+  ) => {
+    return await createTicket(subject, message, priority, category);
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -27,7 +37,7 @@ const NewTicket = () => {
             <CardTitle className="text-xl text-white">Create New Support Ticket</CardTitle>
           </CardHeader>
           <CardContent>
-            <NewTicketForm onCreateTicket={createTicket} />
+            <NewTicketForm onCreateTicket={handleCreateTicket} />
           </CardContent>
         </Card>
       </div>

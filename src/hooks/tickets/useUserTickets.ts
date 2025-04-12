@@ -56,7 +56,12 @@ export const useUserTickets = () => {
     }
   };
 
-  const createTicket = async (subject: string, message: string) => {
+  const createTicket = async (
+    subject: string, 
+    message: string, 
+    priority: string = "medium", 
+    category: string = "general"
+  ): Promise<Ticket | null> => {
     try {
       setLoading(true);
       
@@ -64,7 +69,7 @@ export const useUserTickets = () => {
         throw new Error("User not authenticated");
       }
       
-      const newTicket = await createSupportTicket(user.id, subject, message);
+      const newTicket = await createSupportTicket(user.id, subject, message, priority, category);
       
       if (newTicket) {
         setTickets(prevTickets => [newTicket, ...prevTickets]);
@@ -74,7 +79,7 @@ export const useUserTickets = () => {
           description: "Ticket created successfully",
         });
         
-        return true;
+        return newTicket;
       } else {
         throw new Error("Failed to create ticket");
       }
@@ -85,7 +90,7 @@ export const useUserTickets = () => {
         description: "Failed to create ticket",
         variant: "destructive",
       });
-      return false;
+      return null;
     } finally {
       setLoading(false);
     }

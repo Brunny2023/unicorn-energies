@@ -8,6 +8,9 @@ import {
   updateTicket 
 } from '@/utils/ticket/api/index';
 
+type TicketStatus = "open" | "in-progress" | "resolved" | "closed" | "replied";
+type TicketPriority = "high" | "medium" | "low";
+
 /**
  * Hook for admin ticket management
  */
@@ -77,9 +80,9 @@ export const useAdminTickets = () => {
         throw new Error("Response cannot be empty");
       }
       
-      const updateData = {
+      const updateData: Partial<Ticket> = {
         admin_response: response,
-        status: 'responded',
+        status: "responded" as TicketStatus,
         updated_at: new Date().toISOString()
       };
       
@@ -115,9 +118,11 @@ export const useAdminTickets = () => {
     }
   };
 
-  const updateTicketStatus = async (ticketId: string, status: string) => {
+  const updateTicketStatus = async (ticketId: string, status: TicketStatus) => {
     try {
-      const success = await updateTicket(ticketId, { status });
+      const updateData: Partial<Ticket> = { status };
+      
+      const success = await updateTicket(ticketId, updateData);
       
       if (!success) {
         throw new Error("Failed to update ticket status");
@@ -149,9 +154,11 @@ export const useAdminTickets = () => {
     }
   };
 
-  const updateTicketPriority = async (ticketId: string, priority: string) => {
+  const updateTicketPriority = async (ticketId: string, priority: TicketPriority) => {
     try {
-      const success = await updateTicket(ticketId, { priority });
+      const updateData: Partial<Ticket> = { priority };
+      
+      const success = await updateTicket(ticketId, updateData);
       
       if (!success) {
         throw new Error("Failed to update ticket priority");
