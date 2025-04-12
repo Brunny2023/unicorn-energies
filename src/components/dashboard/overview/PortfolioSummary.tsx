@@ -17,9 +17,12 @@ interface PortfolioSummaryProps {
 }
 
 const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({ 
-  loading, 
-  investmentStats 
+  loading = false, 
+  investmentStats = { total_invested: 0, total_expected_return: 0 }
 }) => {
+  // Ensure we have default values to prevent runtime errors
+  const stats = investmentStats || { total_invested: 0, total_expected_return: 0 };
+  
   return (
     <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30 h-full">
       <CardHeader className="pb-2">
@@ -36,23 +39,23 @@ const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
           <div className="space-y-4">
             <div className="flex justify-between">
               <span className="text-gray-400">Total Invested</span>
-              <span className="text-white font-medium">{formatCurrency(investmentStats.total_invested)}</span>
+              <span className="text-white font-medium">{formatCurrency(stats.total_invested)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-400">Expected Returns</span>
-              <span className="text-green-400 font-medium">{formatCurrency(investmentStats.total_expected_return)}</span>
+              <span className="text-green-400 font-medium">{formatCurrency(stats.total_expected_return)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-400">Profit</span>
               <span className="text-unicorn-gold font-medium">
-                {formatCurrency(investmentStats.total_expected_return - investmentStats.total_invested)}
+                {formatCurrency(stats.total_expected_return - stats.total_invested)}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-400">ROI</span>
               <span className="text-unicorn-gold font-medium">
-                {investmentStats.total_invested > 0 
-                  ? `${((investmentStats.total_expected_return / investmentStats.total_invested - 1) * 100).toFixed(2)}%` 
+                {stats.total_invested > 0 
+                  ? `${((stats.total_expected_return / stats.total_invested - 1) * 100).toFixed(2)}%` 
                   : "0.00%"
                 }
               </span>

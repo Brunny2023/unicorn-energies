@@ -10,11 +10,63 @@ import RecentActivities from "./RecentActivities";
 
 const DashboardContent = () => {
   const [loading, setLoading] = useState(true);
+  
+  // Default investment stats to avoid runtime errors
+  const [investmentStats, setInvestmentStats] = useState({
+    total_invested: 0,
+    total_expected_return: 0
+  });
+  
+  // Default transactions to avoid runtime errors
+  const [transactions, setTransactions] = useState([
+    {
+      id: "1",
+      type: "deposit",
+      amount: 1000,
+      status: "completed",
+      created_at: new Date().toISOString(),
+      description: "Initial deposit"
+    }
+  ]);
 
   // Simulate loading
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
+      
+      // Simulate fetching investment stats
+      setInvestmentStats({
+        total_invested: 5000,
+        total_expected_return: 6250
+      });
+      
+      // Simulate fetching transactions
+      setTransactions([
+        {
+          id: "1",
+          type: "deposit",
+          amount: 3000,
+          status: "completed",
+          created_at: new Date().toISOString(),
+          description: "Initial deposit"
+        },
+        {
+          id: "2",
+          type: "investment",
+          amount: 2000,
+          status: "completed",
+          created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+          description: "Dolphin plan investment"
+        },
+        {
+          id: "3",
+          type: "withdrawal",
+          amount: 500,
+          status: "pending",
+          created_at: new Date(Date.now() - 86400000 * 5).toISOString(),
+          description: "Withdrawal request"
+        }
+      ]);
     }, 1500);
     
     return () => clearTimeout(timer);
@@ -32,7 +84,7 @@ const DashboardContent = () => {
             <CardTitle className="text-xl text-white">Portfolio Performance</CardTitle>
           </CardHeader>
           <CardContent>
-            <PortfolioSummary loading={loading} />
+            <PortfolioSummary loading={loading} investmentStats={investmentStats} />
           </CardContent>
         </Card>
         
@@ -41,7 +93,7 @@ const DashboardContent = () => {
       
       <Tabs defaultValue="all" className="w-full">
         <TabsContent value="all" className="mt-0">
-          <TransactionsPanel loading={loading} />
+          <TransactionsPanel loading={loading} transactions={transactions} />
         </TabsContent>
       </Tabs>
     </div>

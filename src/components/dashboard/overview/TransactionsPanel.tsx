@@ -21,9 +21,12 @@ interface TransactionsPanelProps {
 }
 
 const TransactionsPanel: React.FC<TransactionsPanelProps> = ({ 
-  loading, 
-  transactions 
+  loading = false, 
+  transactions = []
 }) => {
+  // Ensure transactions is always an array to prevent runtime errors
+  const transactionsList = transactions || [];
+  
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', {
@@ -89,9 +92,9 @@ const TransactionsPanel: React.FC<TransactionsPanelProps> = ({
               </div>
             ))}
           </div>
-        ) : transactions.length > 0 ? (
+        ) : transactionsList.length > 0 ? (
           <div className="divide-y divide-unicorn-gold/30">
-            {transactions.map((transaction) => (
+            {transactionsList.map((transaction) => (
               <div key={transaction.id} className="p-4 flex items-center justify-between">
                 <div className="flex items-center">
                   <div className="mr-3 rounded-full bg-unicorn-darkPurple/80 p-2">
