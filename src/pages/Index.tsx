@@ -25,6 +25,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
+      {/* Stars background should be positioned behind all content */}
       <StarsBackground />
       
       {/* Explicitly include the Navbar component here */}

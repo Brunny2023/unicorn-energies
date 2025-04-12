@@ -25,6 +25,7 @@ const DashboardLayout = ({ children, isAdmin = false }: DashboardLayoutProps) =>
 
   return (
     <div className="relative min-h-screen flex flex-col">
+      {/* StarsBackground should be positioned absolutely and not affect layout */}
       <StarsBackground />
 
       <DashboardHeader 
@@ -40,9 +41,10 @@ const DashboardLayout = ({ children, isAdmin = false }: DashboardLayoutProps) =>
       />
 
       {/* Main Content */}
-      <main className="flex-1 md:pl-64 p-6 overflow-auto">
-        {/* The Outlet component is what renders the matched child route */}
+      <main className="flex-1 md:pl-64 p-6 overflow-auto relative z-10">
+        {/* The Outlet component renders the matched child route */}
         <Outlet />
+        {children}
       </main>
     </div>
   );
