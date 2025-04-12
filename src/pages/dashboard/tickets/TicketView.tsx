@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { useTicketDetails } from "@/hooks/useTickets";
@@ -7,7 +7,15 @@ import TicketDetails from "@/components/tickets/TicketDetails";
 
 const TicketView = () => {
   const { id } = useParams<{ id: string }>();
-  const { loading } = useTicketDetails(id);
+  const { ticket, loading, error, fetchTicket } = useTicketDetails(id);
+  
+  useEffect(() => {
+    // Add debugging logs
+    console.log("TicketView component loaded. ID:", id);
+    console.log("Ticket data:", ticket);
+    console.log("Loading state:", loading);
+    console.log("Error state:", error);
+  }, [id, ticket, loading, error]);
 
   return (
     <DashboardLayout>

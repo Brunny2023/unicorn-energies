@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -12,6 +12,14 @@ import TicketDetailsNotFound from "./TicketDetailsNotFound";
 const TicketDetails = () => {
   const { id } = useParams<{ id: string }>();
   const { ticket, loading, error } = useTicketDetails(id);
+  
+  useEffect(() => {
+    console.log("TicketDetails component loaded");
+    console.log("Ticket ID from params:", id);
+    console.log("Ticket data:", ticket);
+    console.log("Loading state:", loading);
+    console.log("Error state:", error);
+  }, [id, ticket, loading, error]);
 
   return (
     <div className="space-y-6">

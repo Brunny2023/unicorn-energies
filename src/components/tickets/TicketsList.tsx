@@ -1,11 +1,18 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useUserTickets } from "@/hooks/useTickets";
 import TicketsListHeader from "./TicketsListHeader";
 import TicketsListContent from "./TicketsListContent";
 
 const TicketsList = () => {
   const { tickets, loading, error, fetchTickets } = useUserTickets();
+  
+  useEffect(() => {
+    console.log("TicketsList component loaded");
+    console.log("Tickets:", tickets);
+    console.log("Loading state:", loading);
+    console.log("Error state:", error);
+  }, [tickets, loading, error]);
 
   return (
     <div className="space-y-6">

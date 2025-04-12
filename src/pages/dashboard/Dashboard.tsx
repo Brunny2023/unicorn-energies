@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
@@ -84,6 +83,8 @@ const formatCurrency = (amount: number): string => {
 };
 
 const Dashboard = () => {
+  console.log("Dashboard component loaded"); // Debug log
+  
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [walletData, setWalletData] = useState<any>(null);
@@ -99,7 +100,10 @@ const Dashboard = () => {
   });
 
   useEffect(() => {
+    console.log("Dashboard useEffect triggered, user:", user); // Debug log
+    
     if (DEVELOPMENT_MODE) {
+      console.log("Loading sample data in dev mode"); // Debug log
       // Simulate loading
       setTimeout(() => {
         setWalletData(SAMPLE_DATA.wallet);
@@ -107,6 +111,7 @@ const Dashboard = () => {
         setInvestmentStats(SAMPLE_DATA.investments);
         setTicketStats(SAMPLE_DATA.tickets);
         setLoading(false);
+        console.log("Sample data loaded"); // Debug log
       }, 1000);
       return;
     }
@@ -239,6 +244,13 @@ const Dashboard = () => {
         return <Clock className="h-4 w-4 text-gray-500" />;
     }
   };
+
+  console.log("Dashboard rendering with data:", { 
+    walletData, 
+    transactions: transactions.length,
+    investmentStats,
+    ticketStats
+  }); // Debug log
 
   return (
     <DashboardLayout>

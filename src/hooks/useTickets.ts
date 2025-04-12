@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -7,7 +6,8 @@ import {
   getUserTickets, 
   createSupportTicket, 
   getTicketDetails, 
-  updateTicket 
+  updateTicket,
+  getAllTickets as fetchAllTickets
 } from '@/utils/ticket';
 
 /**
@@ -80,7 +80,6 @@ export const useUserTickets = () => {
         throw new Error("Failed to create ticket");
       }
       
-      // Update local state
       setTickets(prev => [newTicket, ...prev]);
       
       toast({
@@ -168,7 +167,6 @@ export const useTicketDetails = (ticketId: string | undefined) => {
         throw new Error("Failed to update ticket");
       }
       
-      // Update local state
       if (ticket) {
         setTicket({
           ...ticket,
@@ -225,7 +223,7 @@ export const useAdminTickets = () => {
       setError(null);
       
       console.log("Admin: Fetching all tickets");
-      const allTickets = await getAllTickets();
+      const allTickets = await fetchAllTickets();
       console.log("Admin: All tickets fetched:", allTickets.length);
       setTickets(allTickets);
     } catch (err) {
@@ -262,7 +260,6 @@ export const useAdminTickets = () => {
         throw new Error("Failed to respond to ticket");
       }
       
-      // Update local state
       setTickets(prev => prev.map(ticket => 
         ticket.id === ticketId 
           ? { ...ticket, ...updateData, updated_at: new Date().toISOString() } 
