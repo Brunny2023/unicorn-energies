@@ -69,3 +69,37 @@ export interface TicketMessage {
   created_at: string;
   attachments?: string[];
 }
+
+export interface LoanApplication {
+  id: string;
+  user_id: string;
+  amount: number;
+  purpose?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  admin_notes?: string;
+  created_at: string;
+  updated_at: string;
+  approved_by?: string;
+  approved_at?: string;
+}
+
+export interface AffiliateReward {
+  id: string;
+  user_id: string;
+  source_investment_id: string;
+  amount: number;
+  level: number;
+  status: 'pending' | 'processed';
+  created_at: string;
+  processed_at?: string;
+}
+
+export interface NotificationPreferences {
+  id: string;
+  user_id: string;
+  interest_payments: boolean;
+  loan_updates: boolean;
+  affiliate_rewards: boolean;
+  created_at: string;
+  updated_at: string;
+}

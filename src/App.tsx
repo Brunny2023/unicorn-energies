@@ -25,6 +25,8 @@ import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import Investments from "./pages/dashboard/Investments";
 import Withdraw from "./pages/dashboard/Withdraw";
 import Transactions from "./pages/dashboard/Transactions";
+import Loans from "./pages/dashboard/Loans";
+import Affiliates from "./pages/dashboard/Affiliates";
 import TicketsIndex from "./pages/dashboard/tickets/TicketsIndex";
 import NewTicket from "./pages/dashboard/tickets/NewTicket";
 import TicketView from "./pages/dashboard/tickets/TicketView";
@@ -35,6 +37,7 @@ import AdminUsers from "./pages/admin/Users";
 import AdminTransactions from "./pages/admin/Transactions";
 import AdminTickets from "./pages/admin/Tickets";
 import AdminTicketDetails from "./pages/admin/TicketDetails";
+import LoanApplications from "./pages/admin/LoanApplications";
 import PaymentConnections from "./pages/admin/PaymentConnections";
 import BroadcastMessages from "./pages/admin/BroadcastMessages";
 
@@ -77,6 +80,8 @@ const App = () => {
             <Route path="investments" element={<Investments />} />
             <Route path="withdraw" element={<Withdraw />} />
             <Route path="transactions" element={<Transactions />} />
+            <Route path="loans" element={<Loans />} />
+            <Route path="affiliates" element={<Affiliates />} />
             <Route path="tickets" element={<TicketsIndex />} />
             <Route path="tickets/new" element={<NewTicket />} />
             <Route path="tickets/:id" element={<TicketView />} />
@@ -90,6 +95,7 @@ const App = () => {
             <Route path="tickets/:id" element={<AdminTicketDetails />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="transactions" element={<AdminTransactions />} />
+            <Route path="loan-applications" element={<LoanApplications />} />
             <Route path="payment-connections" element={<PaymentConnections />} />
             <Route path="broadcast" element={<BroadcastMessages />} />
           </Route>

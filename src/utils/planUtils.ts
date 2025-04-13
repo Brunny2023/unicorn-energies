@@ -5,11 +5,11 @@ export const fetchInvestmentPlans = async (): Promise<Plan[]> => {
   try {
     // Hardcoded investment plans since the table doesn't exist in Supabase
     const plans: Plan[] = [
-      { id: "goldfish", name: "Goldfish", minAmount: 100, maxAmount: 999, dailyReturn: 1.2, duration: 15 },
-      { id: "dolphin", name: "Dolphin", minAmount: 1000, maxAmount: 4999, dailyReturn: 1.5, duration: 20 },
-      { id: "shark", name: "Shark", minAmount: 5000, maxAmount: 14999, dailyReturn: 1.8, duration: 25 },
-      { id: "whales", name: "Whales", minAmount: 15000, maxAmount: 50000, dailyReturn: 2.2, duration: 30 },
-      { id: "accredited", name: "Accredited Investor", minAmount: 50000, maxAmount: 1000000, dailyReturn: 2.5, duration: 40 }
+      { id: "goldfish", name: "Goldfish", minAmount: 10, maxAmount: 100, dailyReturn: 0.35, duration: 30 },
+      { id: "dolphin", name: "Dolphin", minAmount: 100, maxAmount: 1000, dailyReturn: 0.45, duration: 30 },
+      { id: "shark", name: "Shark", minAmount: 1000, maxAmount: 10000, dailyReturn: 0.55, duration: 30 },
+      { id: "whales", name: "Whales", minAmount: 10000, maxAmount: 200000, dailyReturn: 0.65, duration: 30 },
+      { id: "accredited", name: "Accredited Investor", minAmount: 200000, maxAmount: 1000000, dailyReturn: 0.85, duration: 30 }
     ];
     
     return plans;

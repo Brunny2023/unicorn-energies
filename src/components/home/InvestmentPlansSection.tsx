@@ -18,32 +18,39 @@ type InvestmentPlan = {
 const investmentPlans: InvestmentPlan[] = [
   {
     name: "Goldfish",
-    range: "$100 - $999",
-    dailyReturn: 1.2,
-    duration: 15,
-    totalReturn: 118
+    range: "$10 - $100",
+    dailyReturn: 0.35,
+    duration: 30,
+    totalReturn: 10.5
   },
   {
     name: "Dolphin",
-    range: "$1,000 - $4,999",
-    dailyReturn: 1.5,
-    duration: 20,
-    totalReturn: 130,
+    range: "$100 - $1,000",
+    dailyReturn: 0.45,
+    duration: 30,
+    totalReturn: 13.5,
     featured: true
   },
   {
     name: "Shark",
-    range: "$5,000 - $14,999",
-    dailyReturn: 1.8,
-    duration: 25,
-    totalReturn: 145
+    range: "$1,000 - $10,000",
+    dailyReturn: 0.55,
+    duration: 30,
+    totalReturn: 16.5
   },
   {
     name: "Whales",
-    range: "$15,000 - $50,000",
-    dailyReturn: 2.2,
+    range: "$10,000 - $200,000",
+    dailyReturn: 0.65,
     duration: 30,
-    totalReturn: 166
+    totalReturn: 19.5
+  },
+  {
+    name: "Accredited",
+    range: "$200,000 - $1,000,000",
+    dailyReturn: 0.85,
+    duration: 30,
+    totalReturn: 25.5
   }
 ];
 
@@ -64,7 +71,7 @@ const InvestmentPlansSection = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           {investmentPlans.map((plan) => (
             <Card 
               key={plan.name}
@@ -90,10 +97,10 @@ const InvestmentPlansSection = () => {
               </div>
               
               <CardHeader className="relative pb-0 pt-6">
-                <CardTitle className="text-2xl font-bold text-unicorn-gold mb-1 text-center">
+                <CardTitle className="text-xl font-bold text-unicorn-gold mb-1 text-center">
                   {plan.name}
                 </CardTitle>
-                <div className="text-3xl font-bold text-white mb-2 text-center">
+                <div className="text-2xl font-bold text-white mb-2 text-center">
                   {plan.range}
                 </div>
               </CardHeader>
@@ -101,16 +108,16 @@ const InvestmentPlansSection = () => {
               <CardContent className="relative pt-4">
                 <div className="space-y-4 mb-6">
                   <div className="flex justify-between items-center py-2 px-1 border-b border-unicorn-purple/30">
-                    <span className="text-gray-200 font-medium">Daily Return:</span>
-                    <span className="font-bold text-lg text-unicorn-gold">{plan.dailyReturn}%</span>
+                    <span className="text-gray-200 text-sm font-medium">Daily Return:</span>
+                    <span className="font-bold text-md text-unicorn-gold">{plan.dailyReturn}%</span>
                   </div>
                   <div className="flex justify-between items-center py-2 px-1 border-b border-unicorn-purple/30">
-                    <span className="text-gray-200 font-medium">Duration:</span>
-                    <span className="font-bold text-lg text-unicorn-gold">{plan.duration} days</span>
+                    <span className="text-gray-200 text-sm font-medium">Duration:</span>
+                    <span className="font-bold text-md text-unicorn-gold">{plan.duration} days</span>
                   </div>
                   <div className="flex justify-between items-center py-2 px-1">
-                    <span className="text-gray-200 font-medium">Total Return:</span>
-                    <span className="font-bold text-lg text-unicorn-gold">{plan.totalReturn}%</span>
+                    <span className="text-gray-200 text-sm font-medium">Total Return:</span>
+                    <span className="font-bold text-md text-unicorn-gold">{plan.totalReturn}% + Capital</span>
                   </div>
                 </div>
               </CardContent>
@@ -118,7 +125,7 @@ const InvestmentPlansSection = () => {
               <CardFooter className="relative pt-0">
                 <Link to="/investment-plans" className="w-full">
                   <Button 
-                    className={`w-full group text-base font-bold ${
+                    className={`w-full group text-sm font-bold ${
                       plan.featured 
                         ? 'bg-unicorn-gold hover:bg-unicorn-gold/90 text-unicorn-black' 
                         : 'border border-unicorn-gold text-unicorn-gold hover:bg-unicorn-gold/20'

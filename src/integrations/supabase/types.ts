@@ -9,6 +9,71 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      affiliate_rewards: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          level: number
+          processed_at: string | null
+          source_investment_id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          level: number
+          processed_at?: string | null
+          source_investment_id: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          level?: number
+          processed_at?: string | null
+          source_investment_id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_rewards_source_investment_id_fkey"
+            columns: ["source_investment_id"]
+            isOneToOne: false
+            referencedRelation: "investments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliates: {
+        Row: {
+          created_at: string
+          id: string
+          level: number
+          referrer_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          level?: number
+          referrer_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          level?: number
+          referrer_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       investments: {
         Row: {
           amount: number
@@ -51,6 +116,75 @@ export type Database = {
         }
         Relationships: []
       }
+      loan_applications: {
+        Row: {
+          admin_notes: string | null
+          amount: number
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          id: string
+          purpose: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          amount: number
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          id?: string
+          purpose?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          amount?: number
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          id?: string
+          purpose?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notification_preferences: {
+        Row: {
+          affiliate_rewards: boolean
+          created_at: string
+          id: string
+          interest_payments: boolean
+          loan_updates: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          affiliate_rewards?: boolean
+          created_at?: string
+          id?: string
+          interest_payments?: boolean
+          loan_updates?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          affiliate_rewards?: boolean
+          created_at?: string
+          id?: string
+          interest_payments?: boolean
+          loan_updates?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -58,6 +192,8 @@ export type Database = {
           email: string
           full_name: string | null
           id: string
+          referral_code: string | null
+          referred_by: string | null
           role: string
           updated_at: string
         }
@@ -67,6 +203,8 @@ export type Database = {
           email: string
           full_name?: string | null
           id: string
+          referral_code?: string | null
+          referred_by?: string | null
           role?: string
           updated_at?: string
         }
@@ -76,6 +214,8 @@ export type Database = {
           email?: string
           full_name?: string | null
           id?: string
+          referral_code?: string | null
+          referred_by?: string | null
           role?: string
           updated_at?: string
         }
