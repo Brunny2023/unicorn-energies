@@ -18,7 +18,7 @@ const plans: Plan[] = [
 const ProfitCalculatorSection = () => {
   const [selectedPlan, setSelectedPlan] = useState<Plan>(plans[0]);
   const [amount, setAmount] = useState<number>(selectedPlan.minAmount);
-  const [results, setResults] = useState<CalculationResults>(null);
+  const [results, setResults] = useState<CalculationResults | null>(null);
 
   const handlePlanChange = (value: string) => {
     const plan = plans.find(p => p.name === value) || plans[0];
@@ -57,11 +57,17 @@ const ProfitCalculatorSection = () => {
     const dailyProfit = (amount * selectedPlan.dailyReturn) / 100;
     const totalProfit = dailyProfit * selectedPlan.duration;
     const totalReturn = amount + totalProfit;
+    const returnPercentage = (totalProfit / amount) * 100;
+    const dailyRate = selectedPlan.dailyReturn / 100;
+    const annualYield = (Math.pow(1 + dailyRate, 365) - 1) * 100;
     
     setResults({
       dailyProfit,
       totalProfit,
-      totalReturn
+      totalReturn,
+      returnPercentage,
+      annualYield,
+      duration: selectedPlan.duration
     });
   };
 

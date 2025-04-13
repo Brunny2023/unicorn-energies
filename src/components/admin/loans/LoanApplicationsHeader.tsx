@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { RefreshCw, InfoCircle } from "lucide-react";
+import { RefreshCw, Info } from "lucide-react";
 import { 
   HoverCard,
   HoverCardContent,
@@ -40,7 +40,7 @@ const LoanApplicationsHeader = ({
           <h3 className="font-medium text-unicorn-gold text-lg mr-2">Loan Approval Guidelines</h3>
           <HoverCard>
             <HoverCardTrigger asChild>
-              <InfoCircle className="h-4 w-4 text-unicorn-gold cursor-help" />
+              <Info className="h-4 w-4 text-unicorn-gold cursor-help" />
             </HoverCardTrigger>
             <HoverCardContent className="w-80 bg-unicorn-darkPurple border-unicorn-gold/30 text-white">
               <p className="text-sm">
@@ -65,6 +65,9 @@ const LoanApplicationsHeader = ({
           </li>
           <li>
             Always verify the user's investment history and wallet balance before approving large loans.
+          </li>
+          <li>
+            Unicorn Energies Allied Resources Texas Branch: Unicorn Energy Inc, RR5 Box 181-N, Elgin, TX 78621.
           </li>
         </ul>
       </div>

@@ -1,7 +1,12 @@
 
 import { Plan, CalculationResults } from '@/types/investment';
 
-// Investment calculation utilities
+/**
+ * Calculate investment results based on investment amount and plan details
+ * @param amount The amount being invested
+ * @param plan The investment plan to use for calculations
+ * @returns Complete calculation results
+ */
 export const calculateInvestmentResults = (amount: number, plan: Plan): CalculationResults => {
   // Daily profit is calculated based on the daily return percentage
   const dailyProfit = amount * (plan.dailyReturn / 100);
@@ -30,7 +35,13 @@ export const calculateInvestmentResults = (amount: number, plan: Plan): Calculat
   };
 };
 
-// Calculate the withdrawal eligibility for profits from loan-funded investments
+/**
+ * Determine if a user can withdraw profits from a loan-funded investment
+ * @param userId The user's ID
+ * @param loanAmount The total loan amount received
+ * @param investedAmount The amount the user has invested
+ * @returns Eligibility status and reason if not eligible
+ */
 export const calculateLoanProfitWithdrawalEligibility = async (
   userId: string,
   loanAmount: number,
@@ -49,5 +60,36 @@ export const calculateLoanProfitWithdrawalEligibility = async (
   return { eligible: true };
 };
 
-// Export calculateInvestment as an alias of calculateInvestmentResults
+/**
+ * Calculate the maximum loan amount based on proposed investment
+ * @param proposedInvestmentAmount The amount the user proposes to invest
+ * @returns The maximum loan amount (300% of proposed investment)
+ */
+export const calculateMaximumLoanAmount = (proposedInvestmentAmount: number): number => {
+  return proposedInvestmentAmount * 3; // 300% of proposed investment
+};
+
+/**
+ * Verify if a loan amount is valid based on proposed investment
+ * @param loanAmount The requested loan amount
+ * @param proposedInvestmentAmount The amount the user proposes to invest
+ * @returns Validation result with status and message
+ */
+export const validateLoanAmount = (
+  loanAmount: number, 
+  proposedInvestmentAmount: number
+): {valid: boolean, message?: string} => {
+  const maxLoanAmount = calculateMaximumLoanAmount(proposedInvestmentAmount);
+  
+  if (loanAmount > maxLoanAmount) {
+    return {
+      valid: false,
+      message: `Loan amount cannot exceed $${maxLoanAmount.toLocaleString()} (300% of your proposed investment of $${proposedInvestmentAmount.toLocaleString()})`
+    };
+  }
+  
+  return { valid: true };
+};
+
+// Export calculateInvestment as an alias of calculateInvestmentResults for backwards compatibility
 export const calculateInvestment = calculateInvestmentResults;
