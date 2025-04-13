@@ -1,16 +1,17 @@
 
-import { renderTemplate } from './email/emailRenderer';
-import { sendEmail } from './email/emailSender';
+// Define the email template types
+export interface EmailTemplateType {
+  name: string;
+  subject: string;
+  html: string;
+}
 
-// Function to send welcome email
-export const sendWelcomeEmail = async (
-  email: string,
-  userData: { userName: string }
-): Promise<boolean> => {
-  try {
-    // In a real app, these templates would be fetched from the database
-    const subject = "Welcome to UnicornEnergies - Your Investment Journey Begins!";
-    const htmlTemplate = `
+// Email template collection
+export const EMAIL_TEMPLATES: Record<string, EmailTemplateType> = {
+  welcome: {
+    name: "Welcome Email",
+    subject: "Welcome to UnicornEnergies - Your Investment Journey Begins!",
+    html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
         <h1 style="color: #8a6d3b; border-bottom: 2px solid #f0ad4e; padding-bottom: 10px;">Welcome to UnicornEnergies!</h1>
         <p>Hello {{userName}},</p>
@@ -36,30 +37,12 @@ export const sendWelcomeEmail = async (
         <p>Best regards,<br>The UnicornEnergies Team</p>
         <p style="margin-top: 30px; font-size: 12px; color: #777; border-top: 1px solid #eee; padding-top: 15px;">This is an automated message. Please do not reply to this email.</p>
       </div>
-    `;
-    
-    const html = renderTemplate(htmlTemplate, userData);
-    return await sendEmail(email, subject, html);
-  } catch (error) {
-    console.error('Error sending welcome email:', error);
-    return false;
-  }
-};
-
-// Function to send investment confirmation email
-export const sendInvestmentConfirmationEmail = async (
-  email: string,
-  data: { 
-    userName: string; 
-    amount: number;
-    planName: string;
-    duration: number;
-    expectedReturn: number;
-  }
-): Promise<boolean> => {
-  try {
-    const subject = "Investment Confirmation - Your UnicornEnergies Investment";
-    const htmlTemplate = `
+    `
+  },
+  investment_confirmation: {
+    name: "Investment Confirmation",
+    subject: "Investment Confirmation - Your UnicornEnergies Investment",
+    html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
         <h1 style="color: #8a6d3b; border-bottom: 2px solid #f0ad4e; padding-bottom: 10px;">Investment Confirmation</h1>
         <p>Hello {{userName}},</p>
@@ -76,35 +59,12 @@ export const sendInvestmentConfirmationEmail = async (
         <p>Best regards,<br>The UnicornEnergies Team</p>
         <p style="margin-top: 30px; font-size: 12px; color: #777; border-top: 1px solid #eee; padding-top: 15px;">This is an automated message. Please do not reply to this email.</p>
       </div>
-    `;
-    
-    const formattedData = {
-      ...data,
-      amount: data.amount.toFixed(2)
-    };
-    
-    const html = renderTemplate(htmlTemplate, formattedData);
-    return await sendEmail(email, subject, html);
-  } catch (error) {
-    console.error('Error sending investment confirmation email:', error);
-    return false;
-  }
-};
-
-// Function to send withdrawal confirmation email
-export const sendWithdrawalConfirmationEmail = async (
-  email: string,
-  data: { 
-    userName: string; 
-    amount: number;
-    method: string;
-    destination: string;
-    status: string;
-  }
-): Promise<boolean> => {
-  try {
-    const subject = "Withdrawal Request Confirmation - UnicornEnergies";
-    const htmlTemplate = `
+    `
+  },
+  withdrawal_confirmation: {
+    name: "Withdrawal Confirmation",
+    subject: "Withdrawal Request Confirmation - UnicornEnergies",
+    html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
         <h1 style="color: #8a6d3b; border-bottom: 2px solid #f0ad4e; padding-bottom: 10px;">Withdrawal Request Received</h1>
         <p>Hello {{userName}},</p>
@@ -122,37 +82,12 @@ export const sendWithdrawalConfirmationEmail = async (
         <p>Best regards,<br>The UnicornEnergies Team</p>
         <p style="margin-top: 30px; font-size: 12px; color: #777; border-top: 1px solid #eee; padding-top: 15px;">This is an automated message. Please do not reply to this email.</p>
       </div>
-    `;
-    
-    const formattedData = {
-      ...data,
-      amount: data.amount.toFixed(2)
-    };
-    
-    const html = renderTemplate(htmlTemplate, formattedData);
-    return await sendEmail(email, subject, html);
-  } catch (error) {
-    console.error('Error sending withdrawal confirmation email:', error);
-    return false;
-  }
-};
-
-// Function to send loan status email
-export const sendLoanStatusEmail = async (
-  email: string,
-  data: { 
-    userName: string; 
-    amount: number;
-    purpose: string;
-    applicationDate: string;
-    status: string;
-    statusColor: string;
-    statusMessage: string;
-  }
-): Promise<boolean> => {
-  try {
-    const subject = "Loan Application Update - UnicornEnergies";
-    const htmlTemplate = `
+    `
+  },
+  loan_status: {
+    name: "Loan Application Status",
+    subject: "Loan Application Update - UnicornEnergies",
+    html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
         <h1 style="color: #8a6d3b; border-bottom: 2px solid #f0ad4e; padding-bottom: 10px;">Loan Application Update</h1>
         <p>Hello {{userName}},</p>
@@ -169,32 +104,12 @@ export const sendLoanStatusEmail = async (
         <p>Best regards,<br>The UnicornEnergies Team</p>
         <p style="margin-top: 30px; font-size: 12px; color: #777; border-top: 1px solid #eee; padding-top: 15px;">This is an automated message. Please do not reply to this email.</p>
       </div>
-    `;
-    
-    const formattedData = {
-      ...data,
-      amount: data.amount.toFixed(2)
-    };
-    
-    const html = renderTemplate(htmlTemplate, formattedData);
-    return await sendEmail(email, subject, html);
-  } catch (error) {
-    console.error('Error sending loan status email:', error);
-    return false;
-  }
-};
-
-// Function to send password reset email
-export const sendPasswordResetEmail = async (
-  email: string,
-  data: { 
-    userName: string; 
-    resetLink: string;
-  }
-): Promise<boolean> => {
-  try {
-    const subject = "Password Reset Request - UnicornEnergies";
-    const htmlTemplate = `
+    `
+  },
+  password_reset: {
+    name: "Password Reset",
+    subject: "Password Reset Request - UnicornEnergies",
+    html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
         <h1 style="color: #8a6d3b; border-bottom: 2px solid #f0ad4e; padding-bottom: 10px;">Password Reset Request</h1>
         <p>Hello {{userName}},</p>
@@ -207,12 +122,24 @@ export const sendPasswordResetEmail = async (
         <p>Best regards,<br>The UnicornEnergies Team</p>
         <p style="margin-top: 30px; font-size: 12px; color: #777; border-top: 1px solid #eee; padding-top: 15px;">This is an automated message. Please do not reply to this email.</p>
       </div>
-    `;
-    
-    const html = renderTemplate(htmlTemplate, data);
-    return await sendEmail(email, subject, html);
-  } catch (error) {
-    console.error('Error sending password reset email:', error);
-    return false;
+    `
+  },
+};
+
+// Get the available placeholders based on template type
+export const getPlaceholders = (templateId: string): string[] => {
+  switch(templateId) {
+    case 'welcome':
+      return ['userName'];
+    case 'investment_confirmation':
+      return ['userName', 'amount', 'planName', 'duration', 'expectedReturn'];
+    case 'withdrawal_confirmation':
+      return ['userName', 'amount', 'method', 'destination', 'status'];
+    case 'loan_status':
+      return ['userName', 'amount', 'purpose', 'applicationDate', 'status', 'statusColor', 'statusMessage'];
+    case 'password_reset':
+      return ['userName', 'resetLink'];
+    default:
+      return [];
   }
 };
