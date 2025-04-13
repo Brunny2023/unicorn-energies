@@ -13,6 +13,7 @@ import AdminPaymentConnections from "@/pages/admin/PaymentConnections";
 import AdminBroadcastMessages from "@/pages/admin/BroadcastMessages";
 import AdminSettings from "@/pages/admin/Settings";
 import AdminLoanApplications from "@/pages/admin/LoanApplications";
+import EmailTemplateEditor from "@/pages/admin/EmailTemplateEditor";
 
 const AdminRoutes = () => (
   <Routes>
@@ -78,6 +79,14 @@ const AdminRoutes = () => (
       element={
         <AdminRoute>
           <AdminSettings />
+        </AdminRoute>
+      }
+    />
+    <Route
+      path="/settings/email-templates/:templateId"
+      element={
+        <AdminRoute>
+          <EmailTemplateEditor />
         </AdminRoute>
       }
     />

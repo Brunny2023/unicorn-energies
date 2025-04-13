@@ -1,5 +1,5 @@
-
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { Settings as SettingsIcon, Server, Shield, BarChart, Mail, Users, Globe } from "lucide-react";
+import { Settings as SettingsIcon, Server, Shield, Mail, Users, Globe, Edit } from "lucide-react";
 
 const Settings = () => {
   const { toast } = useToast();
@@ -66,6 +66,14 @@ const Settings = () => {
       setLoading(false);
     }
   };
+
+  const emailTemplates = [
+    { id: "welcome", name: "Welcome Email", description: "Sent to new users after registration" },
+    { id: "investment_confirmation", name: "Investment Confirmation", description: "Sent to users after making an investment" },
+    { id: "withdrawal_confirmation", name: "Withdrawal Confirmation", description: "Sent to users after withdrawal request" },
+    { id: "loan_status", name: "Loan Application Status", description: "Sent when loan application status changes" },
+    { id: "password_reset", name: "Password Reset", description: "Sent to users when requesting password reset" },
+  ];
 
   return (
     <AdminLayout>
@@ -363,61 +371,31 @@ const Settings = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 gap-4">
-                  <div className="bg-unicorn-black/30 p-4 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-white font-medium">Welcome Email</h3>
-                      <Button variant="outline" size="sm" className="h-8 border-unicorn-gold/30 text-unicorn-gold hover:bg-unicorn-gold/10">
-                        Edit
-                      </Button>
+                  {emailTemplates.map((template) => (
+                    <div key={template.id} className="bg-unicorn-black/30 p-4 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-white font-medium">{template.name}</h3>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="h-8 border-unicorn-gold/30 text-unicorn-gold hover:bg-unicorn-gold/10"
+                          asChild
+                        >
+                          <Link to={`/admin/settings/email-templates/${template.id}`}>
+                            <Edit className="h-4 w-4 mr-2" />
+                            Edit
+                          </Link>
+                        </Button>
+                      </div>
+                      <p className="text-sm text-gray-400">{template.description}</p>
                     </div>
-                    <p className="text-sm text-gray-400">Sent to new users after registration</p>
-                  </div>
-                  
-                  <div className="bg-unicorn-black/30 p-4 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-white font-medium">Investment Confirmation</h3>
-                      <Button variant="outline" size="sm" className="h-8 border-unicorn-gold/30 text-unicorn-gold hover:bg-unicorn-gold/10">
-                        Edit
-                      </Button>
-                    </div>
-                    <p className="text-sm text-gray-400">Sent to users after making an investment</p>
-                  </div>
-                  
-                  <div className="bg-unicorn-black/30 p-4 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-white font-medium">Withdrawal Confirmation</h3>
-                      <Button variant="outline" size="sm" className="h-8 border-unicorn-gold/30 text-unicorn-gold hover:bg-unicorn-gold/10">
-                        Edit
-                      </Button>
-                    </div>
-                    <p className="text-sm text-gray-400">Sent to users after withdrawal request</p>
-                  </div>
-                  
-                  <div className="bg-unicorn-black/30 p-4 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-white font-medium">Loan Application Status</h3>
-                      <Button variant="outline" size="sm" className="h-8 border-unicorn-gold/30 text-unicorn-gold hover:bg-unicorn-gold/10">
-                        Edit
-                      </Button>
-                    </div>
-                    <p className="text-sm text-gray-400">Sent when loan application status changes</p>
-                  </div>
-                  
-                  <div className="bg-unicorn-black/30 p-4 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-white font-medium">Password Reset</h3>
-                      <Button variant="outline" size="sm" className="h-8 border-unicorn-gold/30 text-unicorn-gold hover:bg-unicorn-gold/10">
-                        Edit
-                      </Button>
-                    </div>
-                    <p className="text-sm text-gray-400">Sent to users when requesting password reset</p>
-                  </div>
+                  ))}
                 </div>
               </CardContent>
               <CardFooter>
-                <Button className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black font-bold">
-                  Save All Templates
-                </Button>
+                <div className="text-sm text-gray-400 italic">
+                  Email templates use placeholders like {{userName}} that will be automatically replaced with actual values when sending emails.
+                </div>
               </CardFooter>
             </Card>
           </TabsContent>
