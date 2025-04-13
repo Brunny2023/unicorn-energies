@@ -185,6 +185,24 @@ const EmailTemplateEditor = () => {
     );
   }
   
+  // Get the available placeholders based on template type
+  const getPlaceholders = () => {
+    switch(templateId) {
+      case 'welcome':
+        return ['userName'];
+      case 'investment_confirmation':
+        return ['userName', 'amount', 'planName', 'duration', 'expectedReturn'];
+      case 'withdrawal_confirmation':
+        return ['userName', 'amount', 'method', 'destination', 'status'];
+      case 'loan_status':
+        return ['userName', 'amount', 'purpose', 'applicationDate', 'status', 'statusColor', 'statusMessage'];
+      case 'password_reset':
+        return ['userName', 'resetLink'];
+      default:
+        return [];
+    }
+  };
+  
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -220,9 +238,13 @@ const EmailTemplateEditor = () => {
             
             <div className="space-y-2">
               <label htmlFor="htmlContent" className="text-white">HTML Content</label>
-              <p className="text-sm text-gray-400">
-                Use {{placeholders}} for dynamic content. Available placeholders vary by email type.
-              </p>
+              <div className="text-sm text-gray-400 mb-2">
+                Available placeholders: {getPlaceholders().map(placeholder => (
+                  <span key={placeholder} className="inline-block bg-unicorn-black/50 px-2 py-1 rounded mr-1 mb-1">
+                    {`{{${placeholder}}}`}
+                  </span>
+                ))}
+              </div>
               <Textarea
                 id="htmlContent"
                 value={emailData.html}

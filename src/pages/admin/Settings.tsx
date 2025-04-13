@@ -394,7 +394,7 @@ const Settings = () => {
               </CardContent>
               <CardFooter>
                 <div className="text-sm text-gray-400 italic">
-                  Email templates use placeholders like {{userName}} that will be automatically replaced with actual values when sending emails.
+                  Email templates use placeholders like {'{'}{'{'}}userName{'}'}{'}'} that will be automatically replaced with actual values when sending emails.
                 </div>
               </CardFooter>
             </Card>
