@@ -8,7 +8,22 @@ import RecentTransactionsPanel from "./RecentTransactionsPanel";
 
 const DashboardContainer = () => {
   const { loading, stats, recentTransactions, chartData, fetchDashboardData } = useDashboardData();
-  const { handleApproveWithdrawal, handleRejectWithdrawal } = useTransactionActions(fetchDashboardData);
+  const { handleApproveWithdrawal, handleRejectWithdrawal, processing } = useTransactionActions(fetchDashboardData);
+
+  // Wrapper functions to adapt the transaction actions to the expected interface
+  const onApproveWithdrawal = (id: string) => {
+    const transaction = recentTransactions.find(t => t.id === id);
+    if (transaction) {
+      handleApproveWithdrawal(id, transaction.user_id, transaction.amount);
+    }
+  };
+
+  const onRejectWithdrawal = (id: string) => {
+    const transaction = recentTransactions.find(t => t.id === id);
+    if (transaction) {
+      handleRejectWithdrawal(id, transaction.user_id, transaction.amount);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -24,8 +39,9 @@ const DashboardContainer = () => {
       <RecentTransactionsPanel 
         transactions={recentTransactions} 
         loading={loading}
-        onApproveWithdrawal={handleApproveWithdrawal}
-        onRejectWithdrawal={handleRejectWithdrawal}
+        onApproveWithdrawal={onApproveWithdrawal}
+        onRejectWithdrawal={onRejectWithdrawal}
+        processingId={processing}
       />
     </div>
   );

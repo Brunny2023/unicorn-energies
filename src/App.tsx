@@ -8,6 +8,8 @@ import Contact from "./pages/Contact";
 import Faq from "./pages/Faq";
 import HowItWorks from "./pages/HowItWorks";
 import NotFound from "./pages/NotFound";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
 
 // Auth pages
 import Login from "./pages/auth/Login";
@@ -53,186 +55,186 @@ import "./App.css";
 
 function App() {
   return (
-    <Router>
-      <AuthProvider>
-        <Routes>
-          {/* Public Pages */}
-          <Route path="/" element={<Index />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/investment-plans" element={<InvestmentPlans />} />
-          <Route path="/calculator" element={<Calculator />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/faq" element={<Faq />} />
-          <Route path="/how-it-works" element={<HowItWorks />} />
+    <AuthProvider>
+      <Routes>
+        {/* Public Pages */}
+        <Route path="/" element={<Index />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/investment-plans" element={<InvestmentPlans />} />
+        <Route path="/calculator" element={<Calculator />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/faq" element={<Faq />} />
+        <Route path="/how-it-works" element={<HowItWorks />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
 
-          {/* Auth Pages */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
+        {/* Auth Pages */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
-          {/* Protected Dashboard Pages */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/dashboard/investments"
-            element={
-              <ProtectedRoute>
-                <Investments />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/dashboard/transactions"
-            element={
-              <ProtectedRoute>
-                <Transactions />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/dashboard/withdraw"
-            element={
-              <ProtectedRoute>
-                <Withdraw />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/dashboard/loans"
-            element={
-              <ProtectedRoute>
-                <Loans />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/dashboard/affiliates"
-            element={
-              <ProtectedRoute>
-                <Affiliates />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/dashboard/settings"
-            element={
-              <ProtectedRoute>
-                <Settings />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/dashboard/tickets"
-            element={
-              <ProtectedRoute>
-                <TicketsIndex />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/dashboard/tickets/new"
-            element={
-              <ProtectedRoute>
-                <NewTicket />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/dashboard/tickets/:id"
-            element={
-              <ProtectedRoute>
-                <TicketView />
-              </ProtectedRoute>
-            }
-          />
+        {/* Protected Dashboard Pages */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/investments"
+          element={
+            <ProtectedRoute>
+              <Investments />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/transactions"
+          element={
+            <ProtectedRoute>
+              <Transactions />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/withdraw"
+          element={
+            <ProtectedRoute>
+              <Withdraw />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/loans"
+          element={
+            <ProtectedRoute>
+              <Loans />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/affiliates"
+          element={
+            <ProtectedRoute>
+              <Affiliates />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/settings"
+          element={
+            <ProtectedRoute>
+              <Settings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/tickets"
+          element={
+            <ProtectedRoute>
+              <TicketsIndex />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/tickets/new"
+          element={
+            <ProtectedRoute>
+              <NewTicket />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/tickets/:id"
+          element={
+            <ProtectedRoute>
+              <TicketView />
+            </ProtectedRoute>
+          }
+        />
 
-          {/* Admin Pages */}
-          <Route
-            path="/admin/dashboard"
-            element={
-              <AdminRoute>
-                <AdminDashboard />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/users"
-            element={
-              <AdminRoute>
-                <AdminUsers />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/transactions"
-            element={
-              <AdminRoute>
-                <AdminTransactions />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/tickets"
-            element={
-              <AdminRoute>
-                <AdminTickets />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/tickets/:id"
-            element={
-              <AdminRoute>
-                <AdminTicketDetails />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/payment-connections"
-            element={
-              <AdminRoute>
-                <AdminPaymentConnections />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/broadcast"
-            element={
-              <AdminRoute>
-                <AdminBroadcastMessages />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/settings"
-            element={
-              <AdminRoute>
-                <AdminSettings />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/loan-applications"
-            element={
-              <AdminRoute>
-                <AdminLoanApplications />
-              </AdminRoute>
-            }
-          />
+        {/* Admin Pages */}
+        <Route
+          path="/admin/dashboard"
+          element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <AdminRoute>
+              <AdminUsers />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/transactions"
+          element={
+            <AdminRoute>
+              <AdminTransactions />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/tickets"
+          element={
+            <AdminRoute>
+              <AdminTickets />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/tickets/:id"
+          element={
+            <AdminRoute>
+              <AdminTicketDetails />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/payment-connections"
+          element={
+            <AdminRoute>
+              <AdminPaymentConnections />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/broadcast"
+          element={
+            <AdminRoute>
+              <AdminBroadcastMessages />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/settings"
+          element={
+            <AdminRoute>
+              <AdminSettings />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/loan-applications"
+          element={
+            <AdminRoute>
+              <AdminLoanApplications />
+            </AdminRoute>
+          }
+        />
 
-          {/* 404 Not Found */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <Toaster />
-      </AuthProvider>
-    </Router>
+        {/* 404 Not Found */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <Toaster />
+    </AuthProvider>
   );
 }
 

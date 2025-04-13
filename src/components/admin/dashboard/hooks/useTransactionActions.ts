@@ -63,11 +63,13 @@ export const useTransactionActions = (refreshCallback: () => Promise<void>) => {
       if (updateError) throw updateError;
       
       // 2. Add the amount back to user's wallet
-      const { error: walletError } = await supabase.rpc('restore_rejected_withdrawal', {
-        p_transaction_id: transactionId,
-        p_user_id: userId,
-        p_amount: amount
-      });
+      // Use a more direct approach rather than RPC
+      const { error: walletError } = await supabase
+        .from('wallets')
+        .update({ 
+          balance: supabase.rpc('get_wallet_balance_plus', { p_user_id: userId, p_amount: amount })
+        })
+        .eq('user_id', userId);
       
       if (walletError) throw walletError;
       

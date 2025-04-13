@@ -1,169 +1,163 @@
 
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
-import { CheckCircle } from 'lucide-react';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import { Loader2 } from 'lucide-react';
 import Captcha from '@/components/ui/Captcha';
 import useCaptcha from '@/hooks/useCaptcha';
+import { Link } from 'react-router-dom';
+
+const formSchema = z.object({
+  name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
+  email: z.string().email({ message: 'Please enter a valid email address' }),
+  subject: z.string().min(5, { message: 'Subject must be at least 5 characters' }),
+  message: z.string().min(10, { message: 'Message must be at least 10 characters' }),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 interface ContactFormProps {
-  onSubmit: (formData: {
-    name: string;
-    email: string;
-    subject: string;
-    message: string;
-  }) => Promise<void>;
+  onSubmit: (formData: FormValues) => Promise<void>;
 }
 
 const ContactForm = ({ onSubmit }: ContactFormProps) => {
-  const [formSubmitted, setFormSubmitted] = useState(false);
+  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { siteKey, verified, handleVerify, resetCaptcha } = useCaptcha();
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
+  const captcha = useCaptcha();
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      subject: '',
+      message: '',
+    },
   });
-  
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
-  };
-  
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!verified) {
-      alert('Please complete the CAPTCHA verification.');
+
+  const handleSubmit = async (values: FormValues) => {
+    if (!captcha.verified) {
+      toast({
+        variant: "destructive",
+        title: "CAPTCHA Required",
+        description: "Please complete the CAPTCHA verification first.",
+      });
       return;
     }
-    
+
     setIsSubmitting(true);
-    
     try {
-      await onSubmit(formData);
-      
-      setFormSubmitted(true);
-      setIsSubmitting(false);
-      
-      // Reset form after submission
-      setFormData({
-        name: '',
-        email: '',
-        subject: '',
-        message: ''
+      await onSubmit(values);
+      form.reset();
+      captcha.resetCaptcha && captcha.resetCaptcha();
+      toast({
+        title: 'Message Sent',
+        description: 'Your message has been sent successfully. We\'ll get back to you soon.',
       });
-      
-      // Reset captcha
-      resetCaptcha();
-      
-      // Reset the submission status after 5 seconds
-      setTimeout(() => {
-        setFormSubmitted(false);
-      }, 5000);
     } catch (error) {
-      console.error('Error submitting form:', error);
+      toast({
+        variant: "destructive",
+        title: 'Error',
+        description: 'There was a problem sending your message. Please try again.',
+      });
+    } finally {
       setIsSubmitting(false);
-      alert('There was an error submitting your message. Please try again.');
     }
   };
 
   return (
-    <>
-      {formSubmitted ? (
-        <div className="bg-green-50 border border-green-200 text-green-700 p-6 rounded-lg flex items-start">
-          <CheckCircle className="h-6 w-6 mr-3 mt-0.5 flex-shrink-0" />
-          <div>
-            <h3 className="font-bold text-lg mb-1">Message Sent Successfully!</h3>
-            <p>Thank you for contacting us. Our team will respond to your inquiry as soon as possible, typically within 24 hours.</p>
-          </div>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-gray-700">Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Your name" {...field} className="border-gray-300" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-gray-700">Email</FormLabel>
+              <FormControl>
+                <Input placeholder="Your email" type="email" {...field} className="border-gray-300" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="subject"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-gray-700">Subject</FormLabel>
+              <FormControl>
+                <Input placeholder="Message subject" {...field} className="border-gray-300" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="message"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-gray-700">Message</FormLabel>
+              <FormControl>
+                <Textarea 
+                  placeholder="Write your message here..." 
+                  {...field} 
+                  className="border-gray-300 min-h-[150px]" 
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <div className="mt-4">
+          <Captcha siteKey={captcha.siteKey} onVerify={captcha.handleVerify} />
         </div>
-      ) : (
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="name" className="block text-gray-700 font-medium mb-2">Your Name</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-investment-navy"
-              placeholder="John Doe"
-              required
-            />
-          </div>
-          
-          <div>
-            <label htmlFor="email" className="block text-gray-700 font-medium mb-2">Email Address</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-investment-navy"
-              placeholder="john@example.com"
-              required
-            />
-          </div>
-          
-          <div>
-            <label htmlFor="subject" className="block text-gray-700 font-medium mb-2">Subject</label>
-            <select
-              id="subject"
-              name="subject"
-              value={formData.subject}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-investment-navy"
-              required
-            >
-              <option value="" disabled>Select a subject</option>
-              <option value="General Inquiry">General Inquiry</option>
-              <option value="Investment Question">Investment Question</option>
-              <option value="Account Support">Account Support</option>
-              <option value="Technical Issue">Technical Issue</option>
-              <option value="Partnership Opportunity">Partnership Opportunity</option>
-            </select>
-          </div>
-          
-          <div>
-            <label htmlFor="message" className="block text-gray-700 font-medium mb-2">Your Message</label>
-            <textarea
-              id="message"
-              name="message"
-              value={formData.message}
-              onChange={handleChange}
-              rows={5}
-              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-investment-navy"
-              placeholder="Please describe how we can help you..."
-              required
-            ></textarea>
-          </div>
-          
-          {/* CAPTCHA Verification */}
-          <div className="w-full">
-            <label className="block text-gray-700 font-medium mb-2">Verification</label>
-            <Captcha siteKey={siteKey} onVerify={handleVerify} />
-          </div>
-          
-          <Button 
-            type="submit" 
-            className="w-full bg-investment-navy hover:bg-investment-lightNavy text-white"
-            disabled={isSubmitting || !verified}
-          >
-            {isSubmitting ? 'Sending...' : 'Send Message'}
-          </Button>
-          
-          <p className="text-xs text-gray-500 text-center">
-            By submitting this form, you agree to our Privacy Policy. Your message will be sent to support@unicorn-energies.com.
-          </p>
-        </form>
-      )}
-    </>
+        
+        <div className="text-xs text-gray-500 mt-3">
+          By submitting this form, you agree to our <Link to="/terms" className="text-investment-navy hover:underline">Terms of Service</Link> and <Link to="/privacy" className="text-investment-navy hover:underline">Privacy Policy</Link>.
+        </div>
+        
+        <Button 
+          type="submit" 
+          disabled={isSubmitting || !captcha.verified}
+          className="w-full bg-investment-navy hover:bg-investment-navy/90"
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
+              Sending Message...
+            </>
+          ) : (
+            'Send Message'
+          )}
+        </Button>
+      </form>
+    </Form>
   );
 };
 

@@ -8,13 +8,15 @@ interface RecentTransactionsPanelProps {
   loading: boolean;
   onApproveWithdrawal: (id: string) => void;
   onRejectWithdrawal: (id: string) => void;
+  processingId?: string | null;
 }
 
 const RecentTransactionsPanel = ({ 
   transactions, 
   loading, 
   onApproveWithdrawal, 
-  onRejectWithdrawal 
+  onRejectWithdrawal,
+  processingId 
 }: RecentTransactionsPanelProps) => {
   return (
     <Card className="bg-unicorn-darkPurple/50 border-unicorn-gold/30">
@@ -78,16 +80,26 @@ const RecentTransactionsPanel = ({
                             variant="outline"
                             className="border-green-500 text-green-400 hover:bg-green-500/20"
                             onClick={() => onApproveWithdrawal(transaction.id)}
+                            disabled={processingId === transaction.id}
                           >
-                            Approve
+                            {processingId === transaction.id ? (
+                              <span className="h-4 w-4 border-t-2 border-green-400 border-solid rounded-full animate-spin"></span>
+                            ) : (
+                              'Approve'
+                            )}
                           </Button>
                           <Button
                             size="sm"
                             variant="outline"
                             className="border-red-500 text-red-400 hover:bg-red-500/20"
                             onClick={() => onRejectWithdrawal(transaction.id)}
+                            disabled={processingId === transaction.id}
                           >
-                            Reject
+                            {processingId === transaction.id ? (
+                              <span className="h-4 w-4 border-t-2 border-red-400 border-solid rounded-full animate-spin"></span>
+                            ) : (
+                              'Reject'
+                            )}
                           </Button>
                         </div>
                       )}

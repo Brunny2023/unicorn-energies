@@ -1,51 +1,58 @@
 
-import { Mail, MapPin, Phone } from 'lucide-react';
+import { Mail, Phone, MapPin, Clock } from 'lucide-react';
 
 const ContactInfo = () => {
   return (
-    <div className="lg:pl-8">
+    <div>
       <h2 className="text-3xl font-bold text-investment-navy mb-6">Contact Information</h2>
-      <div className="space-y-8">
+      
+      <div className="space-y-6">
         <div className="flex items-start">
-          <Mail className="text-investment-gold h-6 w-6 mr-4 mt-1" />
+          <div className="mt-1 p-2 bg-investment-navy/10 rounded-full mr-4">
+            <MapPin className="h-5 w-5 text-investment-navy" />
+          </div>
           <div>
-            <h3 className="font-semibold text-lg text-investment-navy">Email Us</h3>
-            <p className="text-gray-600 mt-1">
-              <a href="mailto:info@unicorn-energies.com" className="hover:text-investment-gold">
-                info@unicorn-energies.com
-              </a>
-            </p>
-            <p className="text-gray-600 mt-1">
-              <a href="mailto:support@unicorn-energies.com" className="hover:text-investment-gold">
-                support@unicorn-energies.com
-              </a>
+            <h3 className="font-semibold text-investment-navy mb-1">Our Location</h3>
+            <p className="text-gray-600">
+              123 Investment St, Financial District<br />
+              New York, NY 10004
             </p>
           </div>
         </div>
         
         <div className="flex items-start">
-          <Phone className="text-investment-gold h-6 w-6 mr-4 mt-1" />
+          <div className="mt-1 p-2 bg-investment-navy/10 rounded-full mr-4">
+            <Phone className="h-5 w-5 text-investment-navy" />
+          </div>
           <div>
-            <h3 className="font-semibold text-lg text-investment-navy">Call Us</h3>
-            <p className="text-gray-600 mt-1">
-              <a href="tel:+15127894567" className="hover:text-investment-gold">
-                +1 (512) 789-4567
-              </a>
-            </p>
+            <h3 className="font-semibold text-investment-navy mb-1">Phone Number</h3>
+            <p className="text-gray-600">+1 (212) 555-7890</p>
+            <p className="text-sm text-gray-500">Monday to Friday, 9am to 6pm EST</p>
           </div>
         </div>
         
         <div className="flex items-start">
-          <MapPin className="text-investment-gold h-6 w-6 mr-4 mt-1" />
+          <div className="mt-1 p-2 bg-investment-navy/10 rounded-full mr-4">
+            <Mail className="h-5 w-5 text-investment-navy" />
+          </div>
           <div>
-            <h3 className="font-semibold text-lg text-investment-navy">Visit Us</h3>
-            <div className="text-gray-600 mt-1">
-              <p>Unicorn Energies Headquarters</p>
-              <p>1234 Energy Way, Houston, TX 77002</p>
-              <p className="mt-4">Texas Branch:</p>
-              <p>Unicorn Energy Inc</p>
-              <p>RR5 Box 181-N, Elgin, TX 78621</p>
-            </div>
+            <h3 className="font-semibold text-investment-navy mb-1">Email Address</h3>
+            <p className="text-gray-600">support@unicorn-energies.com</p>
+            <p className="text-sm text-gray-500">We'll respond within 24 hours</p>
+          </div>
+        </div>
+        
+        <div className="flex items-start">
+          <div className="mt-1 p-2 bg-investment-navy/10 rounded-full mr-4">
+            <Clock className="h-5 w-5 text-investment-navy" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-investment-navy mb-1">Business Hours</h3>
+            <p className="text-gray-600">
+              Monday to Friday: 9:00 AM - 6:00 PM<br />
+              Saturday: 10:00 AM - 2:00 PM<br />
+              Sunday: Closed
+            </p>
           </div>
         </div>
       </div>
