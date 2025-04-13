@@ -25,7 +25,6 @@ const DashboardLayout = ({ children, isAdmin = false }: DashboardLayoutProps) =>
 
   return (
     <div className="relative min-h-screen flex flex-col">
-      {/* StarsBackground should be positioned absolutely and not affect layout */}
       <StarsBackground />
 
       <DashboardHeader 
@@ -41,12 +40,9 @@ const DashboardLayout = ({ children, isAdmin = false }: DashboardLayoutProps) =>
           isAdmin={isAdmin} 
         />
 
-        {/* Main Content - fixed alignment to be left-aligned rather than right-aligned */}
         <main className="flex-1 md:ml-64 p-6 mt-0 overflow-auto">
           <div className="w-full max-w-7xl mx-auto">
-            {/* The Outlet component renders the matched child route */}
-            <Outlet />
-            {children}
+            {children || <Outlet />}
           </div>
         </main>
       </div>

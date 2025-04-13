@@ -3,6 +3,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Settings, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLogoutHandler } from "@/hooks/useLogoutHandler";
 
 interface DashboardFooterLinksProps {
   isAdmin: boolean;
@@ -11,6 +12,8 @@ interface DashboardFooterLinksProps {
 }
 
 const DashboardFooterLinks = ({ isAdmin, onLogout, closeMenu }: DashboardFooterLinksProps) => {
+  const handleLogout = useLogoutHandler(closeMenu);
+  
   return (
     <div className="mt-auto pt-6 border-t border-unicorn-purple/20 space-y-2">
       {!isAdmin && (
@@ -27,7 +30,7 @@ const DashboardFooterLinks = ({ isAdmin, onLogout, closeMenu }: DashboardFooterL
       <Button
         variant="outline"
         className="w-full text-red-400 hover:text-red-300 hover:bg-red-500/10 border-red-500/30 justify-start font-medium"
-        onClick={onLogout}
+        onClick={handleLogout}
       >
         <LogOut className="h-5 w-5 mr-3" />
         Sign Out
