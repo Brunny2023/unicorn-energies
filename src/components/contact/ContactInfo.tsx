@@ -14,8 +14,8 @@ const ContactInfo = () => {
           <div>
             <h3 className="font-semibold text-investment-navy mb-1">Our Location</h3>
             <p className="text-gray-600">
-              123 Investment St, Financial District<br />
-              New York, NY 10004
+              5900 Balcones Drive, Suite 4000<br />
+              Austin, TX 78731
             </p>
           </div>
         </div>

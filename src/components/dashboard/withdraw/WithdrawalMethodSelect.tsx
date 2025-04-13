@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -121,6 +120,13 @@ const WithdrawalMethodSelect: React.FC<WithdrawalMethodSelectProps> = ({ lastDep
   const handleTabChange = (value: string) => {
     setActiveTab(value as 'crypto' | 'bank' | 'digital_wallet');
     setShowNewDestinationForm(false);
+    
+    // Reset the new destination form when switching tabs
+    setNewDestination({
+      method_type: value as 'crypto' | 'bank' | 'digital_wallet',
+      name: '',
+      details: {}
+    });
     
     // Select the first destination of the new tab type
     const destination = savedDestinations.find(d => d.method_type === value);

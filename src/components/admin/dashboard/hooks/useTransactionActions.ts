@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { WithdrawalDestination } from '@/types/investment';
+import { WithdrawalDestination, TransactionMetadata } from '@/types/investment';
 
 export const useTransactionActions = (refreshCallback: () => Promise<void>) => {
   const { toast } = useToast();
@@ -46,7 +46,12 @@ export const useTransactionActions = (refreshCallback: () => Promise<void>) => {
           if (!walletFetchError && walletData) {
             // Check if total_withdrawals exists in the wallets table
             if ('total_withdrawals' in walletData) {
-              const newTotalWithdrawals = (walletData.total_withdrawals || 0) + amount;
+              // Type-safe way to get the total_withdrawals value
+              const currentWithdrawals = typeof walletData.total_withdrawals === 'number' 
+                ? walletData.total_withdrawals 
+                : 0;
+              
+              const newTotalWithdrawals = currentWithdrawals + amount;
               
               await supabase
                 .from('wallets')
