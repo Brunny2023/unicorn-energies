@@ -9,7 +9,9 @@ import {
   Ticket, 
   CreditCard,
   Clock,
-  MessageCircle
+  MessageCircle,
+  Settings,
+  DollarSign
 } from 'lucide-react';
 import {
   Breadcrumb,
@@ -33,9 +35,9 @@ const adminRoutes = [
   { path: '/admin/transactions', label: 'Transactions', icon: Wallet },
   { path: '/admin/tickets', label: 'Support Tickets', icon: Ticket },
   { path: '/admin/payment-connections', label: 'Payment Connections', icon: CreditCard },
-  { path: '/admin/loan-applications', label: 'Loan Applications', icon: Clock },
+  { path: '/admin/loan-applications', label: 'Loan Applications', icon: DollarSign },
   { path: '/admin/broadcast', label: 'Broadcast Messages', icon: MessageCircle },
-  { path: '/admin/settings', label: 'Settings', icon: CreditCard },
+  { path: '/admin/settings', label: 'Settings', icon: Settings },
 ];
 
 const MobileAdminNav = () => {

@@ -69,7 +69,15 @@ const AIAdminManager = () => {
         lastProcessed: recentData[0]?.ai_responded_at || null,
       });
       
-      setRecentActivity(recentData || []);
+      // Fix for the build error - map ai_responded_at to responded_at
+      const formattedRecentData = recentData?.map(ticket => ({
+        id: ticket.id,
+        subject: ticket.subject,
+        status: ticket.status,
+        responded_at: ticket.ai_responded_at
+      })) || [];
+      
+      setRecentActivity(formattedRecentData);
     } catch (error) {
       console.error('Error fetching AI stats:', error);
       toast({
@@ -228,7 +236,7 @@ const AIAdminManager = () => {
                     <div className="flex justify-between items-center mb-2">
                       <span className="font-medium text-white">{ticket.subject}</span>
                       <Badge 
-                        variant={ticket.status === 'open' ? 'destructive' : ticket.status === 'in-progress' ? 'warning' : 'default'}
+                        variant={ticket.status === 'open' ? 'destructive' : ticket.status === 'in-progress' ? 'secondary' : 'default'}
                         className={
                           ticket.status === 'open' 
                             ? 'bg-red-500/20 text-red-300 hover:bg-red-500/30' 

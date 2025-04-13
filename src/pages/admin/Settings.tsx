@@ -1,33 +1,65 @@
 
-import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Settings as SettingsIcon, Shield, Bell, Server, Database } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import AdminLayout from '@/components/layout/AdminLayout';
+import React, { useState } from "react";
+import AdminLayout from "@/components/layout/AdminLayout";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
+import { Settings as SettingsIcon, Server, Shield, BarChart, Mail, Users, Globe } from "lucide-react";
 
-const AdminSettings = () => {
+const Settings = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   
-  const handleSaveSettings = async () => {
+  const [systemSettings, setSystemSettings] = useState({
+    maxWithdrawalAmount: 100000,
+    minWithdrawalAmount: 100,
+    withdrawalFeePercent: 2.5,
+    allowRegistration: true,
+    allowLoans: true,
+    maintenanceMode: false,
+  });
+  
+  const handleSaveSystemSettings = async () => {
     setLoading(true);
     try {
-      // Simulating API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // In a real app, this would save to the database
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
       toast({
-        title: "Settings updated",
-        description: "Admin settings have been updated successfully.",
+        title: "System settings updated",
+        description: "The platform settings have been saved successfully",
       });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to update settings. Please try again.",
+        title: "Failed to update settings",
+        description: "There was an error saving system settings",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const handleSaveAISettings = async () => {
+    setLoading(true);
+    try {
+      // In a real app, this would save to the database
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      toast({
+        title: "AI settings updated",
+        description: "AI assistant settings have been saved successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Failed to update AI settings",
+        description: "There was an error saving AI assistant settings",
         variant: "destructive",
       });
     } finally {
@@ -39,80 +71,228 @@ const AdminSettings = () => {
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h2 className="text-3xl font-bold text-white">Admin Settings</h2>
+          <div>
+            <h1 className="text-2xl font-bold text-white">Admin Settings</h1>
+            <p className="text-gray-400">Manage platform configuration and system settings</p>
+          </div>
         </div>
         
-        <Tabs defaultValue="general" className="space-y-6">
+        <Tabs defaultValue="system" className="space-y-6">
           <TabsList className="bg-unicorn-darkPurple/50 border border-unicorn-gold/20">
-            <TabsTrigger value="general" className="data-[state=active]:bg-unicorn-gold/20 data-[state=active]:text-unicorn-gold">
-              <SettingsIcon className="w-4 h-4 mr-2" />
-              General
+            <TabsTrigger 
+              value="system" 
+              className="data-[state=active]:bg-unicorn-gold/20 data-[state=active]:text-unicorn-gold"
+            >
+              <SettingsIcon className="h-4 w-4 mr-2" />
+              System
             </TabsTrigger>
-            <TabsTrigger value="security" className="data-[state=active]:bg-unicorn-gold/20 data-[state=active]:text-unicorn-gold">
-              <Shield className="w-4 h-4 mr-2" />
+            <TabsTrigger 
+              value="ai" 
+              className="data-[state=active]:bg-unicorn-gold/20 data-[state=active]:text-unicorn-gold"
+            >
+              <Server className="h-4 w-4 mr-2" />
+              AI Assistant
+            </TabsTrigger>
+            <TabsTrigger 
+              value="security" 
+              className="data-[state=active]:bg-unicorn-gold/20 data-[state=active]:text-unicorn-gold"
+            >
+              <Shield className="h-4 w-4 mr-2" />
               Security
             </TabsTrigger>
-            <TabsTrigger value="notifications" className="data-[state=active]:bg-unicorn-gold/20 data-[state=active]:text-unicorn-gold">
-              <Bell className="w-4 h-4 mr-2" />
-              Notifications
-            </TabsTrigger>
-            <TabsTrigger value="ai" className="data-[state=active]:bg-unicorn-gold/20 data-[state=active]:text-unicorn-gold">
-              <Server className="w-4 h-4 mr-2" />
-              AI Assistant
+            <TabsTrigger 
+              value="emails" 
+              className="data-[state=active]:bg-unicorn-gold/20 data-[state=active]:text-unicorn-gold"
+            >
+              <Mail className="h-4 w-4 mr-2" />
+              Email Templates
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="general">
+          <TabsContent value="system">
             <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
               <CardHeader>
                 <CardTitle className="text-white">Platform Settings</CardTitle>
-                <CardDescription className="text-gray-400">Configure general platform settings</CardDescription>
+                <CardDescription className="text-gray-400">
+                  Configure global platform settings and limits
+                </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-white">Maintenance Mode</Label>
-                    <p className="text-sm text-gray-400">Temporarily disable access to the platform</p>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="minWithdrawal" className="text-white">Minimum Withdrawal ($)</Label>
+                    <Input 
+                      id="minWithdrawal" 
+                      type="number"
+                      value={systemSettings.minWithdrawalAmount}
+                      onChange={(e) => setSystemSettings({
+                        ...systemSettings, 
+                        minWithdrawalAmount: Number(e.target.value)
+                      })}
+                      min={1}
+                      className="bg-unicorn-black/30 border-unicorn-gold/30 text-white"
+                    />
                   </div>
-                  <Switch />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-white">User Registration</Label>
-                    <p className="text-sm text-gray-400">Allow new users to register</p>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="maxWithdrawal" className="text-white">Maximum Withdrawal ($)</Label>
+                    <Input 
+                      id="maxWithdrawal" 
+                      type="number"
+                      value={systemSettings.maxWithdrawalAmount}
+                      onChange={(e) => setSystemSettings({
+                        ...systemSettings, 
+                        maxWithdrawalAmount: Number(e.target.value)
+                      })}
+                      min={100}
+                      className="bg-unicorn-black/30 border-unicorn-gold/30 text-white"
+                    />
                   </div>
-                  <Switch defaultChecked />
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="withdrawalFee" className="text-white">Withdrawal Fee (%)</Label>
+                    <Input 
+                      id="withdrawalFee" 
+                      type="number"
+                      value={systemSettings.withdrawalFeePercent}
+                      onChange={(e) => setSystemSettings({
+                        ...systemSettings, 
+                        withdrawalFeePercent: Number(e.target.value)
+                      })}
+                      min={0}
+                      max={20}
+                      step={0.1}
+                      className="bg-unicorn-black/30 border-unicorn-gold/30 text-white"
+                    />
+                  </div>
                 </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="supportEmail" className="text-white">Support Email</Label>
-                  <Input 
-                    id="supportEmail" 
-                    defaultValue="support@unicorn-energies.com" 
-                    className="bg-unicorn-black/30 border-unicorn-gold/30 text-white"
-                  />
-                </div>
+                <Separator className="bg-unicorn-gold/20" />
                 
-                <div className="space-y-2">
-                  <Label htmlFor="withdrawalFee" className="text-white">Default Withdrawal Fee (%)</Label>
-                  <Input 
-                    id="withdrawalFee" 
-                    type="number" 
-                    defaultValue="5" 
-                    min="0" 
-                    max="20" 
-                    className="bg-unicorn-black/30 border-unicorn-gold/30 text-white"
-                  />
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label className="text-white text-base">User Registration</Label>
+                      <p className="text-gray-400 text-sm">Allow new users to register on the platform</p>
+                    </div>
+                    <Switch 
+                      checked={systemSettings.allowRegistration}
+                      onCheckedChange={(checked) => 
+                        setSystemSettings({...systemSettings, allowRegistration: checked})
+                      }
+                    />
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label className="text-white text-base">Loan Applications</Label>
+                      <p className="text-gray-400 text-sm">Allow users to apply for investment loans</p>
+                    </div>
+                    <Switch 
+                      checked={systemSettings.allowLoans}
+                      onCheckedChange={(checked) => 
+                        setSystemSettings({...systemSettings, allowLoans: checked})
+                      }
+                    />
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label className="text-white text-base">Maintenance Mode</Label>
+                      <p className="text-gray-400 text-sm">Put the platform in maintenance mode (only admins can access)</p>
+                    </div>
+                    <Switch 
+                      checked={systemSettings.maintenanceMode}
+                      onCheckedChange={(checked) => 
+                        setSystemSettings({...systemSettings, maintenanceMode: checked})
+                      }
+                    />
+                  </div>
                 </div>
               </CardContent>
               <CardFooter>
                 <Button 
-                  onClick={handleSaveSettings} 
-                  disabled={loading}
                   className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black font-bold"
+                  onClick={handleSaveSystemSettings}
+                  disabled={loading}
                 >
-                  {loading ? 'Saving...' : 'Save Settings'}
+                  {loading ? "Saving..." : "Save Settings"}
+                </Button>
+              </CardFooter>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="ai">
+            <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
+              <CardHeader>
+                <CardTitle className="text-white">AI Assistant Configuration</CardTitle>
+                <CardDescription className="text-gray-400">
+                  Configure Gilbert Henshow AI assistant settings
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="aiSystemPrompt" className="text-white">AI System Prompt</Label>
+                  <Textarea 
+                    id="aiSystemPrompt" 
+                    rows={6}
+                    defaultValue="You are Gilbert Henshow, an AI assistant for Unicorn Energies Investment platform. Your goal is to help users with their questions about investments, loan applications, and general platform usage. You should be knowledgeable about investment plans, profit calculations, and the platform's policies. Always be professional, helpful, and concise in your responses."
+                    className="bg-unicorn-black/30 border-unicorn-gold/30 text-white"
+                  />
+                  <p className="text-sm text-gray-400">This is the base instruction set for the AI assistant</p>
+                </div>
+                
+                <Separator className="bg-unicorn-gold/20" />
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="aiName" className="text-white">Assistant Name</Label>
+                    <Input 
+                      id="aiName" 
+                      defaultValue="Gilbert Henshow"
+                      className="bg-unicorn-black/30 border-unicorn-gold/30 text-white"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="aiModel" className="text-white">AI Model</Label>
+                    <Input 
+                      id="aiModel" 
+                      defaultValue="gpt-4o-mini"
+                      className="bg-unicorn-black/30 border-unicorn-gold/30 text-white"
+                      disabled
+                    />
+                    <p className="text-xs text-gray-400">Contact support to change AI model</p>
+                  </div>
+                </div>
+                
+                <Separator className="bg-unicorn-gold/20" />
+                
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label className="text-white text-base">Auto-Process New Tickets</Label>
+                      <p className="text-gray-400 text-sm">Automatically process new support tickets with AI</p>
+                    </div>
+                    <Switch defaultChecked={true} />
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label className="text-white text-base">Auto-Resolve Simple Issues</Label>
+                      <p className="text-gray-400 text-sm">Allow AI to automatically resolve simple support issues</p>
+                    </div>
+                    <Switch defaultChecked={true} />
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Button 
+                  className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black font-bold"
+                  onClick={handleSaveAISettings}
+                  disabled={loading}
+                >
+                  {loading ? "Saving..." : "Save AI Settings"}
                 </Button>
               </CardFooter>
             </Card>
@@ -122,210 +302,121 @@ const AdminSettings = () => {
             <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
               <CardHeader>
                 <CardTitle className="text-white">Security Settings</CardTitle>
-                <CardDescription className="text-gray-400">Configure platform security settings</CardDescription>
+                <CardDescription className="text-gray-400">
+                  Configure platform security and access settings
+                </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-white">Two-Factor Authentication</Label>
-                    <p className="text-sm text-gray-400">Require all admin users to use 2FA</p>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label className="text-white text-base">Require 2FA for Admins</Label>
+                      <p className="text-gray-400 text-sm">Force all administrators to use two-factor authentication</p>
+                    </div>
+                    <Switch defaultChecked={true} />
                   </div>
-                  <Switch defaultChecked />
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label className="text-white text-base">Force Password Reset</Label>
+                      <p className="text-gray-400 text-sm">Require users to reset password every 90 days</p>
+                    </div>
+                    <Switch defaultChecked={false} />
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label className="text-white text-base">CAPTCHA on Forms</Label>
+                      <p className="text-gray-400 text-sm">Require CAPTCHA verification on all public forms</p>
+                    </div>
+                    <Switch defaultChecked={true} />
+                  </div>
                 </div>
                 
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-white">Login Rate Limiting</Label>
-                    <p className="text-sm text-gray-400">Limit login attempts to prevent brute force attacks</p>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
+                <Separator className="bg-unicorn-gold/20" />
                 
                 <div className="space-y-2">
-                  <Label htmlFor="sessionTimeout" className="text-white">Admin Session Timeout (minutes)</Label>
-                  <Input 
-                    id="sessionTimeout" 
-                    type="number" 
-                    defaultValue="30" 
-                    min="5" 
+                  <Label htmlFor="ipWhitelist" className="text-white">Admin IP Whitelist</Label>
+                  <Textarea 
+                    id="ipWhitelist" 
+                    placeholder="Enter IP addresses separated by commas"
                     className="bg-unicorn-black/30 border-unicorn-gold/30 text-white"
                   />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="passwordPolicy" className="text-white">Password Policy</Label>
-                  <select 
-                    id="passwordPolicy" 
-                    className="w-full p-3 bg-unicorn-black/30 border border-unicorn-gold/30 rounded-md text-white"
-                  >
-                    <option value="standard">Standard (8+ chars, 1 uppercase, 1 number)</option>
-                    <option value="strong">Strong (10+ chars, uppercase, number, symbol)</option>
-                    <option value="very-strong">Very Strong (12+ chars, uppercase, number, symbol)</option>
-                  </select>
+                  <p className="text-sm text-gray-400">Leave empty to allow admin access from any IP</p>
                 </div>
               </CardContent>
               <CardFooter>
-                <Button 
-                  onClick={handleSaveSettings} 
-                  disabled={loading}
-                  className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black font-bold"
-                >
-                  {loading ? 'Saving...' : 'Save Security Settings'}
+                <Button className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black font-bold">
+                  Save Security Settings
                 </Button>
               </CardFooter>
             </Card>
           </TabsContent>
           
-          <TabsContent value="notifications">
+          <TabsContent value="emails">
             <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
               <CardHeader>
-                <CardTitle className="text-white">Admin Notification Settings</CardTitle>
-                <CardDescription className="text-gray-400">Configure admin notification preferences</CardDescription>
+                <CardTitle className="text-white">Email Templates</CardTitle>
+                <CardDescription className="text-gray-400">
+                  Manage system email templates sent to users
+                </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-white">New User Registrations</Label>
-                    <p className="text-sm text-gray-400">Get notified when new users register</p>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="bg-unicorn-black/30 p-4 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-white font-medium">Welcome Email</h3>
+                      <Button variant="outline" size="sm" className="h-8 border-unicorn-gold/30 text-unicorn-gold hover:bg-unicorn-gold/10">
+                        Edit
+                      </Button>
+                    </div>
+                    <p className="text-sm text-gray-400">Sent to new users after registration</p>
                   </div>
-                  <Switch defaultChecked />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-white">Large Withdrawals</Label>
-                    <p className="text-sm text-gray-400">Get notified for withdrawals above a certain threshold</p>
+                  
+                  <div className="bg-unicorn-black/30 p-4 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-white font-medium">Investment Confirmation</h3>
+                      <Button variant="outline" size="sm" className="h-8 border-unicorn-gold/30 text-unicorn-gold hover:bg-unicorn-gold/10">
+                        Edit
+                      </Button>
+                    </div>
+                    <p className="text-sm text-gray-400">Sent to users after making an investment</p>
                   </div>
-                  <Switch defaultChecked />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-white">Support Tickets</Label>
-                    <p className="text-sm text-gray-400">Get notified for new support tickets</p>
+                  
+                  <div className="bg-unicorn-black/30 p-4 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-white font-medium">Withdrawal Confirmation</h3>
+                      <Button variant="outline" size="sm" className="h-8 border-unicorn-gold/30 text-unicorn-gold hover:bg-unicorn-gold/10">
+                        Edit
+                      </Button>
+                    </div>
+                    <p className="text-sm text-gray-400">Sent to users after withdrawal request</p>
                   </div>
-                  <Switch defaultChecked />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="largeWithdrawalThreshold" className="text-white">Large Withdrawal Threshold ($)</Label>
-                  <Input 
-                    id="largeWithdrawalThreshold" 
-                    type="number" 
-                    defaultValue="5000" 
-                    className="bg-unicorn-black/30 border-unicorn-gold/30 text-white"
-                  />
+                  
+                  <div className="bg-unicorn-black/30 p-4 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-white font-medium">Loan Application Status</h3>
+                      <Button variant="outline" size="sm" className="h-8 border-unicorn-gold/30 text-unicorn-gold hover:bg-unicorn-gold/10">
+                        Edit
+                      </Button>
+                    </div>
+                    <p className="text-sm text-gray-400">Sent when loan application status changes</p>
+                  </div>
+                  
+                  <div className="bg-unicorn-black/30 p-4 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-white font-medium">Password Reset</h3>
+                      <Button variant="outline" size="sm" className="h-8 border-unicorn-gold/30 text-unicorn-gold hover:bg-unicorn-gold/10">
+                        Edit
+                      </Button>
+                    </div>
+                    <p className="text-sm text-gray-400">Sent to users when requesting password reset</p>
+                  </div>
                 </div>
               </CardContent>
               <CardFooter>
-                <Button 
-                  onClick={handleSaveSettings} 
-                  disabled={loading}
-                  className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black font-bold"
-                >
-                  {loading ? 'Saving...' : 'Save Notification Settings'}
-                </Button>
-              </CardFooter>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="ai">
-            <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
-              <CardHeader>
-                <CardTitle className="text-white">AI Assistant Settings</CardTitle>
-                <CardDescription className="text-gray-400">Configure Gilbert Henshow, your AI support assistant</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-white">Enable AI Ticket Responses</Label>
-                    <p className="text-sm text-gray-400">Allow Gilbert to automatically respond to support tickets</p>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-white">Auto-Categorize Tickets</Label>
-                    <p className="text-sm text-gray-400">Let Gilbert categorize tickets based on content</p>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-white">Auto-Prioritize Tickets</Label>
-                    <p className="text-sm text-gray-400">Let Gilbert set ticket priority based on content</p>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="aiResponseDelay" className="text-white">Response Delay (seconds)</Label>
-                  <Input 
-                    id="aiResponseDelay" 
-                    type="number" 
-                    defaultValue="60" 
-                    min="0" 
-                    className="bg-unicorn-black/30 border-unicorn-gold/30 text-white"
-                  />
-                  <p className="text-xs text-gray-400">Allow time for human agents to respond first</p>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="aiRetrainSchedule" className="text-white">Retraining Schedule</Label>
-                  <select 
-                    id="aiRetrainSchedule" 
-                    className="w-full p-3 bg-unicorn-black/30 border border-unicorn-gold/30 rounded-md text-white"
-                  >
-                    <option value="weekly">Weekly</option>
-                    <option value="bi-weekly">Bi-Weekly</option>
-                    <option value="monthly">Monthly</option>
-                  </select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="ticketTypes" className="text-white">Ticket Types to Handle</Label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="flex items-center space-x-2">
-                      <input type="checkbox" id="investment" defaultChecked className="rounded border-unicorn-gold/50" />
-                      <Label htmlFor="investment" className="text-white">Investment Questions</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <input type="checkbox" id="account" defaultChecked className="rounded border-unicorn-gold/50" />
-                      <Label htmlFor="account" className="text-white">Account Issues</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <input type="checkbox" id="withdrawal" defaultChecked className="rounded border-unicorn-gold/50" />
-                      <Label htmlFor="withdrawal" className="text-white">Withdrawal Requests</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <input type="checkbox" id="technical" defaultChecked className="rounded border-unicorn-gold/50" />
-                      <Label htmlFor="technical" className="text-white">Technical Issues</Label>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="flex flex-col items-start space-y-4">
-                <Button 
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
-                  onClick={() => {
-                    toast({
-                      title: "Process started",
-                      description: "Processing all open tickets with Gilbert...",
-                    });
-                  }}
-                >
-                  <Database className="mr-2 h-4 w-4" />
-                  Process All Open Tickets Now
-                </Button>
-                
-                <Button 
-                  onClick={handleSaveSettings} 
-                  disabled={loading}
-                  className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black font-bold w-full"
-                >
-                  {loading ? 'Saving...' : 'Save AI Assistant Settings'}
+                <Button className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black font-bold">
+                  Save All Templates
                 </Button>
               </CardFooter>
             </Card>
@@ -336,4 +427,4 @@ const AdminSettings = () => {
   );
 };
 
-export default AdminSettings;
+export default Settings;

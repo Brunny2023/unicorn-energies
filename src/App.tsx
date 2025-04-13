@@ -1,117 +1,239 @@
 
-import { Routes, Route, Navigate, Outlet } from "react-router-dom";
-import { AuthProvider } from "./contexts/AuthContext";
-import ProtectedRoute from "./components/auth/ProtectedRoute";
-import AdminRoute from "./components/auth/AdminRoute";
-import { Toaster } from "@/components/ui/toaster";
-
-// Pages
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
+import About from "./pages/About";
+import InvestmentPlans from "./pages/InvestmentPlans";
+import Calculator from "./pages/Calculator";
+import Contact from "./pages/Contact";
+import Faq from "./pages/Faq";
+import HowItWorks from "./pages/HowItWorks";
+import NotFound from "./pages/NotFound";
+
+// Auth pages
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
-import About from "./pages/About";
-import HowItWorks from "./pages/HowItWorks";
-import InvestmentPlans from "./pages/InvestmentPlans";
-import Calculator from "./pages/Calculator";
-import Faq from "./pages/Faq";
-import Contact from "./pages/Contact";
-import NotFound from "./pages/NotFound";
 
-// Dashboard Pages
+// Dashboard pages
 import Dashboard from "./pages/dashboard/Dashboard";
-import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import Investments from "./pages/dashboard/Investments";
-import Withdraw from "./pages/dashboard/Withdraw";
 import Transactions from "./pages/dashboard/Transactions";
+import Withdraw from "./pages/dashboard/Withdraw";
 import Loans from "./pages/dashboard/Loans";
 import Affiliates from "./pages/dashboard/Affiliates";
 import Settings from "./pages/dashboard/Settings";
-import TicketsIndex from "./pages/dashboard/tickets/TicketsIndex";
-import NewTicket from "./pages/dashboard/tickets/NewTicket";
-import TicketView from "./pages/dashboard/tickets/TicketView";
 
-// Admin Pages
+// Admin pages
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminUsers from "./pages/admin/Users";
 import AdminTransactions from "./pages/admin/Transactions";
 import AdminTickets from "./pages/admin/Tickets";
 import AdminTicketDetails from "./pages/admin/TicketDetails";
+import AdminPaymentConnections from "./pages/admin/PaymentConnections";
+import AdminBroadcastMessages from "./pages/admin/BroadcastMessages";
 import AdminSettings from "./pages/admin/Settings";
-import LoanApplications from "./pages/admin/LoanApplications";
-import PaymentConnections from "./pages/admin/PaymentConnections";
-import BroadcastMessages from "./pages/admin/BroadcastMessages";
+import AdminLoanApplications from "./pages/admin/LoanApplications";
 
-// Utility for console error filtering
-import "./utils/consoleErrorFilter";
+// Ticket pages
+import TicketsIndex from "./pages/dashboard/tickets/TicketsIndex";
+import NewTicket from "./pages/dashboard/tickets/NewTicket";
+import TicketView from "./pages/dashboard/tickets/TicketView";
 
-// Define the Turnstile interface globally without declaring it in the window interface
-// This avoids the conflicting declarations
-interface TurnstileInterface {
-  render: (container: string | HTMLElement, params: any) => string;
-  reset: (widgetId: string) => void;
-}
+// Auth context
+import { AuthProvider } from "./contexts/AuthContext";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+import AdminRoute from "./components/auth/AdminRoute";
 
-// Add the global type declaration without modifying window
-declare global {
-  var turnstile: TurnstileInterface;
-}
+// Toaster
+import { Toaster } from "@/components/ui/toaster";
 
-const App = () => {
+// CSS and other assets
+import "./App.css";
+
+function App() {
   return (
-    <div className="relative">
+    <Router>
       <AuthProvider>
         <Routes>
-          {/* Public Routes */}
+          {/* Public Pages */}
           <Route path="/" element={<Index />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/investment-plans" element={<InvestmentPlans />} />
+          <Route path="/calculator" element={<Calculator />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/faq" element={<Faq />} />
+          <Route path="/how-it-works" element={<HowItWorks />} />
+
+          {/* Auth Pages */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/how-it-works" element={<HowItWorks />} />
-          <Route path="/investment-plans" element={<InvestmentPlans />} />
-          <Route path="/calculator" element={<Calculator />} />
-          <Route path="/faq" element={<Faq />} />
-          <Route path="/contact" element={<Contact />} />
 
-          {/* Dashboard Routes - Updated to use nested routes */}
-          <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
-            <Route index element={<Dashboard />} />
-            <Route path="investments" element={<Investments />} />
-            <Route path="withdraw" element={<Withdraw />} />
-            <Route path="transactions" element={<Transactions />} />
-            <Route path="loans" element={<Loans />} />
-            <Route path="affiliates" element={<Affiliates />} />
-            <Route path="settings" element={<Settings />} />
-            <Route path="tickets" element={<TicketsIndex />} />
-            <Route path="tickets/new" element={<NewTicket />} />
-            <Route path="tickets/:id" element={<TicketView />} />
-          </Route>
+          {/* Protected Dashboard Pages */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/investments"
+            element={
+              <ProtectedRoute>
+                <Investments />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/transactions"
+            element={
+              <ProtectedRoute>
+                <Transactions />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/withdraw"
+            element={
+              <ProtectedRoute>
+                <Withdraw />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/loans"
+            element={
+              <ProtectedRoute>
+                <Loans />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/affiliates"
+            element={
+              <ProtectedRoute>
+                <Affiliates />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/settings"
+            element={
+              <ProtectedRoute>
+                <Settings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/tickets"
+            element={
+              <ProtectedRoute>
+                <TicketsIndex />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/tickets/new"
+            element={
+              <ProtectedRoute>
+                <NewTicket />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/tickets/:id"
+            element={
+              <ProtectedRoute>
+                <TicketView />
+              </ProtectedRoute>
+            }
+          />
 
-          {/* Admin Routes */}
-          <Route path="/admin" element={<AdminRoute><Outlet /></AdminRoute>}>
-            <Route index element={<Navigate to="/admin/dashboard" replace />} />
-            <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="tickets" element={<AdminTickets />} />
-            <Route path="tickets/:id" element={<AdminTicketDetails />} />
-            <Route path="users" element={<AdminUsers />} />
-            <Route path="transactions" element={<AdminTransactions />} />
-            <Route path="settings" element={<AdminSettings />} />
-            <Route path="loan-applications" element={<LoanApplications />} />
-            <Route path="payment-connections" element={<PaymentConnections />} />
-            <Route path="broadcast" element={<BroadcastMessages />} />
-          </Route>
+          {/* Admin Pages */}
+          <Route
+            path="/admin/dashboard"
+            element={
+              <AdminRoute>
+                <AdminDashboard />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <AdminRoute>
+                <AdminUsers />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/transactions"
+            element={
+              <AdminRoute>
+                <AdminTransactions />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/tickets"
+            element={
+              <AdminRoute>
+                <AdminTickets />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/tickets/:id"
+            element={
+              <AdminRoute>
+                <AdminTicketDetails />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/payment-connections"
+            element={
+              <AdminRoute>
+                <AdminPaymentConnections />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/broadcast"
+            element={
+              <AdminRoute>
+                <AdminBroadcastMessages />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/settings"
+            element={
+              <AdminRoute>
+                <AdminSettings />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/loan-applications"
+            element={
+              <AdminRoute>
+                <AdminLoanApplications />
+              </AdminRoute>
+            }
+          />
 
-          {/* Catch All */}
-          <Route path="/404" element={<NotFound />} />
-          <Route path="*" element={<Navigate to="/404" replace />} />
+          {/* 404 Not Found */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
+        <Toaster />
       </AuthProvider>
-      <Toaster />
-    </div>
+    </Router>
   );
-};
+}
 
 export default App;
