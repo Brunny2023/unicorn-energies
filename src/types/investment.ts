@@ -5,8 +5,8 @@ export interface WalletData {
   balance: number;
   accrued_profits: number;
   withdrawal_fee_percentage: number;
-  total_deposits?: number;
-  total_withdrawals?: number;
+  total_deposits: number;
+  total_withdrawals: number;
   updated_at?: string;
   created_at?: string;
 }
@@ -134,3 +134,32 @@ export interface WithdrawalDestination {
   created_at?: string;
 }
 
+// Add this new table schema
+export interface WithdrawalDestinationTable {
+  id?: string;
+  user_id: string;
+  method_type: 'crypto' | 'bank' | 'digital_wallet';
+  name: string;
+  details: {
+    [key: string]: string;
+  };
+  is_default?: boolean;
+  created_at?: string;
+}
+
+// Add this for transaction metadata
+export interface TransactionMetadata {
+  destination?: WithdrawalDestination;
+  [key: string]: any;
+}
+
+// Add this for notifications table
+export interface Notification {
+  id: string;
+  user_id: string;
+  type: string;
+  message: string;
+  metadata?: any;
+  read: boolean;
+  created_at: string;
+}

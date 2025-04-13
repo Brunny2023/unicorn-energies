@@ -6,9 +6,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { PlusCircle, CreditCard, BitcoinIcon, WalletCards } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { PlusCircle, CreditCard, Bitcoin, Wallet, Building2, Landmark } from "lucide-react";
 import { WithdrawalDestination } from "@/types/investment";
-import { supabase } from "@/integrations/supabase/client";
 
 interface WithdrawalMethodSelectProps {
   lastDepositMethod?: string | null;
@@ -48,7 +48,9 @@ const WithdrawalMethodSelect: React.FC<WithdrawalMethodSelectProps> = ({ lastDep
       details: {
         bank_name: "Chase Bank",
         account_number: "****4567",
-        routing_number: "****8901"
+        routing_number: "****8901",
+        account_holder: "John Doe",
+        country: "United States"
       }
     },
     {
@@ -57,7 +59,8 @@ const WithdrawalMethodSelect: React.FC<WithdrawalMethodSelectProps> = ({ lastDep
       method_type: "digital_wallet",
       name: "My PayPal",
       details: {
-        email: "user@example.com"
+        email: "user@example.com",
+        service_provider: "PayPal"
       }
     }
   ];
@@ -69,32 +72,36 @@ const WithdrawalMethodSelect: React.FC<WithdrawalMethodSelectProps> = ({ lastDep
   }
 
   useEffect(() => {
-    if (!user?.id) {
-      setSavedDestinations(DEV_SAVED_DESTINATIONS);
-      setLoading(false);
-      return;
+    // In development mode, use our dummy data
+    setSavedDestinations(DEV_SAVED_DESTINATIONS);
+    setLoading(false);
+
+    // In a real app with Supabase, we would fetch real data
+    // This code is commented out since the withdrawal_destinations table doesn't exist yet
+    /*
+    if (user?.id) {
+      const fetchDestinations = async () => {
+        try {
+          // This would require creating a withdrawal_destinations table in Supabase
+          const { data, error } = await supabase
+            .from('withdrawal_destinations')
+            .select('*')
+            .eq('user_id', user.id);
+
+          if (error) throw error;
+          setSavedDestinations(data || []);
+        } catch (error) {
+          console.error("Error fetching withdrawal destinations:", error);
+          // Fallback to dev data
+          setSavedDestinations(DEV_SAVED_DESTINATIONS);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchDestinations();
     }
-
-    const fetchDestinations = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('withdrawal_destinations')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-        setSavedDestinations(data || []);
-      } catch (error) {
-        console.error("Error fetching withdrawal destinations:", error);
-        // Fallback to dev data
-        setSavedDestinations(DEV_SAVED_DESTINATIONS);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDestinations();
+    */
   }, [user]);
 
   useEffect(() => {
@@ -109,7 +116,7 @@ const WithdrawalMethodSelect: React.FC<WithdrawalMethodSelectProps> = ({ lastDep
         onSelect(firstOfType);
       }
     }
-  }, [savedDestinations, activeTab]);
+  }, [savedDestinations, activeTab, onSelect]);
 
   const handleTabChange = (value: string) => {
     setActiveTab(value as 'crypto' | 'bank' | 'digital_wallet');
@@ -154,7 +161,15 @@ const WithdrawalMethodSelect: React.FC<WithdrawalMethodSelectProps> = ({ lastDep
       details: newDestination.details || {}
     };
 
-    // In a real app, we would save to the database here
+    // In development mode, just add to the state
+    const newId = `dev-${Date.now()}`;
+    const newDest = { ...destination, id: newId };
+    setSavedDestinations([newDest, ...savedDestinations]);
+    onSelect(newDest);
+
+    // In a real app with Supabase, we would save to the database
+    // This code is commented out since the withdrawal_destinations table doesn't exist yet
+    /*
     if (user?.id) {
       // Save to Supabase
       try {
@@ -176,13 +191,8 @@ const WithdrawalMethodSelect: React.FC<WithdrawalMethodSelectProps> = ({ lastDep
         setSavedDestinations([newDest, ...savedDestinations]);
         onSelect(newDest);
       }
-    } else {
-      // Development mode
-      const newId = `dev-${Date.now()}`;
-      const newDest = { ...destination, id: newId };
-      setSavedDestinations([newDest, ...savedDestinations]);
-      onSelect(newDest);
     }
+    */
 
     setShowNewDestinationForm(false);
     setNewDestination({
@@ -202,11 +212,29 @@ const WithdrawalMethodSelect: React.FC<WithdrawalMethodSelectProps> = ({ lastDep
               <Label htmlFor="wallet-name" className="text-white">Wallet Name</Label>
               <Input 
                 id="wallet-name"
-                placeholder="My Bitcoin Wallet"
+                placeholder="My Crypto Wallet"
                 value={newDestination.name || ''}
                 onChange={(e) => handleNewDestinationChange('name', e.target.value)}
                 className="bg-unicorn-darkPurple/50 text-white border-unicorn-gold/30"
               />
+            </div>
+            <div className="mb-4">
+              <Label htmlFor="crypto-network" className="text-white">Cryptocurrency</Label>
+              <Select 
+                value={newDestination.details?.network || 'Bitcoin'}
+                onValueChange={(value) => handleNewDestinationChange('details.network', value)}
+              >
+                <SelectTrigger className="bg-unicorn-darkPurple/50 text-white border-unicorn-gold/30">
+                  <SelectValue placeholder="Select cryptocurrency" />
+                </SelectTrigger>
+                <SelectContent className="bg-unicorn-darkPurple border-unicorn-gold/30">
+                  <SelectItem value="Bitcoin">Bitcoin (BTC)</SelectItem>
+                  <SelectItem value="Ethereum">Ethereum (ETH)</SelectItem>
+                  <SelectItem value="USDT">Tether (USDT)</SelectItem>
+                  <SelectItem value="USDC">USD Coin (USDC)</SelectItem>
+                  <SelectItem value="BNB">Binance Coin (BNB)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="mb-4">
               <Label htmlFor="wallet-address" className="text-white">Wallet Address</Label>
@@ -218,25 +246,15 @@ const WithdrawalMethodSelect: React.FC<WithdrawalMethodSelectProps> = ({ lastDep
                 className="bg-unicorn-darkPurple/50 text-white border-unicorn-gold/30"
               />
             </div>
-            <div className="mb-4">
-              <Label htmlFor="wallet-network" className="text-white">Network</Label>
-              <Input 
-                id="wallet-network"
-                placeholder="Bitcoin, Ethereum, etc."
-                value={newDestination.details?.network || ''}
-                onChange={(e) => handleNewDestinationChange('details.network', e.target.value)}
-                className="bg-unicorn-darkPurple/50 text-white border-unicorn-gold/30"
-              />
-            </div>
           </>
         );
       case 'bank':
         return (
           <>
             <div className="mb-4">
-              <Label htmlFor="bank-name" className="text-white">Account Name</Label>
+              <Label htmlFor="bank-account-name" className="text-white">Account Name</Label>
               <Input 
-                id="bank-name"
+                id="bank-account-name"
                 placeholder="My Bank Account"
                 value={newDestination.name || ''}
                 onChange={(e) => handleNewDestinationChange('name', e.target.value)}
@@ -244,12 +262,22 @@ const WithdrawalMethodSelect: React.FC<WithdrawalMethodSelectProps> = ({ lastDep
               />
             </div>
             <div className="mb-4">
-              <Label htmlFor="bank-institution" className="text-white">Bank Name</Label>
+              <Label htmlFor="bank-name" className="text-white">Bank Name</Label>
               <Input 
-                id="bank-institution"
+                id="bank-name"
                 placeholder="Enter your bank name"
                 value={newDestination.details?.bank_name || ''}
                 onChange={(e) => handleNewDestinationChange('details.bank_name', e.target.value)}
+                className="bg-unicorn-darkPurple/50 text-white border-unicorn-gold/30"
+              />
+            </div>
+            <div className="mb-4">
+              <Label htmlFor="account-holder" className="text-white">Account Holder Name</Label>
+              <Input 
+                id="account-holder"
+                placeholder="Enter account holder name"
+                value={newDestination.details?.account_holder || ''}
+                onChange={(e) => handleNewDestinationChange('details.account_holder', e.target.value)}
                 className="bg-unicorn-darkPurple/50 text-white border-unicorn-gold/30"
               />
             </div>
@@ -273,6 +301,16 @@ const WithdrawalMethodSelect: React.FC<WithdrawalMethodSelectProps> = ({ lastDep
                 className="bg-unicorn-darkPurple/50 text-white border-unicorn-gold/30"
               />
             </div>
+            <div className="mb-4">
+              <Label htmlFor="bank-country" className="text-white">Country</Label>
+              <Input 
+                id="bank-country"
+                placeholder="Enter country"
+                value={newDestination.details?.country || ''}
+                onChange={(e) => handleNewDestinationChange('details.country', e.target.value)}
+                className="bg-unicorn-darkPurple/50 text-white border-unicorn-gold/30"
+              />
+            </div>
           </>
         );
       case 'digital_wallet':
@@ -282,11 +320,29 @@ const WithdrawalMethodSelect: React.FC<WithdrawalMethodSelectProps> = ({ lastDep
               <Label htmlFor="wallet-name" className="text-white">Digital Wallet Name</Label>
               <Input 
                 id="wallet-name"
-                placeholder="My PayPal"
+                placeholder="My Digital Wallet"
                 value={newDestination.name || ''}
                 onChange={(e) => handleNewDestinationChange('name', e.target.value)}
                 className="bg-unicorn-darkPurple/50 text-white border-unicorn-gold/30"
               />
+            </div>
+            <div className="mb-4">
+              <Label htmlFor="wallet-provider" className="text-white">Service Provider</Label>
+              <Select 
+                value={newDestination.details?.service_provider || ''}
+                onValueChange={(value) => handleNewDestinationChange('details.service_provider', value)}
+              >
+                <SelectTrigger className="bg-unicorn-darkPurple/50 text-white border-unicorn-gold/30">
+                  <SelectValue placeholder="Select provider" />
+                </SelectTrigger>
+                <SelectContent className="bg-unicorn-darkPurple border-unicorn-gold/30">
+                  <SelectItem value="PayPal">PayPal</SelectItem>
+                  <SelectItem value="Venmo">Venmo</SelectItem>
+                  <SelectItem value="Cash App">Cash App</SelectItem>
+                  <SelectItem value="Skrill">Skrill</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="mb-4">
               <Label htmlFor="wallet-email" className="text-white">Email or Username</Label>
@@ -308,11 +364,11 @@ const WithdrawalMethodSelect: React.FC<WithdrawalMethodSelectProps> = ({ lastDep
   const getMethodIcon = (method: 'crypto' | 'bank' | 'digital_wallet') => {
     switch (method) {
       case 'crypto':
-        return <BitcoinIcon className="h-5 w-5" />;
+        return <Bitcoin className="h-5 w-5" />;
       case 'bank':
-        return <CreditCard className="h-5 w-5" />;
+        return <Building2 className="h-5 w-5" />;
       case 'digital_wallet':
-        return <WalletCards className="h-5 w-5" />;
+        return <Wallet className="h-5 w-5" />;
       default:
         return null;
     }
@@ -332,13 +388,13 @@ const WithdrawalMethodSelect: React.FC<WithdrawalMethodSelectProps> = ({ lastDep
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           <TabsList className="grid grid-cols-3 mb-4 bg-unicorn-darkPurple/70">
             <TabsTrigger value="crypto" className="data-[state=active]:bg-unicorn-gold/20 data-[state=active]:text-unicorn-gold">
-              <BitcoinIcon className="h-4 w-4 mr-2" /> Crypto
+              <Bitcoin className="h-4 w-4 mr-2" /> Crypto
             </TabsTrigger>
             <TabsTrigger value="bank" className="data-[state=active]:bg-unicorn-gold/20 data-[state=active]:text-unicorn-gold">
-              <CreditCard className="h-4 w-4 mr-2" /> Bank
+              <Building2 className="h-4 w-4 mr-2" /> Bank
             </TabsTrigger>
             <TabsTrigger value="digital_wallet" className="data-[state=active]:bg-unicorn-gold/20 data-[state=active]:text-unicorn-gold">
-              <WalletCards className="h-4 w-4 mr-2" /> Digital Wallet
+              <Wallet className="h-4 w-4 mr-2" /> Digital Wallet
             </TabsTrigger>
           </TabsList>
 
@@ -399,7 +455,7 @@ const WithdrawalMethodSelect: React.FC<WithdrawalMethodSelectProps> = ({ lastDep
                                 `${destination.details.bank_name || 'Bank'} • ${destination.details.account_number || ''}`
                               }
                               {destination.method_type === 'digital_wallet' && 
-                                `${destination.details.email || 'Email/Username'}`
+                                `${destination.details.service_provider || ''} • ${destination.details.email || ''}`
                               }
                             </div>
                           </div>

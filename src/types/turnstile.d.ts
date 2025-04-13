@@ -5,6 +5,6 @@ interface TurnstileObject {
   remove: (widgetId: string) => void;
 }
 
-interface Window {
+declare interface Window {
   turnstile: TurnstileObject;
 }
