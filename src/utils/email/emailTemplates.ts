@@ -92,7 +92,7 @@ export const EMAIL_TEMPLATES: Record<string, EmailTemplateType> = {
         <h1 style="color: #8a6d3b; border-bottom: 2px solid #f0ad4e; padding-bottom: 10px;">Loan Application Update</h1>
         <p>Hello {{userName}},</p>
         <p>We're writing to inform you about an update to your loan application with UnicornEnergies.</p>
-        <div style="background-color: #f8f9fa; border-left: 4px solid #{{statusColor}}; padding: 15px; margin: 20px 0;">
+        <div style="background-color: #f8f9fa; border-left: 4px solid {{statusColor}}; padding: 15px; margin: 20px 0;">
           <p style="margin: 0; font-size: 18px;">Loan Amount: <strong>${{amount}}</strong></p>
           <p style="margin: 5px 0 0 0;">Loan Purpose: <strong>{{purpose}}</strong></p>
           <p style="margin: 5px 0 0 0;">Application Date: <strong>{{applicationDate}}</strong></p>
