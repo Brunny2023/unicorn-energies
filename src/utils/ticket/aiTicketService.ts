@@ -15,7 +15,7 @@ export const aiTicketService = {
   async analyzeTicket(ticket: Ticket): Promise<{
     response: string;
     category?: string;
-    priority?: string;
+    priority?: "low" | "medium" | "high";
     suggestedNextSteps?: string[];
   }> {
     try {
@@ -62,7 +62,15 @@ export const aiTicketService = {
 
       const aiResponse = aiAnalysis.response;
       const category = aiAnalysis.category || ticket.category;
-      const priority = aiAnalysis.priority || ticket.priority;
+      
+      // Fix: Ensure priority is of the correct type
+      let priority: "low" | "medium" | "high" = ticket.priority as "low" | "medium" | "high";
+      if (aiAnalysis.priority) {
+        // Only assign if it's one of the allowed values
+        if (["low", "medium", "high"].includes(aiAnalysis.priority)) {
+          priority = aiAnalysis.priority as "low" | "medium" | "high";
+        }
+      }
       
       // Update the ticket with the AI response
       const success = await updateTicket(ticket.id, {

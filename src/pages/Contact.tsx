@@ -1,11 +1,16 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Mail, Phone, MapPin, MessageCircle, CheckCircle } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import Captcha from '@/components/ui/Captcha';
+import useCaptcha from '@/hooks/useCaptcha';
 
 const Contact = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { siteKey, verified, handleVerify, resetCaptcha } = useCaptcha();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -21,24 +26,47 @@ const Contact = () => {
     }));
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real application, you would send the form data to a server here
-    console.log('Form submitted to support@unicorn-energies.com:', formData);
-    setFormSubmitted(true);
     
-    // Reset form after submission
-    setFormData({
-      name: '',
-      email: '',
-      subject: '',
-      message: ''
-    });
+    if (!verified) {
+      alert('Please complete the CAPTCHA verification.');
+      return;
+    }
     
-    // Reset the submission status after 5 seconds
-    setTimeout(() => {
-      setFormSubmitted(false);
-    }, 5000);
+    setIsSubmitting(true);
+    
+    try {
+      // In a real application, this would send the data to a server
+      // Here we're simulating the email submission to support@unicorn-energies.com
+      console.log('Form submitted to support@unicorn-energies.com:', formData);
+      
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      setFormSubmitted(true);
+      setIsSubmitting(false);
+      
+      // Reset form after submission
+      setFormData({
+        name: '',
+        email: '',
+        subject: '',
+        message: ''
+      });
+      
+      // Reset captcha
+      resetCaptcha();
+      
+      // Reset the submission status after 5 seconds
+      setTimeout(() => {
+        setFormSubmitted(false);
+      }, 5000);
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setIsSubmitting(false);
+      alert('There was an error submitting your message. Please try again.');
+    }
   };
 
   return (
@@ -137,9 +165,23 @@ const Contact = () => {
                       ></textarea>
                     </div>
                     
-                    <Button type="submit" className="w-full bg-investment-navy hover:bg-investment-lightNavy text-white">
-                      Send Message
+                    {/* CAPTCHA Verification */}
+                    <div className="w-full">
+                      <label className="block text-gray-700 font-medium mb-2">Verification</label>
+                      <Captcha siteKey={siteKey} onVerify={handleVerify} />
+                    </div>
+                    
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-investment-navy hover:bg-investment-lightNavy text-white"
+                      disabled={isSubmitting || !verified}
+                    >
+                      {isSubmitting ? 'Sending...' : 'Send Message'}
                     </Button>
+                    
+                    <p className="text-xs text-gray-500 text-center">
+                      By submitting this form, you agree to our Privacy Policy. Your message will be sent to support@unicorn-energies.com.
+                    </p>
                   </form>
                 )}
               </div>
@@ -170,9 +212,9 @@ const Contact = () => {
                       <div>
                         <h3 className="font-bold text-lg text-investment-navy">Call Us</h3>
                         <p className="text-gray-600 mb-1">Main Office:</p>
-                        <a href="tel:+15551234567" className="text-investment-lightNavy hover:underline">+1 (555) 123-4567</a>
+                        <a href="tel:+12125559876" className="text-investment-lightNavy hover:underline">+1 (212) 555-9876</a>
                         <p className="text-gray-600 mt-2 mb-1">Support Hotline:</p>
-                        <a href="tel:+18007654321" className="text-investment-lightNavy hover:underline">+1 (800) 765-4321</a>
+                        <a href="tel:+18448889123" className="text-investment-lightNavy hover:underline">+1 (844) 888-9123</a>
                       </div>
                     </div>
                     
