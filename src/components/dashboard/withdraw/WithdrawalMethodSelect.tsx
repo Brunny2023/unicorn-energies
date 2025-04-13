@@ -1,13 +1,14 @@
+
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { PlusCircle, CreditCard, Bitcoin, Wallet, Building2, Landmark } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import { WithdrawalDestination } from "@/types/investment";
+import WithdrawalMethodTabs from "./withdrawal-methods/WithdrawalMethodTabs";
+import WithdrawalDestinationItem from "./withdrawal-methods/WithdrawalDestinationItem";
+import NewDestinationForm from "./withdrawal-methods/NewDestinationForm";
 
 interface WithdrawalMethodSelectProps {
   lastDepositMethod?: string | null;
@@ -74,33 +75,6 @@ const WithdrawalMethodSelect: React.FC<WithdrawalMethodSelectProps> = ({ lastDep
     // In development mode, use our dummy data
     setSavedDestinations(DEV_SAVED_DESTINATIONS);
     setLoading(false);
-
-    // In a real app with Supabase, we would fetch real data
-    // This code is commented out since the withdrawal_destinations table doesn't exist yet
-    /*
-    if (user?.id) {
-      const fetchDestinations = async () => {
-        try {
-          // This would require creating a withdrawal_destinations table in Supabase
-          const { data, error } = await supabase
-            .from('withdrawal_destinations')
-            .select('*')
-            .eq('user_id', user.id);
-
-          if (error) throw error;
-          setSavedDestinations(data || []);
-        } catch (error) {
-          console.error("Error fetching withdrawal destinations:", error);
-          // Fallback to dev data
-          setSavedDestinations(DEV_SAVED_DESTINATIONS);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchDestinations();
-    }
-    */
   }, [user]);
 
   useEffect(() => {
@@ -173,211 +147,12 @@ const WithdrawalMethodSelect: React.FC<WithdrawalMethodSelectProps> = ({ lastDep
     setSavedDestinations([newDest, ...savedDestinations]);
     onSelect(newDest);
 
-    // In a real app with Supabase, we would save to the database
-    // This code is commented out since the withdrawal_destinations table doesn't exist yet
-    /*
-    if (user?.id) {
-      // Save to Supabase
-      try {
-        const { data, error } = await supabase
-          .from('withdrawal_destinations')
-          .insert([destination])
-          .select()
-          .single();
-
-        if (error) throw error;
-        
-        setSavedDestinations([data, ...savedDestinations]);
-        onSelect(data);
-      } catch (error) {
-        console.error("Error saving withdrawal destination:", error);
-        // Fallback for development
-        const newId = `dev-${Date.now()}`;
-        const newDest = { ...destination, id: newId };
-        setSavedDestinations([newDest, ...savedDestinations]);
-        onSelect(newDest);
-      }
-    }
-    */
-
     setShowNewDestinationForm(false);
     setNewDestination({
       method_type: activeTab as 'crypto' | 'bank' | 'digital_wallet',
       name: '',
       details: {}
     });
-  };
-
-  // Render different form fields based on the method type
-  const renderNewDestinationFields = () => {
-    switch (newDestination.method_type) {
-      case 'crypto':
-        return (
-          <>
-            <div className="mb-4">
-              <Label htmlFor="wallet-name" className="text-white">Wallet Name</Label>
-              <Input 
-                id="wallet-name"
-                placeholder="My Crypto Wallet"
-                value={newDestination.name || ''}
-                onChange={(e) => handleNewDestinationChange('name', e.target.value)}
-                className="bg-unicorn-darkPurple/50 text-white border-unicorn-gold/30"
-              />
-            </div>
-            <div className="mb-4">
-              <Label htmlFor="crypto-network" className="text-white">Cryptocurrency</Label>
-              <Select 
-                value={newDestination.details?.network || 'Bitcoin'}
-                onValueChange={(value) => handleNewDestinationChange('details.network', value)}
-              >
-                <SelectTrigger className="bg-unicorn-darkPurple/50 text-white border-unicorn-gold/30">
-                  <SelectValue placeholder="Select cryptocurrency" />
-                </SelectTrigger>
-                <SelectContent className="bg-unicorn-darkPurple border-unicorn-gold/30">
-                  <SelectItem value="Bitcoin">Bitcoin (BTC)</SelectItem>
-                  <SelectItem value="Ethereum">Ethereum (ETH)</SelectItem>
-                  <SelectItem value="USDT">Tether (USDT)</SelectItem>
-                  <SelectItem value="USDC">USD Coin (USDC)</SelectItem>
-                  <SelectItem value="BNB">Binance Coin (BNB)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="mb-4">
-              <Label htmlFor="wallet-address" className="text-white">Wallet Address</Label>
-              <Input 
-                id="wallet-address"
-                placeholder="Enter your crypto wallet address"
-                value={newDestination.details?.address || ''}
-                onChange={(e) => handleNewDestinationChange('details.address', e.target.value)}
-                className="bg-unicorn-darkPurple/50 text-white border-unicorn-gold/30"
-              />
-            </div>
-          </>
-        );
-      case 'bank':
-        return (
-          <>
-            <div className="mb-4">
-              <Label htmlFor="bank-account-name" className="text-white">Account Name</Label>
-              <Input 
-                id="bank-account-name"
-                placeholder="My Bank Account"
-                value={newDestination.name || ''}
-                onChange={(e) => handleNewDestinationChange('name', e.target.value)}
-                className="bg-unicorn-darkPurple/50 text-white border-unicorn-gold/30"
-              />
-            </div>
-            <div className="mb-4">
-              <Label htmlFor="bank-name" className="text-white">Bank Name</Label>
-              <Input 
-                id="bank-name"
-                placeholder="Enter your bank name"
-                value={newDestination.details?.bank_name || ''}
-                onChange={(e) => handleNewDestinationChange('details.bank_name', e.target.value)}
-                className="bg-unicorn-darkPurple/50 text-white border-unicorn-gold/30"
-              />
-            </div>
-            <div className="mb-4">
-              <Label htmlFor="account-holder" className="text-white">Account Holder Name</Label>
-              <Input 
-                id="account-holder"
-                placeholder="Enter account holder name"
-                value={newDestination.details?.account_holder || ''}
-                onChange={(e) => handleNewDestinationChange('details.account_holder', e.target.value)}
-                className="bg-unicorn-darkPurple/50 text-white border-unicorn-gold/30"
-              />
-            </div>
-            <div className="mb-4">
-              <Label htmlFor="account-number" className="text-white">Account Number</Label>
-              <Input 
-                id="account-number"
-                placeholder="Enter your account number"
-                value={newDestination.details?.account_number || ''}
-                onChange={(e) => handleNewDestinationChange('details.account_number', e.target.value)}
-                className="bg-unicorn-darkPurple/50 text-white border-unicorn-gold/30"
-              />
-            </div>
-            <div className="mb-4">
-              <Label htmlFor="routing-number" className="text-white">Routing Number</Label>
-              <Input 
-                id="routing-number"
-                placeholder="Enter your routing number"
-                value={newDestination.details?.routing_number || ''}
-                onChange={(e) => handleNewDestinationChange('details.routing_number', e.target.value)}
-                className="bg-unicorn-darkPurple/50 text-white border-unicorn-gold/30"
-              />
-            </div>
-            <div className="mb-4">
-              <Label htmlFor="bank-country" className="text-white">Country</Label>
-              <Input 
-                id="bank-country"
-                placeholder="Enter country"
-                value={newDestination.details?.country || ''}
-                onChange={(e) => handleNewDestinationChange('details.country', e.target.value)}
-                className="bg-unicorn-darkPurple/50 text-white border-unicorn-gold/30"
-              />
-            </div>
-          </>
-        );
-      case 'digital_wallet':
-        return (
-          <>
-            <div className="mb-4">
-              <Label htmlFor="wallet-name" className="text-white">Digital Wallet Name</Label>
-              <Input 
-                id="wallet-name"
-                placeholder="My Digital Wallet"
-                value={newDestination.name || ''}
-                onChange={(e) => handleNewDestinationChange('name', e.target.value)}
-                className="bg-unicorn-darkPurple/50 text-white border-unicorn-gold/30"
-              />
-            </div>
-            <div className="mb-4">
-              <Label htmlFor="wallet-provider" className="text-white">Service Provider</Label>
-              <Select 
-                value={newDestination.details?.service_provider || ''}
-                onValueChange={(value) => handleNewDestinationChange('details.service_provider', value)}
-              >
-                <SelectTrigger className="bg-unicorn-darkPurple/50 text-white border-unicorn-gold/30">
-                  <SelectValue placeholder="Select provider" />
-                </SelectTrigger>
-                <SelectContent className="bg-unicorn-darkPurple border-unicorn-gold/30">
-                  <SelectItem value="PayPal">PayPal</SelectItem>
-                  <SelectItem value="Venmo">Venmo</SelectItem>
-                  <SelectItem value="Cash App">Cash App</SelectItem>
-                  <SelectItem value="Skrill">Skrill</SelectItem>
-                  <SelectItem value="Other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="mb-4">
-              <Label htmlFor="wallet-email" className="text-white">Email or Username</Label>
-              <Input 
-                id="wallet-email"
-                placeholder="Enter your email or username"
-                value={newDestination.details?.email || ''}
-                onChange={(e) => handleNewDestinationChange('details.email', e.target.value)}
-                className="bg-unicorn-darkPurple/50 text-white border-unicorn-gold/30"
-              />
-            </div>
-          </>
-        );
-      default:
-        return null;
-    }
-  };
-
-  const getMethodIcon = (method: 'crypto' | 'bank' | 'digital_wallet') => {
-    switch (method) {
-      case 'crypto':
-        return <Bitcoin className="h-5 w-5" />;
-      case 'bank':
-        return <Building2 className="h-5 w-5" />;
-      case 'digital_wallet':
-        return <Wallet className="h-5 w-5" />;
-      default:
-        return null;
-    }
   };
 
   // Filter destinations by the selected tab
@@ -392,48 +167,24 @@ const WithdrawalMethodSelect: React.FC<WithdrawalMethodSelectProps> = ({ lastDep
       </CardHeader>
       <CardContent>
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-          <TabsList className="grid grid-cols-3 mb-4 bg-unicorn-darkPurple/70">
-            <TabsTrigger value="crypto" className="data-[state=active]:bg-unicorn-gold/20 data-[state=active]:text-unicorn-gold">
-              <Bitcoin className="h-4 w-4 mr-2" /> Crypto
-            </TabsTrigger>
-            <TabsTrigger value="bank" className="data-[state=active]:bg-unicorn-gold/20 data-[state=active]:text-unicorn-gold">
-              <Building2 className="h-4 w-4 mr-2" /> Bank
-            </TabsTrigger>
-            <TabsTrigger value="digital_wallet" className="data-[state=active]:bg-unicorn-gold/20 data-[state=active]:text-unicorn-gold">
-              <Wallet className="h-4 w-4 mr-2" /> Digital Wallet
-            </TabsTrigger>
-          </TabsList>
-
-          {lastDepositMethod && (
-            <div className="bg-amber-500/10 text-amber-400 p-2 mb-4 rounded text-sm flex items-center">
-              <span className="mr-1">⚠</span> You can only withdraw using the same method you deposited with ({lastDepositMethod}).
-            </div>
-          )}
+          <WithdrawalMethodTabs 
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
+            lastDepositMethod={lastDepositMethod}
+          />
 
           <div className="space-y-4">
             {showNewDestinationForm ? (
-              <div className="bg-unicorn-purple/10 p-4 rounded-md border border-unicorn-purple/30">
-                <h4 className="text-white font-medium mb-3">Add New {activeTab === 'crypto' ? 'Crypto Wallet' : activeTab === 'bank' ? 'Bank Account' : 'Digital Wallet'}</h4>
-                
-                {renderNewDestinationFields()}
-                
-                <div className="flex space-x-2">
-                  <Button 
-                    onClick={handleAddDestination}
-                    className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black"
-                    disabled={!newDestination.name}
-                  >
-                    Add
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setShowNewDestinationForm(false)}
-                    className="border-unicorn-gold/30 text-unicorn-gold hover:bg-unicorn-gold/10"
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </div>
+              <NewDestinationForm
+                methodType={activeTab as 'crypto' | 'bank' | 'digital_wallet'}
+                values={{
+                  ...newDestination,
+                  method_type: activeTab as 'crypto' | 'bank' | 'digital_wallet'
+                } as any}
+                onChange={handleNewDestinationChange}
+                onAdd={handleAddDestination}
+                onCancel={() => setShowNewDestinationForm(false)}
+              />
             ) : (
               <>
                 {loading ? (
@@ -444,34 +195,11 @@ const WithdrawalMethodSelect: React.FC<WithdrawalMethodSelectProps> = ({ lastDep
                 ) : filteredDestinations.length > 0 ? (
                   <div className="space-y-2">
                     {filteredDestinations.map((destination) => (
-                      <div
+                      <WithdrawalDestinationItem
                         key={destination.id}
+                        destination={destination}
                         onClick={() => handleSelectDestination(destination)}
-                        className="p-3 rounded-md border border-unicorn-gold/20 bg-unicorn-darkPurple/30 hover:bg-unicorn-purple/20 cursor-pointer transition-colors flex items-center justify-between"
-                      >
-                        <div className="flex items-center">
-                          {getMethodIcon(destination.method_type)}
-                          <div className="ml-3">
-                            <div className="text-white font-medium">{destination.name}</div>
-                            <div className="text-xs text-gray-400">
-                              {destination.method_type === 'crypto' && 
-                                `${destination.details.network || 'Crypto'} • ${destination.details.address ? destination.details.address.substring(0, 6) + '...' + destination.details.address.substring(destination.details.address.length - 4) : ''}`
-                              }
-                              {destination.method_type === 'bank' && 
-                                `${destination.details.bank_name || 'Bank'} • ${destination.details.account_number || ''}`
-                              }
-                              {destination.method_type === 'digital_wallet' && 
-                                `${destination.details.service_provider || ''} • ${destination.details.email || ''}`
-                              }
-                            </div>
-                          </div>
-                        </div>
-                        {destination.is_default && (
-                          <span className="text-xs bg-unicorn-gold/20 text-unicorn-gold px-2 py-1 rounded-full">
-                            Default
-                          </span>
-                        )}
-                      </div>
+                      />
                     ))}
                   </div>
                 ) : (

@@ -4,6 +4,19 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { WithdrawalDestination, TransactionMetadata } from '@/types/investment';
 
+interface Transaction {
+  id: string;
+  user_id: string;
+  amount: number;
+  type: string;
+  status: string;
+  description?: string;
+  created_at: string;
+  created_by?: string;
+  metadata?: TransactionMetadata;
+  updated_at?: string;
+}
+
 export const useTransactionActions = (refreshCallback: () => Promise<void>) => {
   const { toast } = useToast();
   const [processing, setProcessing] = useState<string | null>(null);
@@ -20,6 +33,8 @@ export const useTransactionActions = (refreshCallback: () => Promise<void>) => {
         .single();
         
       if (txError) throw txError;
+      
+      const transaction = txData as Transaction;
       
       // Update transaction status
       const { error: updateError } = await supabase
@@ -77,7 +92,7 @@ export const useTransactionActions = (refreshCallback: () => Promise<void>) => {
         metadata: {
           amount,
           transaction_id: transactionId,
-          destination: txData?.metadata?.destination || null
+          destination: transaction.metadata?.destination || null
         },
         read: false
       });
