@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,15 +24,16 @@ const FiatDepositForm: React.FC<FiatDepositFormProps> = ({
   const [cvv, setCvv] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
-  
-  // Simulated payment processor
+  const [cardBrand, setCardBrand] = useState<string>("");
+  const [referenceId, setReferenceId] = useState<string>("");
+
   const DEVELOPMENT_MODE = true;
-  
+
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9.]/g, "");
     setAmount(value);
   };
-  
+
   const formatCardNumber = (value: string) => {
     const cleanValue = value.replace(/\D/g, "");
     const chunks = [];
@@ -44,14 +44,31 @@ const FiatDepositForm: React.FC<FiatDepositFormProps> = ({
     
     return chunks.join(" ");
   };
-  
+
+  const detectCardBrand = (cardNumber: string) => {
+    const cleanNumber = cardNumber.replace(/\D/g, "");
+    
+    if (cleanNumber.startsWith('4')) {
+      setCardBrand('visa');
+    } else if (/^5[1-5]/.test(cleanNumber)) {
+      setCardBrand('mastercard');
+    } else if (/^3[47]/.test(cleanNumber)) {
+      setCardBrand('amex');
+    } else if (/^6(?:011|5)/.test(cleanNumber)) {
+      setCardBrand('discover');
+    } else {
+      setCardBrand('');
+    }
+  };
+
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formattedValue = formatCardNumber(e.target.value);
     if (formattedValue.length <= 19) {
       setCardNumber(formattedValue);
+      detectCardBrand(formattedValue);
     }
   };
-  
+
   const formatExpiryDate = (value: string) => {
     const cleanValue = value.replace(/\D/g, "");
     if (cleanValue.length > 2) {
@@ -59,21 +76,21 @@ const FiatDepositForm: React.FC<FiatDepositFormProps> = ({
     }
     return cleanValue;
   };
-  
+
   const handleExpiryDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formattedValue = formatExpiryDate(e.target.value);
     if (formattedValue.length <= 5) {
       setExpiryDate(formattedValue);
     }
   };
-  
+
   const handleCvvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, "");
     if (value.length <= 3) {
       setCvv(value);
     }
   };
-  
+
   const validateForm = () => {
     if (!amount || parseFloat(amount) < 100) {
       toast({
@@ -122,7 +139,7 @@ const FiatDepositForm: React.FC<FiatDepositFormProps> = ({
     
     return true;
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -131,42 +148,79 @@ const FiatDepositForm: React.FC<FiatDepositFormProps> = ({
     setLoading(true);
     
     try {
-      // In development mode, simulate a successful deposit
       if (DEVELOPMENT_MODE) {
         await new Promise(resolve => setTimeout(resolve, 1500));
         
-        // Process the deposit by updating the wallet balance
         const depositAmount = parseFloat(amount);
         
-        // Use the depositFunds utility to update the balance
-        const result = await depositFunds(userId, depositAmount);
+        const paymentRef = referenceId || `PAY-${Date.now().toString().substring(7)}`;
+        
+        const result = await depositFunds(
+          userId, 
+          depositAmount, 
+          "card", 
+          paymentRef
+        );
         
         if (result) {
           setSuccess(true);
           
-          // Pass deposit info to parent component
           onSuccessfulDeposit({
             amount: depositAmount,
             method: "card",
             cardLast4: cardNumber.slice(-4),
+            cardBrand: cardBrand,
+            referenceId: paymentRef,
             timestamp: new Date().toISOString()
           });
           
-          // Reset form after a delay
           setTimeout(() => {
             setAmount("");
             setCardName("");
             setCardNumber("");
             setExpiryDate("");
             setCvv("");
+            setReferenceId("");
             setSuccess(false);
           }, 3000);
         } else {
           throw new Error("Failed to process deposit");
         }
       } else {
-        // In production, you would integrate with a payment processor here
-        throw new Error("Payment processing not implemented in production");
+        const depositAmount = parseFloat(amount);
+        const paymentRef = referenceId || `PAY-${Date.now().toString().substring(7)}`;
+        
+        const result = await depositFunds(
+          userId, 
+          depositAmount, 
+          "card", 
+          paymentRef
+        );
+        
+        if (result) {
+          setSuccess(true);
+          
+          onSuccessfulDeposit({
+            amount: depositAmount,
+            method: "card",
+            cardLast4: cardNumber.slice(-4),
+            cardBrand: cardBrand,
+            referenceId: paymentRef,
+            timestamp: new Date().toISOString()
+          });
+          
+          setTimeout(() => {
+            setAmount("");
+            setCardName("");
+            setCardNumber("");
+            setExpiryDate("");
+            setCvv("");
+            setReferenceId("");
+            setSuccess(false);
+          }, 3000);
+        } else {
+          throw new Error("Failed to process deposit");
+        }
       }
     } catch (error) {
       console.error("Error processing deposit:", error);
@@ -179,7 +233,7 @@ const FiatDepositForm: React.FC<FiatDepositFormProps> = ({
       setLoading(false);
     }
   };
-  
+
   if (success) {
     return (
       <div className="p-6 flex flex-col items-center justify-center min-h-[300px]">
@@ -199,7 +253,7 @@ const FiatDepositForm: React.FC<FiatDepositFormProps> = ({
       </div>
     );
   }
-  
+
   return (
     <form onSubmit={handleSubmit}>
       <CardHeader>
@@ -278,6 +332,22 @@ const FiatDepositForm: React.FC<FiatDepositFormProps> = ({
             />
           </div>
         </div>
+        
+        {!DEVELOPMENT_MODE && (
+          <div className="space-y-2">
+            <Label htmlFor="referenceId" className="text-white">Payment Reference (Optional)</Label>
+            <Input
+              id="referenceId"
+              placeholder="Enter payment reference if available"
+              value={referenceId}
+              onChange={(e) => setReferenceId(e.target.value)}
+              className="bg-unicorn-black/30 border-unicorn-gold/30 text-white"
+            />
+            <p className="text-xs text-gray-500">
+              Reference ID helps track your payment if provided by your bank
+            </p>
+          </div>
+        )}
       </CardContent>
       <CardFooter className="flex justify-between items-center border-t border-unicorn-gold/20 pt-6">
         <p className="text-sm text-gray-400">

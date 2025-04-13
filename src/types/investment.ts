@@ -1,9 +1,13 @@
 export interface WalletData {
   id: string;
+  user_id: string;
   balance: number;
   accrued_profits: number;
   withdrawal_fee_percentage: number;
-  user_id: string;
+  total_deposits?: number;
+  total_withdrawals?: number;
+  updated_at?: string;
+  created_at?: string;
 }
 
 export interface WithdrawalRequest {

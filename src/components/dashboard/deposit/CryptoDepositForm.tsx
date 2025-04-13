@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -35,11 +34,10 @@ const CryptoDepositForm: React.FC<CryptoDepositFormProps> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
   const [cryptoAmount, setCryptoAmount] = useState<string>("0");
-  
-  // Simulated payment processor
+  const [transactionId, setTransactionId] = useState<string>("");
+
   const DEVELOPMENT_MODE = true;
-  
-  // Available cryptocurrencies (in a real app, these would come from an API or database)
+
   const cryptocurrencies: CryptoCurrency[] = [
     {
       id: "bitcoin",
@@ -79,14 +77,13 @@ const CryptoDepositForm: React.FC<CryptoDepositFormProps> = ({
       usdValue: 1.00
     },
   ];
-  
+
   const selectedCryptoCurrency = cryptocurrencies.find(c => c.id === selectedCrypto) || cryptocurrencies[0];
-  
+
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9.]/g, "");
     setAmount(value);
     
-    // Calculate equivalent crypto amount
     if (value && selectedCryptoCurrency) {
       const usdAmount = parseFloat(value);
       const cryptoValue = usdAmount / selectedCryptoCurrency.usdValue;
@@ -95,11 +92,10 @@ const CryptoDepositForm: React.FC<CryptoDepositFormProps> = ({
       setCryptoAmount("0");
     }
   };
-  
+
   const handleCryptoChange = (value: string) => {
     setSelectedCrypto(value);
     
-    // Recalculate crypto amount when currency changes
     if (amount) {
       const selectedCrypto = cryptocurrencies.find(c => c.id === value);
       if (selectedCrypto) {
@@ -109,7 +105,7 @@ const CryptoDepositForm: React.FC<CryptoDepositFormProps> = ({
       }
     }
   };
-  
+
   const handleCopyAddress = () => {
     navigator.clipboard.writeText(selectedCryptoCurrency.address);
     toast({
@@ -117,7 +113,7 @@ const CryptoDepositForm: React.FC<CryptoDepositFormProps> = ({
       description: "Cryptocurrency address copied to clipboard",
     });
   };
-  
+
   const validateForm = () => {
     if (!amount || parseFloat(amount) < 100) {
       toast({
@@ -130,7 +126,7 @@ const CryptoDepositForm: React.FC<CryptoDepositFormProps> = ({
     
     return true;
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -139,40 +135,80 @@ const CryptoDepositForm: React.FC<CryptoDepositFormProps> = ({
     setLoading(true);
     
     try {
-      // In development mode, simulate a successful deposit
       if (DEVELOPMENT_MODE) {
         await new Promise(resolve => setTimeout(resolve, 2000));
         
-        // Process the deposit by updating the wallet balance
         const depositAmount = parseFloat(amount);
         
-        // Use the depositFunds utility to update the balance
-        const result = await depositFunds(userId, depositAmount);
+        const result = await depositFunds(
+          userId, 
+          depositAmount, 
+          selectedCryptoCurrency.id, 
+          transactionId || undefined
+        );
         
         if (result) {
           setSuccess(true);
           
-          // Pass deposit info to parent component
           onSuccessfulDeposit({
             amount: depositAmount,
             method: selectedCryptoCurrency.id,
             currency: selectedCryptoCurrency.shortName,
             cryptoAmount: parseFloat(cryptoAmount),
+            transactionId: transactionId || undefined,
             timestamp: new Date().toISOString()
           });
           
-          // Reset form after a delay
           setTimeout(() => {
             setAmount("");
             setCryptoAmount("0");
+            setTransactionId("");
             setSuccess(false);
           }, 3000);
         } else {
           throw new Error("Failed to process deposit");
         }
       } else {
-        // In production, you would integrate with a crypto payment processor here
-        throw new Error("Crypto payment processing not implemented in production");
+        if (!transactionId) {
+          toast({
+            title: "Transaction ID Required",
+            description: "Please enter the transaction ID from your wallet or exchange",
+            variant: "destructive",
+          });
+          setLoading(false);
+          return;
+        }
+        
+        const depositAmount = parseFloat(amount);
+        
+        const result = await depositFunds(
+          userId, 
+          depositAmount, 
+          selectedCryptoCurrency.id, 
+          transactionId
+        );
+        
+        if (result) {
+          setSuccess(true);
+          
+          onSuccessfulDeposit({
+            amount: depositAmount,
+            method: selectedCryptoCurrency.id,
+            currency: selectedCryptoCurrency.shortName,
+            cryptoAmount: parseFloat(cryptoAmount),
+            transactionId: transactionId,
+            timestamp: new Date().toISOString()
+          });
+          
+          setTimeout(() => {
+            setAmount("");
+            setCryptoAmount("0");
+            setTransactionId("");
+            setSuccess(false);
+          }, 3000);
+        } else {
+          throw new Error("Failed to process deposit");
+        }
       }
     } catch (error) {
       console.error("Error processing deposit:", error);
@@ -185,8 +221,7 @@ const CryptoDepositForm: React.FC<CryptoDepositFormProps> = ({
       setLoading(false);
     }
   };
-  
-  // Dev mode allows automating the crypto deposit without actual transfer
+
   const handleManualConfirm = async () => {
     if (DEVELOPMENT_MODE && amount) {
       setLoading(true);
@@ -194,28 +229,31 @@ const CryptoDepositForm: React.FC<CryptoDepositFormProps> = ({
       try {
         await new Promise(resolve => setTimeout(resolve, 1500));
         
-        // Process the deposit by updating the wallet balance
         const depositAmount = parseFloat(amount);
         
-        // Use the depositFunds utility to update the balance
-        const result = await depositFunds(userId, depositAmount);
+        const result = await depositFunds(
+          userId, 
+          depositAmount, 
+          selectedCryptoCurrency.id, 
+          transactionId || undefined
+        );
         
         if (result) {
           setSuccess(true);
           
-          // Pass deposit info to parent component
           onSuccessfulDeposit({
             amount: depositAmount,
             method: selectedCryptoCurrency.id,
             currency: selectedCryptoCurrency.shortName,
             cryptoAmount: parseFloat(cryptoAmount),
+            transactionId: transactionId || undefined,
             timestamp: new Date().toISOString()
           });
           
-          // Reset form after a delay
           setTimeout(() => {
             setAmount("");
             setCryptoAmount("0");
+            setTransactionId("");
             setSuccess(false);
           }, 3000);
         } else {
@@ -233,7 +271,7 @@ const CryptoDepositForm: React.FC<CryptoDepositFormProps> = ({
       }
     }
   };
-  
+
   if (success) {
     return (
       <div className="p-6 flex flex-col items-center justify-center min-h-[300px]">
@@ -253,7 +291,7 @@ const CryptoDepositForm: React.FC<CryptoDepositFormProps> = ({
       </div>
     );
   }
-  
+
   return (
     <form onSubmit={handleSubmit}>
       <CardHeader>
@@ -358,6 +396,22 @@ const CryptoDepositForm: React.FC<CryptoDepositFormProps> = ({
             </div>
           </div>
         </div>
+        
+        {!DEVELOPMENT_MODE && (
+          <div className="mt-4 space-y-2">
+            <Label htmlFor="transactionId" className="text-white">Transaction ID</Label>
+            <Input
+              id="transactionId"
+              placeholder="Enter the transaction ID from your wallet"
+              value={transactionId}
+              onChange={(e) => setTransactionId(e.target.value)}
+              className="bg-unicorn-black/30 border-unicorn-gold/30 text-white"
+            />
+            <p className="text-xs text-gray-400">
+              This helps us verify your transaction on the blockchain
+            </p>
+          </div>
+        )}
         
         {DEVELOPMENT_MODE && (
           <div className="border border-dashed border-unicorn-gold/40 rounded-lg p-3 bg-unicorn-gold/5">

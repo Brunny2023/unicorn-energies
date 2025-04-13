@@ -8,6 +8,16 @@ interface CaptchaProps {
   onVerify: (token: string) => void;
 }
 
+declare global {
+  interface Window {
+    turnstile: {
+      render: (containerId: string, config: any) => string;
+      reset: (widgetId: string) => void;
+      remove: (widgetId: string) => void;
+    };
+  }
+}
+
 const Captcha = ({ siteKey, onVerify }: CaptchaProps) => {
   const [widgetId, setWidgetId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);

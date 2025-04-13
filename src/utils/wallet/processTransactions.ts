@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { fetchWalletData } from './fetchWalletData';
 import { calculateWithdrawalRequest } from './calculateWithdrawal';
@@ -111,8 +110,8 @@ export const processWithdrawal = async (userId: string, amount: number): Promise
   }
 };
 
-// Deposit funds into wallet
-export const depositFunds = async (userId: string, amount: number): Promise<boolean> => {
+// Enhanced deposit function with transaction tracking
+export const depositFunds = async (userId: string, amount: number, method?: string, transactionId?: string): Promise<boolean> => {
   try {
     // Get current wallet data
     const walletData = await fetchWalletData(userId);
@@ -124,11 +123,12 @@ export const depositFunds = async (userId: string, amount: number): Promise<bool
     // Calculate new balance
     const newBalance = walletData.balance + amount;
     
-    // Update wallet balance
+    // Update wallet balance and total_deposits
     const { error: walletError } = await supabase
       .from('wallets')
       .update({ 
         balance: newBalance,
+        total_deposits: (walletData.total_deposits || 0) + amount,
         updated_at: new Date().toISOString()
       })
       .eq('user_id', userId);
@@ -144,11 +144,16 @@ export const depositFunds = async (userId: string, amount: number): Promise<bool
           type: 'deposit',
           amount: amount,
           status: 'completed',
-          description: `Deposit processed`
+          description: `Deposit processed via ${method || 'unknown method'}${transactionId ? ` (Tx ID: ${transactionId})` : ''}`
         }
       ]);
       
     if (txError) throw txError;
+    
+    // Store the user's last deposit method in local storage
+    if (method) {
+      localStorage.setItem("lastDepositMethod", method);
+    }
     
     return true;
   } catch (error) {
