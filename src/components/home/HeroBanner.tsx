@@ -38,7 +38,7 @@ const HeroBanner = () => {
       <div className="absolute top-[30%] right-[20%] w-56 h-56 bg-[#D4B24C]/10 rounded-full blur-2xl"></div>
       <div className="absolute bottom-[20%] left-[25%] w-40 h-40 bg-[#4A3F35]/20 rounded-full blur-xl"></div>
       
-      <div className="container mx-auto px-4 relative z-20">
+      <div className="container mx-auto px-4 relative z-30">
         <div className="max-w-4xl mx-auto text-center">
           <div className="flex justify-center mb-6">
             <img 
@@ -47,15 +47,20 @@ const HeroBanner = () => {
               className="w-24 h-24 animate-float"
             />
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 animate-fade-in">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 animate-fade-in relative z-10">
             <span className="bg-gradient-to-r from-[#F3D77F] via-[#D4AD3A] to-[#9A7D2E] bg-clip-text text-transparent">Premium</span> Energy Investments
           </h1>
-          <p className="text-xl md:text-2xl mb-8 text-gray-200 animate-slide-up relative z-30 bg-unicorn-darkPurple/40 p-4 rounded-lg shadow-lg">
-            Harness the power of cutting-edge energy markets with UnicornEnergies' exclusive investment portfolios. Our carefully vetted opportunities deliver industry-leading returns while supporting the future of sustainable energy.
-          </p>
+          
+          {/* Enhanced paragraph with stronger background and higher z-index */}
+          <div className="relative mb-8 z-50">
+            <div className="absolute inset-0 bg-unicorn-darkPurple/70 backdrop-blur-sm rounded-lg"></div>
+            <p className="text-xl md:text-2xl text-gray-200 animate-slide-up relative z-10 p-5 rounded-lg">
+              Harness the power of cutting-edge energy markets with UnicornEnergies' exclusive investment portfolios. Our carefully vetted opportunities deliver industry-leading returns while supporting the future of sustainable energy.
+            </p>
+          </div>
           
           {/* Investment highlights */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 relative z-30">
             <div className="bg-unicorn-darkPurple/50 border border-unicorn-gold/30 rounded-lg p-6 transform transition-all hover:scale-105">
               <div className="flex justify-center mb-4">
                 <div className="w-12 h-12 rounded-full bg-unicorn-gold/20 flex items-center justify-center">
@@ -87,7 +92,7 @@ const HeroBanner = () => {
             </div>
           </div>
           
-          <div className="flex flex-col sm:flex-row justify-center gap-4 animate-slide-up" style={{ animationDelay: "0.2s" }}>
+          <div className="flex flex-col sm:flex-row justify-center gap-4 animate-slide-up relative z-30" style={{ animationDelay: "0.2s" }}>
             <Link to="/investment-plans">
               <Button size="lg" className="bg-[#D4AD3A] hover:bg-[#9A7D2E] text-unicorn-black font-bold px-8 py-6 text-lg group">
                 Explore Investment Plans 
@@ -100,7 +105,7 @@ const HeroBanner = () => {
               </Button>
             </Link>
           </div>
-          <div className="mt-12 flex flex-wrap justify-center gap-8 animate-slide-up" style={{ animationDelay: "0.4s" }}>
+          <div className="mt-12 flex flex-wrap justify-center gap-8 animate-slide-up relative z-30" style={{ animationDelay: "0.4s" }}>
             <div className="text-center">
               <div className="font-bold text-4xl text-[#D4AD3A] animate-pulse-glow">$250M+</div>
               <div className="text-gray-200">Assets Under Management</div>

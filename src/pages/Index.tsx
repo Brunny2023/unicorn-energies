@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -25,7 +24,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Stars background with explicit z-index to ensure it's behind content */}
+      {/* Stars background with low z-index to ensure it's behind content */}
       <div className="fixed inset-0 z-0">
         <StarsBackground />
       </div>
@@ -35,7 +34,12 @@ const Index = () => {
         {/* Explicitly include the Navbar component here */}
         <Navbar />
         
-        <HeroBanner />
+        {/* Make sure HeroBanner has proper z-index hierarchy */}
+        <div className="relative z-20">
+          <HeroBanner />
+        </div>
+        
+        {/* Other sections */}
         <AboutSection />
         <HowItWorksSection />
         <InvestmentPlansSection />
