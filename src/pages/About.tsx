@@ -16,7 +16,7 @@ const About = () => {
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="heading-xl mb-6">About UnicornEnergies</h1>
             <p className="text-xl text-gray-200">
-              Your trusted partner in oil and gas market investments, providing reliable high-income sources while minimizing risks.
+              Your trusted partner in oil and gas market investments since 1976, providing reliable high-income sources while minimizing risks.
             </p>
           </div>
         </div>
@@ -31,17 +31,17 @@ const About = () => {
                 Our Background and Experience
               </h2>
               <p className="text-gray-700 mb-4">
-                We are an international Oil and Gas Investment Company financial company in activities which are related 
-                to trading in the oil and gas markets globally, and performed by qualified professionals.
+                Established in 1976, we are an international Oil and Gas Investment Company with nearly five decades of experience in activities related 
+                to trading in the oil and gas markets globally, performed by qualified professionals.
               </p>
               <p className="text-gray-700 mb-4">
-                Our goal is to provide our investors with a reliable source of high income, while minimizing any possible risks 
-                and offering high-quality services, allowing us to automate and simplify the relations between the investors and 
-                the trustees. We work towards increasing your profit margin by profitable investments. We look forward to you 
-                being part of our satisfied community.
+                For the past 22 years, we've opened our opportunities to global investors, providing a reliable source of high income, 
+                while minimizing any possible risks and offering high-quality services. Our systems automate and simplify the relations 
+                between the investors and the trustees. We work towards increasing your profit margin by profitable investments. 
+                We look forward to you being part of our satisfied global community.
               </p>
               <p className="text-gray-700">
-                Today, we manage over $250 million in assets for more than 15,000 investors worldwide, delivering consistent returns regardless of broader market conditions.
+                Today, we manage over $850 million in assets for more than 35,000 investors worldwide, delivering consistent returns regardless of broader market conditions.
               </p>
             </div>
             
@@ -52,7 +52,7 @@ const About = () => {
                 className="rounded-lg shadow-xl w-full max-w-lg mx-auto"
               />
               <div className="absolute -bottom-6 -right-6 bg-white p-6 rounded-lg shadow-lg border-t-4 border-investment-gold">
-                <div className="text-investment-navy font-bold text-2xl">20+ Years</div>
+                <div className="text-investment-navy font-bold text-2xl">47+ Years</div>
                 <div className="text-gray-600">Industry Leadership</div>
               </div>
             </div>
@@ -90,7 +90,7 @@ const About = () => {
                 Our Mission & Values
               </h2>
               <p className="text-gray-700 mb-4">
-                Our mission is to democratize access to the profitable oil and gas sector, allowing individual investors to benefit from opportunities traditionally reserved for institutional players.
+                Since 1976, our mission has been to democratize access to the profitable oil and gas sector. Since 2001, we've expanded this vision globally, allowing individual investors worldwide to benefit from opportunities traditionally reserved for institutional players.
               </p>
               <p className="text-gray-700 mb-4">
                 We believe that financial success should be built on a foundation of strong values. Every decision we make is guided by our commitment to:
@@ -134,7 +134,7 @@ const About = () => {
               Our Industry Expertise
             </h2>
             <p className="text-gray-600">
-              UnicornEnergies specializes in the energy sector, with a particular focus on oil and gas investments. Our team's deep industry knowledge and market insights give us a competitive edge.
+              UnicornEnergies has specialized in the energy sector since 1976, with a particular focus on oil and gas investments. Our team's deep industry knowledge and market insights give us a competitive edge that we've been refining for nearly five decades.
             </p>
           </div>
           
@@ -186,7 +186,7 @@ const About = () => {
               <div className="p-5">
                 <h3 className="font-bold text-lg text-investment-navy">Colette Mccarty</h3>
                 <p className="text-investment-gold font-medium">UX Expert</p>
-                <p className="text-gray-600 mt-2">Leading our digital experience initiatives with over 12 years in designing intuitive financial platforms for global clients.</p>
+                <p className="text-gray-600 mt-2">Leading our digital experience initiatives with over 20 years in designing intuitive financial platforms for global clients.</p>
               </div>
             </div>
             
@@ -197,7 +197,7 @@ const About = () => {
               <div className="p-5">
                 <h3 className="font-bold text-lg text-investment-navy">Alden Odom</h3>
                 <p className="text-investment-gold font-medium">SEO Expert</p>
-                <p className="text-gray-600 mt-2">Driving our digital visibility with 15+ years of experience optimizing financial services platforms in competitive markets.</p>
+                <p className="text-gray-600 mt-2">Driving our digital visibility with 22+ years of experience optimizing financial services platforms in competitive markets.</p>
               </div>
             </div>
             
@@ -208,7 +208,7 @@ const About = () => {
               <div className="p-5">
                 <h3 className="font-bold text-lg text-investment-navy">Sage Bray</h3>
                 <p className="text-investment-gold font-medium">Marketing Head</p>
-                <p className="text-gray-600 mt-2">With 20+ years in energy sector marketing, Sage has successfully positioned multiple energy investment firms as market leaders.</p>
+                <p className="text-gray-600 mt-2">With 30+ years in energy sector marketing, Sage has successfully positioned multiple energy investment firms as market leaders.</p>
               </div>
             </div>
             
@@ -219,7 +219,7 @@ const About = () => {
               <div className="p-5">
                 <h3 className="font-bold text-lg text-investment-navy">Cyrus Briggs</h3>
                 <p className="text-investment-gold font-medium">Developer</p>
-                <p className="text-gray-600 mt-2">Leading our tech initiatives with innovative blockchain solutions for secure and transparent investment tracking and transactions.</p>
+                <p className="text-gray-600 mt-2">Leading our tech initiatives with innovative blockchain solutions for secure and transparent investment tracking and transactions since our global expansion in 2001.</p>
               </div>
             </div>
           </div>
@@ -234,7 +234,7 @@ const About = () => {
               Ready to Start Your Investment Journey?
             </h2>
             <p className="text-gray-300 mb-8">
-              Join thousands of investors who trust UnicornEnergies with their financial future. Our investment plans offer reliable returns with minimal risk.
+              Join thousands of investors who trust UnicornEnergies with their financial future. Our investment plans offer reliable returns with minimal risk, backed by 47 years of industry experience.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Link to="/investment-plans">

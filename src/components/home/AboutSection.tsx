@@ -15,14 +15,14 @@ const AboutSection = () => {
               <span className="text-unicorn-gold">UnicornEnergies:</span> Your Energy Investment Partner
             </h2>
             <p className="text-gray-200 mb-6">
-              We are an international Oil and Gas Investment Company financial company in activities which are related 
-              to trading in the oil and gas markets globally, and performed by qualified professionals.
+              Established in 1976, we are an international Oil and Gas Investment Company with nearly five decades of experience in activities related 
+              to trading in the oil and gas markets globally, performed by qualified professionals.
             </p>
             <p className="text-gray-200 mb-6">
-              Our goal is to provide our investors with a reliable source of high income, while minimizing any possible risks 
-              and offering high-quality services, allowing us to automate and simplify the relations between the investors and 
-              the trustees. We work towards increasing your profit margin by profitable investments. We look forward to you 
-              being part of our satisfied community.
+              For the past 22 years, we've opened our opportunities to global investors, providing a reliable source of high income, 
+              while minimizing any possible risks and offering high-quality services. Our systems automate and simplify the relations 
+              between the investors and the trustees. We work towards increasing your profit margin by profitable investments. 
+              We look forward to you being part of our satisfied global community.
             </p>
             
             <div className="space-y-6 mb-8">
@@ -83,7 +83,7 @@ const AboutSection = () => {
                 />
               </div>
               <div className="absolute -bottom-6 -right-6 bg-unicorn-darkPurple p-6 rounded-lg border-t-4 border-unicorn-gold shadow-xl">
-                <div className="text-unicorn-gold font-bold text-2xl">$2.3M</div>
+                <div className="text-unicorn-gold font-bold text-2xl">$3.8M</div>
                 <div className="text-gray-300">Average Monthly Returns</div>
               </div>
             </div>
@@ -96,7 +96,7 @@ const AboutSection = () => {
             Our <span className="text-unicorn-gold">Expert</span> Team
           </h2>
           <p className="text-center text-gray-300 mb-12 max-w-2xl mx-auto">
-            Meet the visionaries behind UnicornEnergies who are revolutionizing the energy investment landscape
+            Meet the visionaries behind UnicornEnergies who have been revolutionizing the energy investment landscape since 1976
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
@@ -113,7 +113,7 @@ const AboutSection = () => {
               <h3 className="text-xl font-bold text-unicorn-gold text-center">Callie Mcdowell</h3>
               <p className="text-white text-center mb-2">CEO & Founder</p>
               <p className="text-gray-300 text-center text-sm">
-                With over 15 years of experience in energy markets, Callie leads our strategic vision and investment strategies.
+                With over 35 years of experience in energy markets, Callie leads our strategic vision and investment strategies.
               </p>
             </div>
             
@@ -130,7 +130,7 @@ const AboutSection = () => {
               <h3 className="text-xl font-bold text-unicorn-gold text-center">Marcia Weeks</h3>
               <p className="text-white text-center mb-2">CTO</p>
               <p className="text-gray-300 text-center text-sm">
-                A tech innovator implementing cutting-edge security and blockchain solutions for our investment platform.
+                A tech innovator implementing cutting-edge security and blockchain solutions for our investment platform since 2001.
               </p>
             </div>
             
@@ -147,7 +147,7 @@ const AboutSection = () => {
               <h3 className="text-xl font-bold text-unicorn-gold text-center">Upton Blair</h3>
               <p className="text-white text-center mb-2">Investment Manager</p>
               <p className="text-gray-300 text-center text-sm">
-                A financial expert with a proven track record of identifying high-return energy investment opportunities.
+                A financial expert with a proven track record of identifying high-return energy investment opportunities for over 25 years.
               </p>
             </div>
           </div>

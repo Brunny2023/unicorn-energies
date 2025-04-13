@@ -4,6 +4,7 @@ import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'luc
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const yearsInBusiness = currentYear - 1976;
   
   return (
     <footer className="bg-unicorn-darkPurple border-t border-unicorn-gold/20 text-white relative z-10">
@@ -22,7 +23,7 @@ const Footer = () => {
               </span>
             </div>
             <p className="text-gray-300 mb-4">
-              Your secure harbor for energy market investments, providing reliable high-income sources while minimizing risks.
+              Your secure harbor for energy market investments since 1976, providing reliable high-income sources while minimizing risks, with global investor access since 2001.
             </p>
             <div className="flex space-x-3">
               <a href="#" className="bg-unicorn-purple p-2 rounded-full hover:bg-unicorn-gold hover:text-unicorn-black transition-colors">
@@ -105,7 +106,7 @@ const Footer = () => {
         </div>
         
         <div className="border-t border-unicorn-purple mt-10 pt-6 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-300">© {currentYear} UnicornEnergies. All rights reserved.</p>
+          <p className="text-gray-300">© {currentYear} UnicornEnergies. Established 1976. {yearsInBusiness} Years of Excellence. All rights reserved.</p>
           <div className="mt-4 md:mt-0">
             <ul className="flex space-x-5">
               <li>

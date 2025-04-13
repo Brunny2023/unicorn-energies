@@ -1,69 +1,117 @@
 
-import { Shield, TrendingUp, Clock, Zap, UserPlus, HeadphonesIcon } from 'lucide-react';
-
-const featuresData = [
-  {
-    icon: Shield,
-    title: "Legal Compliance",
-    description: "Our operations are fully compliant with international financial regulations, giving you peace of mind for your investments."
-  },
-  {
-    icon: TrendingUp,
-    title: "Reliable Returns",
-    description: "Consistent performance with predictable returns, backed by strategic investments in the oil and gas market."
-  },
-  {
-    icon: UserPlus,
-    title: "Referral Program",
-    description: "Earn additional income by referring others to our platform with our generous multi-level referral system."
-  },
-  {
-    icon: Clock,
-    title: "Quick Withdrawals",
-    description: "Access your funds quickly with our streamlined withdrawal process, typically completed within 24 hours."
-  },
-  {
-    icon: Zap,
-    title: "Cryptocurrency Support",
-    description: "Invest and withdraw using major cryptocurrencies, ensuring privacy and reducing transaction costs."
-  },
-  {
-    icon: HeadphonesIcon,
-    title: "24/7 Support",
-    description: "Our dedicated support team is available around the clock to assist with any questions or concerns."
-  }
-];
+import { Shield, TrendingUp, Clock, Award, Globe, History } from 'lucide-react';
 
 const WhyChooseUsSection = () => {
+  const currentYear = new Date().getFullYear();
+  const yearsInBusiness = currentYear - 1976;
+  const yearsGlobalInvestors = 22;
+  
   return (
-    <section className="section-padding bg-gradient-to-br from-[#1A2930] via-[#2A3C44] to-[#1E272C] text-white relative">
-      {/* Oil-themed subtle background effect */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-[#D4AD3A]/20 to-transparent"></div>
-        <div className="absolute bottom-0 right-0 w-full h-20 bg-gradient-to-t from-[#D4AD3A]/20 to-transparent"></div>
-      </div>
+    <section className="py-20 bg-unicorn-deepBlack relative overflow-hidden">
+      {/* Background elements */}
+      <div className="absolute inset-0 bg-[url('/lovable-uploads/dd9f21c4-5efd-4b78-afb7-e40eed48b069.png')] bg-cover bg-center opacity-10"></div>
+      <div className="absolute top-0 right-0 w-1/3 h-full bg-unicorn-gold/10 blur-[100px]"></div>
+      <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-unicorn-purple/10 blur-[100px]"></div>
       
       <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="heading-lg mb-4">Why Choose UnicornEnergies</h2>
-          <p className="text-gray-200">
-            We combine industry expertise, cutting-edge technology, and exceptional customer service to provide a superior investment experience.
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            Why <span className="text-unicorn-gold">Choose</span> Us
+          </h2>
+          <p className="text-gray-300 max-w-3xl mx-auto">
+            With {yearsInBusiness} years of experience in the energy markets and {yearsGlobalInvestors} years of global investment expertise, we offer a unique combination of industry knowledge, financial security, and technological innovation.
           </p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {featuresData.map((feature, index) => (
-            <div 
-              key={index} 
-              className="bg-[#212F36]/80 backdrop-blur-sm rounded-lg p-6 border border-[#D4AD3A]/30 hover:transform hover:scale-105 transition-transform shadow-lg"
-            >
-              <div className="bg-[#D4AD3A] rounded-full p-3 inline-block mb-4">
-                <feature.icon className="h-6 w-6 text-[#1A2930]" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
-              <p className="text-gray-300">{feature.description}</p>
+          {/* Experience */}
+          <div className="bg-unicorn-deepPurple/40 backdrop-blur-sm p-8 rounded-xl border border-unicorn-gold/20 hover:border-unicorn-gold/40 transition-all duration-300 shadow-xl">
+            <div className="bg-unicorn-gold/20 p-4 inline-block rounded-lg mb-6">
+              <History className="h-10 w-10 text-unicorn-gold" />
             </div>
-          ))}
+            <h3 className="text-2xl font-bold text-white mb-3">Established Since 1976</h3>
+            <p className="text-gray-300">
+              With nearly five decades of operational experience, we've weathered numerous economic cycles and consistently delivered value to our stakeholders throughout changing market conditions.
+            </p>
+          </div>
+          
+          {/* Global Reach */}
+          <div className="bg-unicorn-deepPurple/40 backdrop-blur-sm p-8 rounded-xl border border-unicorn-gold/20 hover:border-unicorn-gold/40 transition-all duration-300 shadow-xl">
+            <div className="bg-unicorn-gold/20 p-4 inline-block rounded-lg mb-6">
+              <Globe className="h-10 w-10 text-unicorn-gold" />
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-3">Global Investor Access</h3>
+            <p className="text-gray-300">
+              Since 2001, we've been welcoming investors from around the world, creating a diverse and resilient community that spans across continents and cultures.
+            </p>
+          </div>
+          
+          {/* Security */}
+          <div className="bg-unicorn-deepPurple/40 backdrop-blur-sm p-8 rounded-xl border border-unicorn-gold/20 hover:border-unicorn-gold/40 transition-all duration-300 shadow-xl">
+            <div className="bg-unicorn-gold/20 p-4 inline-block rounded-lg mb-6">
+              <Shield className="h-10 w-10 text-unicorn-gold" />
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-3">Industry-Leading Security</h3>
+            <p className="text-gray-300">
+              Your investments are protected by advanced security protocols, comprehensive insurance coverage, and strategic risk management approaches refined over decades.
+            </p>
+          </div>
+          
+          {/* Consistent Returns */}
+          <div className="bg-unicorn-deepPurple/40 backdrop-blur-sm p-8 rounded-xl border border-unicorn-gold/20 hover:border-unicorn-gold/40 transition-all duration-300 shadow-xl">
+            <div className="bg-unicorn-gold/20 p-4 inline-block rounded-lg mb-6">
+              <TrendingUp className="h-10 w-10 text-unicorn-gold" />
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-3">Consistent Performance</h3>
+            <p className="text-gray-300">
+              Our investment strategies have delivered reliable returns to investors through market ups and downs, geopolitical events, and economic changes for over four decades.
+            </p>
+          </div>
+          
+          {/* Transparency */}
+          <div className="bg-unicorn-deepPurple/40 backdrop-blur-sm p-8 rounded-xl border border-unicorn-gold/20 hover:border-unicorn-gold/40 transition-all duration-300 shadow-xl">
+            <div className="bg-unicorn-gold/20 p-4 inline-block rounded-lg mb-6">
+              <Clock className="h-10 w-10 text-unicorn-gold" />
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-3">Complete Transparency</h3>
+            <p className="text-gray-300">
+              Track your investments in real-time with our cutting-edge dashboard, receive regular performance updates, and access detailed investment reports whenever you need them.
+            </p>
+          </div>
+          
+          {/* Expertise */}
+          <div className="bg-unicorn-deepPurple/40 backdrop-blur-sm p-8 rounded-xl border border-unicorn-gold/20 hover:border-unicorn-gold/40 transition-all duration-300 shadow-xl">
+            <div className="bg-unicorn-gold/20 p-4 inline-block rounded-lg mb-6">
+              <Award className="h-10 w-10 text-unicorn-gold" />
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-3">Industry Expertise</h3>
+            <p className="text-gray-300">
+              Our team includes veterans of the energy industry with specialized knowledge acquired over decades, giving us unique insights into market opportunities others might miss.
+            </p>
+          </div>
+        </div>
+        
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16">
+          <div className="text-center">
+            <div className="text-4xl font-bold text-unicorn-gold mb-2">{yearsInBusiness}+</div>
+            <div className="text-gray-300">Years of Experience</div>
+          </div>
+          
+          <div className="text-center">
+            <div className="text-4xl font-bold text-unicorn-gold mb-2">35,000+</div>
+            <div className="text-gray-300">Active Investors</div>
+          </div>
+          
+          <div className="text-center">
+            <div className="text-4xl font-bold text-unicorn-gold mb-2">98%</div>
+            <div className="text-gray-300">Client Retention</div>
+          </div>
+          
+          <div className="text-center">
+            <div className="text-4xl font-bold text-unicorn-gold mb-2">156</div>
+            <div className="text-gray-300">Countries Served</div>
+          </div>
         </div>
       </div>
     </section>
