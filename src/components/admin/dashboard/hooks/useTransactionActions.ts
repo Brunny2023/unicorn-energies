@@ -77,7 +77,7 @@ export const useTransactionActions = (refreshCallback: () => Promise<void>) => {
         metadata: {
           amount,
           transaction_id: transactionId,
-          destination: txData?.metadata?.destination
+          destination: txData?.metadata?.destination || null
         },
         read: false
       });
