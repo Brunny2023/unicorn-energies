@@ -9,6 +9,9 @@ const DashboardOverview = () => {
       <h2 className="text-3xl font-bold text-white">Dashboard Overview</h2>
       <div className="flex space-x-4">
         <Button asChild variant="outline" className="text-unicorn-gold border-unicorn-gold hover:bg-unicorn-gold/20">
+          <Link to="/dashboard/deposit">Deposit Funds</Link>
+        </Button>
+        <Button asChild variant="outline" className="text-unicorn-gold border-unicorn-gold hover:bg-unicorn-gold/20">
           <Link to="/dashboard/withdraw">Withdraw Funds</Link>
         </Button>
         <Button asChild className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black">

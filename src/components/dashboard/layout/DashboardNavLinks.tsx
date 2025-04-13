@@ -11,7 +11,8 @@ import {
   Settings,
   Ticket,
   Bitcoin,
-  Link as LinkIcon
+  Link as LinkIcon,
+  Wallet
 } from "lucide-react";
 
 interface DashboardNavLinksProps {
@@ -32,6 +33,11 @@ const DashboardNavLinks = ({ isAdmin, closeMenu }: DashboardNavLinksProps) => {
       title: "Investments",
       icon: <BarChart className="h-5 w-5" />,
       path: "/dashboard/investments",
+    },
+    {
+      title: "Deposit",
+      icon: <Wallet className="h-5 w-5" />,
+      path: "/dashboard/deposit",
     },
     {
       title: "Withdraw",

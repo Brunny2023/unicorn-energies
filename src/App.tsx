@@ -22,6 +22,7 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import Investments from "./pages/dashboard/Investments";
 import Transactions from "./pages/dashboard/Transactions";
 import Withdraw from "./pages/dashboard/Withdraw";
+import Deposit from "./pages/dashboard/Deposit";
 import Loans from "./pages/dashboard/Loans";
 import Affiliates from "./pages/dashboard/Affiliates";
 import Settings from "./pages/dashboard/Settings";
@@ -96,6 +97,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Transactions />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/deposit"
+          element={
+            <ProtectedRoute>
+              <Deposit />
             </ProtectedRoute>
           }
         />
