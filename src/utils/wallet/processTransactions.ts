@@ -1,9 +1,19 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { fetchWalletData } from './fetchWalletData';
 import { calculateWithdrawalRequest } from './calculateWithdrawal';
+import { WithdrawalDestination } from '@/types/investment';
 
 // Process a withdrawal transaction
-export const processWithdrawal = async (userId: string, amount: number): Promise<boolean> => {
+export const processWithdrawal = async (
+  userId: string, 
+  amount: number,
+  destination?: { 
+    method_type: string; 
+    name: string; 
+    details: any 
+  }
+): Promise<boolean> => {
   try {
     // Get current wallet data
     const walletData = await fetchWalletData(userId);
@@ -73,6 +83,30 @@ export const processWithdrawal = async (userId: string, amount: number): Promise
       
     if (walletError) throw walletError;
     
+    // Create a descriptive message for the transaction record
+    let description = `Withdrawal request. Fee: $${withdrawal.fee.toFixed(2)}, Net: $${withdrawal.netAmount.toFixed(2)}`;
+    
+    if (destination) {
+      // Add destination info to the description
+      const methodType = destination.method_type.charAt(0).toUpperCase() + destination.method_type.slice(1);
+      description += ` | To: ${destination.name} (${methodType})`;
+      
+      // Add specific details based on method type
+      if (destination.method_type === 'crypto' && destination.details.address) {
+        const addressShort = destination.details.address.length > 12
+          ? `${destination.details.address.slice(0, 6)}...${destination.details.address.slice(-6)}`
+          : destination.details.address;
+        description += ` | Address: ${addressShort}`;
+      } else if (destination.method_type === 'bank' && destination.details.account_number) {
+        const accountShort = destination.details.account_number.length > 8
+          ? `****${destination.details.account_number.slice(-4)}`
+          : destination.details.account_number;
+        description += ` | Account: ${accountShort}`;
+      } else if (destination.method_type === 'digital_wallet' && destination.details.email) {
+        description += ` | Account: ${destination.details.email}`;
+      }
+    }
+    
     // Record transaction
     const { error: txError } = await supabase
       .from('transactions')
@@ -82,7 +116,14 @@ export const processWithdrawal = async (userId: string, amount: number): Promise
           type: 'withdrawal',
           amount: amount,
           status: 'pending',
-          description: `Withdrawal request. Fee: $${withdrawal.fee.toFixed(2)}, Net: $${withdrawal.netAmount.toFixed(2)}`
+          description: description,
+          metadata: destination ? {
+            destination: {
+              method_type: destination.method_type,
+              name: destination.name,
+              details: destination.details
+            }
+          } : null
         }
       ]);
       
@@ -111,7 +152,13 @@ export const processWithdrawal = async (userId: string, amount: number): Promise
 };
 
 // Enhanced deposit function with transaction tracking
-export const depositFunds = async (userId: string, amount: number, method?: string, transactionId?: string): Promise<boolean> => {
+export const depositFunds = async (
+  userId: string, 
+  amount: number, 
+  method?: string, 
+  transactionId?: string,
+  referenceId?: string
+): Promise<boolean> => {
   try {
     // Get current wallet data
     const walletData = await fetchWalletData(userId);
@@ -135,6 +182,11 @@ export const depositFunds = async (userId: string, amount: number, method?: stri
       
     if (walletError) throw walletError;
     
+    // Build transaction description
+    let description = `Deposit processed via ${method || 'unknown method'}`;
+    if (transactionId) description += ` (Tx ID: ${transactionId})`;
+    if (referenceId) description += ` (Ref: ${referenceId})`;
+    
     // Record transaction
     const { error: txError } = await supabase
       .from('transactions')
@@ -144,7 +196,12 @@ export const depositFunds = async (userId: string, amount: number, method?: stri
           type: 'deposit',
           amount: amount,
           status: 'completed',
-          description: `Deposit processed via ${method || 'unknown method'}${transactionId ? ` (Tx ID: ${transactionId})` : ''}`
+          description: description,
+          metadata: {
+            method: method,
+            transaction_id: transactionId,
+            reference_id: referenceId
+          }
         }
       ]);
       

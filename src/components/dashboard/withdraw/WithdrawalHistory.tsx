@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { BitcoinIcon, CreditCard, WalletCards } from "lucide-react";
 
 interface WithdrawalHistoryItem {
   id: string;
@@ -9,6 +10,11 @@ interface WithdrawalHistoryItem {
   fee: number;
   netAmount: number;
   status: 'pending' | 'processing' | 'completed' | 'rejected';
+  destination?: {
+    name: string;
+    method_type: string;
+    details: any;
+  };
 }
 
 interface WithdrawalHistoryProps {
@@ -40,6 +46,19 @@ const WithdrawalHistory: React.FC<WithdrawalHistoryProps> = ({ history, loading 
       </span>
     );
   };
+  
+  const MethodIcon = ({ method }: { method: string }) => {
+    switch (method) {
+      case 'crypto':
+        return <BitcoinIcon className="h-4 w-4 text-amber-400" />;
+      case 'bank':
+        return <CreditCard className="h-4 w-4 text-blue-400" />;
+      case 'digital_wallet':
+        return <WalletCards className="h-4 w-4 text-green-400" />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
@@ -59,6 +78,7 @@ const WithdrawalHistory: React.FC<WithdrawalHistoryProps> = ({ history, loading 
                 <th className="px-4 py-3 text-left">Amount</th>
                 <th className="px-4 py-3 text-left">Fee</th>
                 <th className="px-4 py-3 text-left">Net Amount</th>
+                <th className="px-4 py-3 text-left">Destination</th>
                 <th className="px-4 py-3 text-left">Status</th>
               </tr>
             </thead>
@@ -72,6 +92,7 @@ const WithdrawalHistory: React.FC<WithdrawalHistoryProps> = ({ history, loading 
                     <td className="px-4 py-3"><div className="h-4 bg-unicorn-gold/10 rounded w-20 animate-pulse"></div></td>
                     <td className="px-4 py-3"><div className="h-4 bg-unicorn-gold/10 rounded w-16 animate-pulse"></div></td>
                     <td className="px-4 py-3"><div className="h-4 bg-unicorn-gold/10 rounded w-20 animate-pulse"></div></td>
+                    <td className="px-4 py-3"><div className="h-4 bg-unicorn-gold/10 rounded w-24 animate-pulse"></div></td>
                     <td className="px-4 py-3"><div className="h-4 bg-unicorn-gold/10 rounded w-24 animate-pulse"></div></td>
                   </tr>
                 ))
@@ -87,6 +108,16 @@ const WithdrawalHistory: React.FC<WithdrawalHistoryProps> = ({ history, loading 
                     <td className="px-4 py-3 text-red-400">${item.fee.toLocaleString()}</td>
                     <td className="px-4 py-3 text-unicorn-gold">${item.netAmount.toLocaleString()}</td>
                     <td className="px-4 py-3">
+                      {item.destination ? (
+                        <div className="flex items-center">
+                          <MethodIcon method={item.destination.method_type} />
+                          <span className="ml-2 text-white">{item.destination.name}</span>
+                        </div>
+                      ) : (
+                        <span className="text-gray-400">-</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
                       <StatusBadge status={item.status} />
                     </td>
                   </tr>
@@ -94,7 +125,7 @@ const WithdrawalHistory: React.FC<WithdrawalHistoryProps> = ({ history, loading 
               ) : (
                 // Empty state
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
+                  <td colSpan={7} className="px-4 py-8 text-center text-gray-400">
                     No withdrawal history found.
                   </td>
                 </tr>

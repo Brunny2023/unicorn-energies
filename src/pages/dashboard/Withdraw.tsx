@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { useToast } from "@/hooks/use-toast";
@@ -16,6 +17,11 @@ interface WithdrawalHistoryItem {
   fee: number;
   netAmount: number;
   status: 'pending' | 'processing' | 'completed' | 'rejected';
+  destination?: {
+    name: string;
+    method_type: string;
+    details: any;
+  };
 }
 
 // Sample withdrawal history
@@ -27,6 +33,13 @@ const SAMPLE_WITHDRAWAL_HISTORY: WithdrawalHistoryItem[] = [
     fee: 37.5,
     netAmount: 1462.5,
     status: 'completed',
+    destination: {
+      name: "My Bitcoin Wallet",
+      method_type: "crypto",
+      details: {
+        network: "Bitcoin"
+      }
+    }
   },
   {
     id: "WD-175432",
@@ -35,6 +48,13 @@ const SAMPLE_WITHDRAWAL_HISTORY: WithdrawalHistoryItem[] = [
     fee: 70,
     netAmount: 2730,
     status: 'completed',
+    destination: {
+      name: "My Bank Account",
+      method_type: "bank",
+      details: {
+        bank_name: "Chase Bank"
+      }
+    }
   },
   {
     id: "WD-098734",
@@ -43,6 +63,13 @@ const SAMPLE_WITHDRAWAL_HISTORY: WithdrawalHistoryItem[] = [
     fee: 23.75,
     netAmount: 926.25,
     status: 'completed',
+    destination: {
+      name: "My PayPal",
+      method_type: "digital_wallet",
+      details: {
+        email: "user@example.com"
+      }
+    }
   },
 ];
 
@@ -53,9 +80,17 @@ const Withdraw = () => {
   const [walletData, setWalletData] = useState<WalletData | null>(null);
   const [loading, setLoading] = useState(true);
   const [withdrawalHistory, setWithdrawalHistory] = useState<WithdrawalHistoryItem[]>(SAMPLE_WITHDRAWAL_HISTORY);
+  const [lastDepositMethod, setLastDepositMethod] = useState<string | null>(null);
 
   useEffect(() => {
     console.log("Withdraw useEffect triggered, user:", user?.id); // Diagnostic log
+    
+    // Get the last deposit method from localStorage if available
+    const savedMethod = localStorage.getItem("lastDepositMethod");
+    if (savedMethod) {
+      setLastDepositMethod(savedMethod);
+    }
+    
     if (user) {
       fetchUserWalletData();
     } else {
@@ -66,7 +101,9 @@ const Withdraw = () => {
         balance: 10000,
         accrued_profits: 1500,
         withdrawal_fee_percentage: 2.5,
-        user_id: "dev-user-id"
+        user_id: "dev-user-id",
+        total_deposits: 15000,
+        total_withdrawals: 5000
       });
       setLoading(false);
     }
@@ -83,7 +120,9 @@ const Withdraw = () => {
           balance: 10000,
           accrued_profits: 1500,
           withdrawal_fee_percentage: 2.5,
-          user_id: "dev-user-id"
+          user_id: "dev-user-id",
+          total_deposits: 15000,
+          total_withdrawals: 5000
         });
         setLoading(false);
         return;
@@ -98,7 +137,9 @@ const Withdraw = () => {
           balance: 10000,
           accrued_profits: 1500,
           withdrawal_fee_percentage: 2.5,
-          user_id: user.id
+          user_id: user.id,
+          total_deposits: 15000,
+          total_withdrawals: 5000
         });
       } else {
         setWalletData(data);
@@ -116,7 +157,9 @@ const Withdraw = () => {
         balance: 10000,
         accrued_profits: 1500,
         withdrawal_fee_percentage: 2.5,
-        user_id: user?.id || "dev-user-id"
+        user_id: user?.id || "dev-user-id",
+        total_deposits: 15000,
+        total_withdrawals: 5000
       });
     } finally {
       setLoading(false);
@@ -124,7 +167,7 @@ const Withdraw = () => {
   };
 
   // Add new withdrawal to history after successful withdrawal
-  const addWithdrawalToHistory = (newWithdrawal: WithdrawalRequest) => {
+  const addWithdrawalToHistory = (newWithdrawal: any) => {
     const newItem: WithdrawalHistoryItem = {
       id: `WD-${Math.floor(100000 + Math.random() * 900000)}`,
       date: new Date(),
@@ -132,6 +175,11 @@ const Withdraw = () => {
       fee: newWithdrawal.fee,
       netAmount: newWithdrawal.netAmount,
       status: 'pending',
+      destination: newWithdrawal.destination ? {
+        name: newWithdrawal.destination.name,
+        method_type: newWithdrawal.destination.method_type,
+        details: newWithdrawal.destination.details
+      } : undefined
     };
     
     setWithdrawalHistory(prev => [newItem, ...prev]);
@@ -151,7 +199,11 @@ const Withdraw = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Wallet Stats */}
         <div className="lg:col-span-1">
-          <WalletSummary walletData={walletData} loading={loading} />
+          <WalletSummary 
+            walletData={walletData} 
+            loading={loading} 
+            lastDepositMethod={lastDepositMethod}
+          />
         </div>
         
         {/* Withdrawal Form */}
@@ -161,6 +213,7 @@ const Withdraw = () => {
             loading={loading}
             fetchWalletData={fetchUserWalletData}
             onSuccessfulWithdrawal={addWithdrawalToHistory}
+            lastDepositMethod={lastDepositMethod}
           />
         </div>
       </div>

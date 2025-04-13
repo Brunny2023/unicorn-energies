@@ -8,8 +8,6 @@ interface CaptchaProps {
   onVerify: (token: string) => void;
 }
 
-// Using the global Turnstile interface defined in types/turnstile.d.ts
-
 const Captcha = ({ siteKey, onVerify }: CaptchaProps) => {
   const [widgetId, setWidgetId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);

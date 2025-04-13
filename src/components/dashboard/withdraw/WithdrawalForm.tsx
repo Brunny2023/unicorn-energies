@@ -5,20 +5,23 @@ import { useToast } from "@/hooks/use-toast";
 import WithdrawalCalculator from "@/components/dashboard/withdraw/WithdrawalCalculator";
 import WithdrawalRequest from "@/components/dashboard/withdraw/WithdrawalRequest";
 import WithdrawalSuccess from "@/components/dashboard/withdraw/WithdrawalSuccess";
-import { WalletData } from "@/types/investment";
+import WithdrawalMethodSelect from "@/components/dashboard/withdraw/WithdrawalMethodSelect";
+import { WalletData, WithdrawalDestination } from "@/types/investment";
 
 interface WithdrawalFormProps {
   walletData: WalletData | null;
   loading: boolean;
   fetchWalletData: () => Promise<void>;
   onSuccessfulWithdrawal: (withdrawalData: any) => void;
+  lastDepositMethod?: string | null;
 }
 
 const WithdrawalForm: React.FC<WithdrawalFormProps> = ({
   walletData,
   loading,
   fetchWalletData,
-  onSuccessfulWithdrawal
+  onSuccessfulWithdrawal,
+  lastDepositMethod
 }) => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -27,6 +30,7 @@ const WithdrawalForm: React.FC<WithdrawalFormProps> = ({
   const [calculating, setCalculating] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [selectedDestination, setSelectedDestination] = useState<WithdrawalDestination | null>(null);
 
   // Development mode flag - set to true to bypass authentication and use dummy data
   const DEVELOPMENT_MODE = true;
@@ -52,19 +56,33 @@ const WithdrawalForm: React.FC<WithdrawalFormProps> = ({
             setWithdrawalRequest={setWithdrawalRequest}
             toast={toast}
           />
+          
           {withdrawalRequest && (
-            <WithdrawalRequest 
-              withdrawalRequest={withdrawalRequest}
-              processing={processing}
-              setProcessing={setProcessing}
-              setSuccess={setSuccess}
-              fetchWalletData={fetchWalletData}
-              toast={toast}
-              devMode={DEVELOPMENT_MODE}
-              onSuccess={() => {
-                onSuccessfulWithdrawal(withdrawalRequest);
-              }}
-            />
+            <>
+              <div className="mt-6 mb-4">
+                <WithdrawalMethodSelect
+                  lastDepositMethod={lastDepositMethod}
+                  onSelect={setSelectedDestination}
+                />
+              </div>
+              
+              <WithdrawalRequest 
+                withdrawalRequest={withdrawalRequest}
+                processing={processing}
+                setProcessing={setProcessing}
+                setSuccess={setSuccess}
+                fetchWalletData={fetchWalletData}
+                toast={toast}
+                devMode={DEVELOPMENT_MODE}
+                destination={selectedDestination}
+                onSuccess={() => {
+                  onSuccessfulWithdrawal({
+                    ...withdrawalRequest,
+                    destination: selectedDestination
+                  });
+                }}
+              />
+            </>
           )}
         </>
       )}

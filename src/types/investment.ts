@@ -17,6 +17,8 @@ export interface WithdrawalRequest {
   amount: number;
   fee: number;
   netAmount: number;
+  method?: string;
+  destination?: string;
 }
 
 export interface Investment {
@@ -110,3 +112,25 @@ export interface NotificationPreferences {
   created_at: string;
   updated_at: string;
 }
+
+export interface WithdrawalMethod {
+  type: 'crypto' | 'bank' | 'digital_wallet';
+  name: string;
+  details: {
+    [key: string]: string;
+  };
+  required_fields: string[];
+}
+
+export interface WithdrawalDestination {
+  id?: string;
+  user_id: string;
+  method_type: 'crypto' | 'bank' | 'digital_wallet';
+  name: string;
+  details: {
+    [key: string]: string;
+  };
+  is_default?: boolean;
+  created_at?: string;
+}
+

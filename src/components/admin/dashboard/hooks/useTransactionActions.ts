@@ -11,6 +11,15 @@ export const useTransactionActions = (refreshCallback: () => Promise<void>) => {
     setProcessing(transactionId);
     
     try {
+      // Fetch transaction details to get destination information
+      const { data: txData, error: txError } = await supabase
+        .from('transactions')
+        .select('metadata')
+        .eq('id', transactionId)
+        .single();
+        
+      if (txError) throw txError;
+      
       // Update transaction status
       const { error: updateError } = await supabase
         .from('transactions')
@@ -24,7 +33,42 @@ export const useTransactionActions = (refreshCallback: () => Promise<void>) => {
       
       if (updateError) throw updateError;
       
-      // Add notification or email here if needed
+      // Update total_withdrawals in wallet
+      if (userId) {
+        const { data: walletData, error: walletFetchError } = await supabase
+          .from('wallets')
+          .select('total_withdrawals')
+          .eq('user_id', userId)
+          .single();
+        
+        if (!walletFetchError && walletData) {
+          const newTotalWithdrawals = (walletData.total_withdrawals || 0) + amount;
+          
+          await supabase
+            .from('wallets')
+            .update({ 
+              total_withdrawals: newTotalWithdrawals,
+              updated_at: new Date().toISOString()
+            })
+            .eq('user_id', userId);
+        }
+      }
+      
+      // Add notification
+      await supabase
+        .from('notifications')
+        .insert([{
+          user_id: userId,
+          type: 'withdrawal_approved',
+          message: `Your withdrawal of $${amount.toFixed(2)} has been approved.`,
+          metadata: {
+            amount,
+            transaction_id: transactionId,
+            destination: txData?.metadata?.destination
+          },
+          read: false
+        }]);
+      
       toast({
         title: "Withdrawal Approved",
         description: `Withdrawal of $${amount.toLocaleString()} has been approved.`,
@@ -63,7 +107,6 @@ export const useTransactionActions = (refreshCallback: () => Promise<void>) => {
       if (updateError) throw updateError;
       
       // 2. Add the amount back to user's wallet
-      // Use a more direct approach rather than RPC
       const { data: wallet, error: walletFetchError } = await supabase
         .from('wallets')
         .select('balance')
@@ -81,7 +124,20 @@ export const useTransactionActions = (refreshCallback: () => Promise<void>) => {
       
       if (walletError) throw walletError;
       
-      // Add notification or email here if needed
+      // Add notification
+      await supabase
+        .from('notifications')
+        .insert([{
+          user_id: userId,
+          type: 'withdrawal_rejected',
+          message: `Your withdrawal of $${amount.toFixed(2)} has been rejected and funds returned to your account.`,
+          metadata: {
+            amount,
+            transaction_id: transactionId
+          },
+          read: false
+        }]);
+      
       toast({
         title: "Withdrawal Rejected",
         description: `Withdrawal of $${amount.toLocaleString()} has been rejected and funds returned to user's wallet.`,
