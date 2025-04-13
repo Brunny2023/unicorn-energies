@@ -118,6 +118,12 @@ const DashboardSidebar = ({
       icon: <LinkIcon className="h-5 w-5" />,
       path: "/admin/broadcast",
       admin: true
+    },
+    {
+      title: "Settings",
+      icon: <Settings className="h-5 w-5" />,
+      path: "/admin/settings",
+      admin: true
     }
   ];
   
@@ -183,14 +189,16 @@ const DashboardSidebar = ({
           </div>
 
           <div className="mt-auto pt-6 border-t border-unicorn-purple/20 space-y-2">
-            <Link
-              to="/settings"
-              className="flex items-center px-4 py-2.5 rounded-lg text-gray-400 hover:text-unicorn-gold hover:bg-unicorn-gold/5 font-medium transition-colors"
-              onClick={closeMenu}
-            >
-              <Settings className="h-5 w-5" />
-              <span className="ml-3">Settings</span>
-            </Link>
+            {!isAdmin && (
+              <Link
+                to="/dashboard/settings"
+                className="flex items-center px-4 py-2.5 rounded-lg text-gray-400 hover:text-unicorn-gold hover:bg-unicorn-gold/5 font-medium transition-colors"
+                onClick={closeMenu}
+              >
+                <Settings className="h-5 w-5" />
+                <span className="ml-3">Settings</span>
+              </Link>
+            )}
             
             <Button
               variant="outline"

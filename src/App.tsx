@@ -27,6 +27,7 @@ import Withdraw from "./pages/dashboard/Withdraw";
 import Transactions from "./pages/dashboard/Transactions";
 import Loans from "./pages/dashboard/Loans";
 import Affiliates from "./pages/dashboard/Affiliates";
+import Settings from "./pages/dashboard/Settings";
 import TicketsIndex from "./pages/dashboard/tickets/TicketsIndex";
 import NewTicket from "./pages/dashboard/tickets/NewTicket";
 import TicketView from "./pages/dashboard/tickets/TicketView";
@@ -37,6 +38,7 @@ import AdminUsers from "./pages/admin/Users";
 import AdminTransactions from "./pages/admin/Transactions";
 import AdminTickets from "./pages/admin/Tickets";
 import AdminTicketDetails from "./pages/admin/TicketDetails";
+import AdminSettings from "./pages/admin/Settings";
 import LoanApplications from "./pages/admin/LoanApplications";
 import PaymentConnections from "./pages/admin/PaymentConnections";
 import BroadcastMessages from "./pages/admin/BroadcastMessages";
@@ -82,6 +84,7 @@ const App = () => {
             <Route path="transactions" element={<Transactions />} />
             <Route path="loans" element={<Loans />} />
             <Route path="affiliates" element={<Affiliates />} />
+            <Route path="settings" element={<Settings />} />
             <Route path="tickets" element={<TicketsIndex />} />
             <Route path="tickets/new" element={<NewTicket />} />
             <Route path="tickets/:id" element={<TicketView />} />
@@ -95,6 +98,7 @@ const App = () => {
             <Route path="tickets/:id" element={<AdminTicketDetails />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="transactions" element={<AdminTransactions />} />
+            <Route path="settings" element={<AdminSettings />} />
             <Route path="loan-applications" element={<LoanApplications />} />
             <Route path="payment-connections" element={<PaymentConnections />} />
             <Route path="broadcast" element={<BroadcastMessages />} />

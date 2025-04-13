@@ -1,9 +1,10 @@
 
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { UserCog, LineChart, Clock, Users, Wallet, LogOut, CreditCard } from 'lucide-react';
+import { UserCog, LineChart, Clock, Users, Wallet, LogOut, CreditCard, Settings, MessageCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import StarsBackground from '@/components/ui/StarsBackground';
+import MobileAdminNav from '@/components/admin/MobileAdminNav';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -20,11 +21,13 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   };
 
   const navigationItems = [
-    { path: '/admin', label: 'Dashboard', icon: <LineChart className="w-5 h-5" /> },
+    { path: '/admin/dashboard', label: 'Dashboard', icon: <LineChart className="w-5 h-5" /> },
     { path: '/admin/transactions', label: 'Transactions', icon: <Wallet className="w-5 h-5" /> },
     { path: '/admin/users', label: 'Users', icon: <Users className="w-5 h-5" /> },
     { path: '/admin/payment-connections', label: 'Payment Connections', icon: <CreditCard className="w-5 h-5" /> },
     { path: '/admin/tickets', label: 'Support Tickets', icon: <Clock className="w-5 h-5" /> },
+    { path: '/admin/broadcast', label: 'Broadcast Messages', icon: <MessageCircle className="w-5 h-5" /> },
+    { path: '/admin/settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
   ];
 
   return (
@@ -48,7 +51,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                   to={item.path}
                   className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${
                     (location.pathname === item.path || 
-                     (item.path !== '/admin' && location.pathname.startsWith(item.path)))
+                     (item.path !== '/admin/dashboard' && location.pathname.startsWith(item.path)))
                       ? 'bg-unicorn-gold/20 text-unicorn-gold'
                       : 'text-gray-300 hover:bg-unicorn-darkPurple/50 hover:text-white'
                   }`}
@@ -81,6 +84,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             <span className="text-lg font-bold text-white">Admin Portal</span>
           </Link>
         </div>
+        
+        {/* Mobile Admin Navigation */}
+        <MobileAdminNav />
         
         {/* Content */}
         <div className="p-6">

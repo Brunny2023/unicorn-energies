@@ -4,14 +4,18 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Copy, Share2, Check } from "lucide-react";
+import GenerateReferralLinkButton from "./GenerateReferralLinkButton";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface ReferralLinkProps {
   referralCode: string | null;
   loading: boolean;
+  onCodeGenerated?: (code: string) => void;
 }
 
-const ReferralLink = ({ referralCode, loading }: ReferralLinkProps) => {
+const ReferralLink = ({ referralCode, loading, onCodeGenerated }: ReferralLinkProps) => {
   const [copied, setCopied] = useState(false);
+  const { user } = useAuth();
   
   const referralLink = referralCode
     ? `${window.location.origin}/register?ref=${referralCode}`
@@ -41,10 +45,22 @@ const ReferralLink = ({ referralCode, loading }: ReferralLinkProps) => {
     }
   };
 
+  const handleCodeGenerated = (newCode: string) => {
+    if (onCodeGenerated) {
+      onCodeGenerated(newCode);
+    }
+  };
+
   return (
     <Card className="bg-unicorn-darkPurple/80 border-unicorn-gold/30">
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-xl font-semibold text-white">Your Referral Link</CardTitle>
+        {!loading && user && (
+          <GenerateReferralLinkButton 
+            userId={user.id} 
+            onGenerated={handleCodeGenerated}
+          />
+        )}
       </CardHeader>
       <CardContent>
         {loading ? (
@@ -91,7 +107,13 @@ const ReferralLink = ({ referralCode, loading }: ReferralLinkProps) => {
           </div>
         ) : (
           <div className="text-center py-4">
-            <p className="text-gray-400">Unable to generate referral link.</p>
+            <p className="text-gray-400 mb-4">You don't have a referral link yet.</p>
+            {user && (
+              <GenerateReferralLinkButton 
+                userId={user.id} 
+                onGenerated={handleCodeGenerated}
+              />
+            )}
           </div>
         )}
       </CardContent>

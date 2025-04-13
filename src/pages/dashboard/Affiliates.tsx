@@ -81,6 +81,14 @@ const Affiliates = () => {
     });
   };
 
+  const handleCodeGenerated = (newCode: string) => {
+    setReferralCode(newCode);
+    toast({
+      title: "Referral Link Generated",
+      description: "Your new referral link is ready to share!",
+    });
+  };
+
   return (
     <div className="space-y-6">
       <AffiliateHeader />
@@ -93,6 +101,7 @@ const Affiliates = () => {
       <ReferralLink
         referralCode={referralCode}
         loading={loading}
+        onCodeGenerated={handleCodeGenerated}
       />
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
