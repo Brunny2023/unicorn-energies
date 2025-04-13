@@ -38,7 +38,7 @@ const HeroBanner = () => {
       <div className="absolute top-[30%] right-[20%] w-56 h-56 bg-[#D4B24C]/10 rounded-full blur-2xl"></div>
       <div className="absolute bottom-[20%] left-[25%] w-40 h-40 bg-[#4A3F35]/20 rounded-full blur-xl"></div>
       
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container mx-auto px-4 relative z-20">
         <div className="max-w-4xl mx-auto text-center">
           <div className="flex justify-center mb-6">
             <img 
@@ -50,7 +50,7 @@ const HeroBanner = () => {
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 animate-fade-in">
             <span className="bg-gradient-to-r from-[#F3D77F] via-[#D4AD3A] to-[#9A7D2E] bg-clip-text text-transparent">Premium</span> Energy Investments
           </h1>
-          <p className="text-xl md:text-2xl mb-8 text-gray-200 animate-slide-up">
+          <p className="text-xl md:text-2xl mb-8 text-gray-200 animate-slide-up relative z-30 bg-unicorn-darkPurple/40 p-4 rounded-lg shadow-lg">
             Harness the power of cutting-edge energy markets with UnicornEnergies' exclusive investment portfolios. Our carefully vetted opportunities deliver industry-leading returns while supporting the future of sustainable energy.
           </p>
           

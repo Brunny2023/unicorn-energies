@@ -31,6 +31,30 @@ const mockTransactions = [
   }
 ];
 
+// Mock data for wallet
+const mockWalletData = {
+  balance: 12500.75,
+  accrued_profits: 1275.32
+};
+
+// Mock data for investments
+const mockInvestmentStats = {
+  active_count: 3,
+  total_invested: 17800.50,
+  total_expected_return: 22250.75
+};
+
+// Mock data for tickets
+const mockTicketStats = {
+  open_count: 1,
+  latest_ticket: {
+    id: "ticket_123456",
+    subject: "Investment Question",
+    status: "open",
+    created_at: new Date(Date.now() - 4 * 3600000).toISOString()
+  }
+};
+
 const DashboardContent = () => {
   const [isLoading, setIsLoading] = React.useState(true);
 
@@ -47,11 +71,22 @@ const DashboardContent = () => {
     <>
       <h1 className="text-2xl font-bold text-white mb-6">Dashboard Overview</h1>
       <div className="grid grid-cols-1 gap-6">
-        <StatCards loading={isLoading} />
+        <StatCards 
+          loading={isLoading} 
+          walletData={mockWalletData}
+          investmentStats={mockInvestmentStats}
+          ticketStats={mockTicketStats}
+        />
         
         {/* 2-column layout for wider screens */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <PortfolioSummary loading={isLoading} />
+          <PortfolioSummary 
+            loading={isLoading} 
+            investmentStats={{
+              total_invested: mockInvestmentStats.total_invested,
+              total_expected_return: mockInvestmentStats.total_expected_return
+            }}
+          />
           <OilTradingChart />
         </div>
         
