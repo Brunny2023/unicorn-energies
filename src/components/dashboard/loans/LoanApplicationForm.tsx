@@ -9,23 +9,32 @@ import {
   FormField, 
   FormItem, 
   FormLabel, 
-  FormMessage 
+  FormMessage,
+  FormDescription
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader } from "lucide-react";
+import { Loader, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const formSchema = z.object({
   amount: z
     .number()
     .min(100, "Minimum loan amount is $100")
     .max(50000, "Maximum loan amount is $50,000"),
+  proposedInvestment: z
+    .number()
+    .min(33.34, "Minimum proposed investment amount is $33.34")
+    .max(50000, "Maximum proposed investment amount is $50,000"),
   purpose: z
     .string()
     .min(10, "Please provide at least 10 characters")
     .max(500, "Maximum 500 characters allowed"),
+}).refine(data => data.amount <= data.proposedInvestment * 3, {
+  message: "Loan amount cannot exceed 300% of your proposed investment",
+  path: ["amount"]
 });
 
 interface LoanApplicationFormProps {
@@ -38,12 +47,18 @@ const LoanApplicationForm = ({ onSubmit, submitting }: LoanApplicationFormProps)
     resolver: zodResolver(formSchema),
     defaultValues: {
       amount: 1000,
+      proposedInvestment: 500,
       purpose: "",
     },
   });
 
+  const watchProposedInvestment = form.watch("proposedInvestment");
+  const maxLoanAmount = watchProposedInvestment * 3;
+
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-    await onSubmit(values.amount, values.purpose);
+    // Include the proposed investment amount in the purpose
+    const enhancedPurpose = `Proposed Investment: $${values.proposedInvestment}. ${values.purpose}`;
+    await onSubmit(values.amount, enhancedPurpose);
     form.reset();
   };
 
@@ -56,14 +71,49 @@ const LoanApplicationForm = ({ onSubmit, submitting }: LoanApplicationFormProps)
         </CardDescription>
       </CardHeader>
       <CardContent>
+        <Alert className="mb-4 bg-amber-500/10 text-amber-500 border-amber-500/30">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Loans can only be used for investments and cannot be withdrawn. You must invest at least 33.33% of the loan 
+            amount before you can withdraw any profits earned from investments made with the loan.
+          </AlertDescription>
+        </Alert>
+        
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="proposedInvestment"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-white">Proposed Investment Amount ($)</FormLabel>
+                  <FormDescription className="text-gray-400">
+                    How much do you plan to invest? This determines your maximum loan amount.
+                  </FormDescription>
+                  <FormControl>
+                    <Input 
+                      type="number"
+                      className="bg-unicorn-darkPurple border-unicorn-gold/30 text-white"
+                      placeholder="Enter proposed investment amount" 
+                      {...field}
+                      onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                      disabled={submitting}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
             <FormField
               control={form.control}
               name="amount"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-white">Loan Amount ($)</FormLabel>
+                  <FormDescription className="text-gray-400">
+                    Maximum loan amount: ${maxLoanAmount.toFixed(2)} (300% of proposed investment)
+                  </FormDescription>
                   <FormControl>
                     <Input 
                       type="number"
@@ -78,12 +128,16 @@ const LoanApplicationForm = ({ onSubmit, submitting }: LoanApplicationFormProps)
                 </FormItem>
               )}
             />
+            
             <FormField
               control={form.control}
               name="purpose"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-white">Purpose</FormLabel>
+                  <FormDescription className="text-gray-400">
+                    Explain how you plan to use the investment funds
+                  </FormDescription>
                   <FormControl>
                     <Textarea 
                       className="bg-unicorn-darkPurple border-unicorn-gold/30 text-white min-h-24"

@@ -66,6 +66,41 @@ export const approveLoanApplication = async (
   adminNotes?: string
 ): Promise<boolean> => {
   try {
+    // Get the loan application details
+    const { data: loanData, error: loanFetchError } = await supabase
+      .from('loan_applications')
+      .select('user_id, amount, purpose')
+      .eq('id', loanId)
+      .single();
+
+    if (loanFetchError) throw loanFetchError;
+    
+    // Validate loan amount is within 300% of proposed investment amount
+    // Extract proposed investment amount from purpose
+    const proposedInvestmentMatch = loanData.purpose?.match(/\$?(\d+[.,]?\d*)/);
+    if (!proposedInvestmentMatch) {
+      throw new Error("Could not determine proposed investment amount from purpose");
+    }
+    
+    const proposedInvestment = parseFloat(proposedInvestmentMatch[1].replace(',', ''));
+    const loanAmount = Number(loanData.amount);
+    
+    // Check if loan is at most 300% of proposed investment
+    if (loanAmount > proposedInvestment * 3) {
+      // Update loan as rejected
+      await supabase
+        .from('loan_applications')
+        .update({ 
+          status: 'rejected', 
+          approved_by: adminId,
+          admin_notes: `Loan amount exceeds 300% of proposed investment (${proposedInvestment}). Maximum allowed: $${(proposedInvestment * 3).toFixed(2)}`,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', loanId);
+      
+      return false;
+    }
+
     // Start a transaction
     // First update the loan application
     const { error: updateError } = await supabase
@@ -81,15 +116,6 @@ export const approveLoanApplication = async (
       .eq('status', 'pending');
 
     if (updateError) throw updateError;
-
-    // Get the loan application details to update the wallet
-    const { data: loanData, error: loanFetchError } = await supabase
-      .from('loan_applications')
-      .select('user_id, amount')
-      .eq('id', loanId)
-      .single();
-
-    if (loanFetchError) throw loanFetchError;
 
     // Update the user's wallet balance
     const { data: walletData, error: walletFetchError } = await supabase
@@ -112,7 +138,7 @@ export const approveLoanApplication = async (
 
     if (walletUpdateError) throw walletUpdateError;
 
-    // Create a transaction record
+    // Create a transaction record with loan metadata
     const { error: transactionError } = await supabase
       .from('transactions')
       .insert([{
@@ -120,7 +146,7 @@ export const approveLoanApplication = async (
         amount: loanData.amount,
         type: 'loan',
         status: 'completed',
-        description: `Loan approved for $${loanData.amount}`,
+        description: `Loan approved for $${loanData.amount}. This amount can only be used for investments and requires at least ${(loanAmount / 3).toFixed(2)} to be invested before withdrawing profits.`,
         created_by: adminId
       }]);
 

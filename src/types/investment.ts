@@ -1,4 +1,3 @@
-
 export interface WalletData {
   id: string;
   balance: number;
@@ -42,6 +41,9 @@ export interface CalculationResults {
   dailyProfit: number;
   totalProfit: number;
   totalReturn: number;
+  returnPercentage: number;
+  annualYield: number;
+  duration: number;
 }
 
 export interface Ticket {
