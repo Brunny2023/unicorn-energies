@@ -1,16 +1,11 @@
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { aiTicketService, AI_ASSISTANT_NAME } from '@/utils/ticket/aiTicketService';
-import { Activity, Server, RefreshCw, CheckCircle2, AlertTriangle, Play } from 'lucide-react';
 import AIStatsPanel from './ai-manager/AIStatsPanel';
 import AIActivityPanel from './ai-manager/AIActivityPanel';
+import AIStatusPanel from './ai-manager/AIStatusPanel';
 
 const AIAdminManager = () => {
   const { toast } = useToast();
@@ -71,7 +66,7 @@ const AIAdminManager = () => {
         lastProcessed: recentData[0]?.ai_responded_at || null,
       });
       
-      // Fix for the build error - map ai_responded_at to responded_at
+      // Map ai_responded_at to responded_at
       const formattedRecentData = recentData?.map(ticket => ({
         id: ticket.id,
         subject: ticket.subject,
@@ -105,6 +100,7 @@ const AIAdminManager = () => {
       toast({
         title: 'Processing complete',
         description: `Processed ${result.processed} tickets: ${result.successful} successful, ${result.failed} failed.`,
+        variant: 'default',
       });
       
       // Refresh stats after processing
@@ -123,7 +119,7 @@ const AIAdminManager = () => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div className="lg:col-span-1">
-        <AIStatsPanel 
+        <AIStatusPanel 
           stats={stats}
           loading={loading}
           processing={processing}

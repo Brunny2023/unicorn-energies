@@ -64,11 +64,19 @@ export const useTransactionActions = (refreshCallback: () => Promise<void>) => {
       
       // 2. Add the amount back to user's wallet
       // Use a more direct approach rather than RPC
+      const { data: wallet, error: walletFetchError } = await supabase
+        .from('wallets')
+        .select('balance')
+        .eq('user_id', userId)
+        .single();
+      
+      if (walletFetchError) throw walletFetchError;
+      
+      const newBalance = Number(wallet.balance) + Number(amount);
+      
       const { error: walletError } = await supabase
         .from('wallets')
-        .update({ 
-          balance: supabase.rpc('get_wallet_balance_plus', { p_user_id: userId, p_amount: amount })
-        })
+        .update({ balance: newBalance })
         .eq('user_id', userId);
       
       if (walletError) throw walletError;
