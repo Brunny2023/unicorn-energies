@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import AdminRoute from "@/components/auth/AdminRoute";
 
 // Admin pages
@@ -15,10 +15,10 @@ import AdminSettings from "@/pages/admin/Settings";
 import AdminLoanApplications from "@/pages/admin/LoanApplications";
 
 const AdminRoutes = () => (
-  <>
+  <Routes>
     {/* Admin Pages */}
     <Route
-      path="/admin/dashboard"
+      path="/dashboard"
       element={
         <AdminRoute>
           <AdminDashboard />
@@ -26,7 +26,7 @@ const AdminRoutes = () => (
       }
     />
     <Route
-      path="/admin/users"
+      path="/users"
       element={
         <AdminRoute>
           <AdminUsers />
@@ -34,7 +34,7 @@ const AdminRoutes = () => (
       }
     />
     <Route
-      path="/admin/transactions"
+      path="/transactions"
       element={
         <AdminRoute>
           <AdminTransactions />
@@ -42,7 +42,7 @@ const AdminRoutes = () => (
       }
     />
     <Route
-      path="/admin/tickets"
+      path="/tickets"
       element={
         <AdminRoute>
           <AdminTickets />
@@ -50,7 +50,7 @@ const AdminRoutes = () => (
       }
     />
     <Route
-      path="/admin/tickets/:id"
+      path="/tickets/:id"
       element={
         <AdminRoute>
           <AdminTicketDetails />
@@ -58,7 +58,7 @@ const AdminRoutes = () => (
       }
     />
     <Route
-      path="/admin/payment-connections"
+      path="/payment-connections"
       element={
         <AdminRoute>
           <AdminPaymentConnections />
@@ -66,7 +66,7 @@ const AdminRoutes = () => (
       }
     />
     <Route
-      path="/admin/broadcast"
+      path="/broadcast"
       element={
         <AdminRoute>
           <AdminBroadcastMessages />
@@ -74,7 +74,7 @@ const AdminRoutes = () => (
       }
     />
     <Route
-      path="/admin/settings"
+      path="/settings"
       element={
         <AdminRoute>
           <AdminSettings />
@@ -82,14 +82,14 @@ const AdminRoutes = () => (
       }
     />
     <Route
-      path="/admin/loan-applications"
+      path="/loan-applications"
       element={
         <AdminRoute>
           <AdminLoanApplications />
         </AdminRoute>
       }
     />
-  </>
+  </Routes>
 );
 
 export default AdminRoutes;

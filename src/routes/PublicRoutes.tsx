@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Index from "@/pages/Index";
 import About from "@/pages/About";
 import InvestmentPlans from "@/pages/InvestmentPlans";
@@ -18,7 +18,7 @@ import ForgotPassword from "@/pages/auth/ForgotPassword";
 import ResetPassword from "@/pages/auth/ResetPassword";
 
 const PublicRoutes = () => (
-  <>
+  <Routes>
     {/* Public Pages */}
     <Route path="/" element={<Index />} />
     <Route path="/about" element={<About />} />
@@ -35,7 +35,7 @@ const PublicRoutes = () => (
     <Route path="/register" element={<Register />} />
     <Route path="/forgot-password" element={<ForgotPassword />} />
     <Route path="/reset-password" element={<ResetPassword />} />
-  </>
+  </Routes>
 );
 
 export default PublicRoutes;

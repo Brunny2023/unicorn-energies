@@ -1,3 +1,4 @@
+
 export interface WalletData {
   id: string;
   user_id: string;

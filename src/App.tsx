@@ -18,12 +18,14 @@ function App() {
   return (
     <AuthProvider>
       <Routes>
-        <PublicRoutes />
-        <DashboardRoutes />
-        <AdminRoutes />
-        
-        {/* 404 Not Found */}
-        <Route path="*" element={<NotFound />} />
+        <Route>
+          <Route path="/*" element={<PublicRoutes />} />
+          <Route path="/dashboard/*" element={<DashboardRoutes />} />
+          <Route path="/admin/*" element={<AdminRoutes />} />
+          
+          {/* 404 Not Found */}
+          <Route path="*" element={<NotFound />} />
+        </Route>
       </Routes>
       <Toaster />
     </AuthProvider>

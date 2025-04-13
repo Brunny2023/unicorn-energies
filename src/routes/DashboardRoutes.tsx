@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 // Dashboard pages
@@ -19,10 +19,10 @@ import NewTicket from "@/pages/dashboard/tickets/NewTicket";
 import TicketView from "@/pages/dashboard/tickets/TicketView";
 
 const DashboardRoutes = () => (
-  <>
+  <Routes>
     {/* Protected Dashboard Pages */}
     <Route
-      path="/dashboard"
+      path="/"
       element={
         <ProtectedRoute>
           <Dashboard />
@@ -30,7 +30,7 @@ const DashboardRoutes = () => (
       }
     />
     <Route
-      path="/dashboard/investments"
+      path="/investments"
       element={
         <ProtectedRoute>
           <Investments />
@@ -38,7 +38,7 @@ const DashboardRoutes = () => (
       }
     />
     <Route
-      path="/dashboard/transactions"
+      path="/transactions"
       element={
         <ProtectedRoute>
           <Transactions />
@@ -46,7 +46,7 @@ const DashboardRoutes = () => (
       }
     />
     <Route
-      path="/dashboard/deposit"
+      path="/deposit"
       element={
         <ProtectedRoute>
           <Deposit />
@@ -54,7 +54,7 @@ const DashboardRoutes = () => (
       }
     />
     <Route
-      path="/dashboard/withdraw"
+      path="/withdraw"
       element={
         <ProtectedRoute>
           <Withdraw />
@@ -62,7 +62,7 @@ const DashboardRoutes = () => (
       }
     />
     <Route
-      path="/dashboard/loans"
+      path="/loans"
       element={
         <ProtectedRoute>
           <Loans />
@@ -70,7 +70,7 @@ const DashboardRoutes = () => (
       }
     />
     <Route
-      path="/dashboard/affiliates"
+      path="/affiliates"
       element={
         <ProtectedRoute>
           <Affiliates />
@@ -78,7 +78,7 @@ const DashboardRoutes = () => (
       }
     />
     <Route
-      path="/dashboard/settings"
+      path="/settings"
       element={
         <ProtectedRoute>
           <Settings />
@@ -86,7 +86,7 @@ const DashboardRoutes = () => (
       }
     />
     <Route
-      path="/dashboard/tickets"
+      path="/tickets"
       element={
         <ProtectedRoute>
           <TicketsIndex />
@@ -94,7 +94,7 @@ const DashboardRoutes = () => (
       }
     />
     <Route
-      path="/dashboard/tickets/new"
+      path="/tickets/new"
       element={
         <ProtectedRoute>
           <NewTicket />
@@ -102,14 +102,14 @@ const DashboardRoutes = () => (
       }
     />
     <Route
-      path="/dashboard/tickets/:id"
+      path="/tickets/:id"
       element={
         <ProtectedRoute>
           <TicketView />
         </ProtectedRoute>
       }
     />
-  </>
+  </Routes>
 );
 
 export default DashboardRoutes;
