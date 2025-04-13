@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Mail, Phone, MapPin, MessageCircle, CheckCircle } from 'lucide-react';
@@ -25,7 +24,7 @@ const Contact = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // In a real application, you would send the form data to a server here
-    console.log('Form submitted:', formData);
+    console.log('Form submitted to support@unicorn-energies.com:', formData);
     setFormSubmitted(true);
     
     // Reset form after submission
@@ -158,9 +157,9 @@ const Contact = () => {
                       <div>
                         <h3 className="font-bold text-lg text-investment-navy">Email Us</h3>
                         <p className="text-gray-600 mb-1">For general inquiries:</p>
-                        <a href="mailto:info@wealthharbor.com" className="text-investment-lightNavy hover:underline">info@wealthharbor.com</a>
+                        <a href="mailto:info@unicorn-energies.com" className="text-investment-lightNavy hover:underline">info@unicorn-energies.com</a>
                         <p className="text-gray-600 mt-2 mb-1">For support:</p>
-                        <a href="mailto:support@wealthharbor.com" className="text-investment-lightNavy hover:underline">support@wealthharbor.com</a>
+                        <a href="mailto:support@unicorn-energies.com" className="text-investment-lightNavy hover:underline">support@unicorn-energies.com</a>
                       </div>
                     </div>
                     
@@ -188,6 +187,13 @@ const Contact = () => {
                           Financial District<br />
                           New York, NY 10004<br />
                           United States
+                        </p>
+                        <p className="text-gray-600 mt-3">
+                          <strong>Texas Branch:</strong><br />
+                          Unicorn Energies Allied Resources<br />
+                          Unicorn Energy Inc<br />
+                          RR5 Box 181-N<br />
+                          Elgin, TX 78621
                         </p>
                       </div>
                     </div>

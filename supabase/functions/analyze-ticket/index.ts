@@ -6,6 +6,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+const AI_ASSISTANT_NAME = "Gilbert Henshow";
+
 /**
  * Edge Function to analyze ticket content and generate appropriate response
  * This function uses a rule-based approach with keyword matching for different ticket types
@@ -26,7 +28,7 @@ serve(async (req) => {
       )
     }
 
-    console.log('Analyzing ticket:', ticket.subject)
+    console.log(`${AI_ASSISTANT_NAME} analyzing ticket:`, ticket.subject)
 
     // Combine subject and message for better analysis
     const ticketContent = `${ticket.subject.toLowerCase()} ${ticket.message.toLowerCase()}`
@@ -52,7 +54,7 @@ serve(async (req) => {
       
       response = `Thank you for contacting Unicorn Energies support about your withdrawal request.
 
-Based on our analysis, we understand you're experiencing issues with withdrawing funds. Here's what you need to know:
+Based on my analysis, I understand you're experiencing issues with withdrawing funds. Here's what you need to know:
 
 1. Withdrawals are processed within 24-48 hours of request
 2. A small fee of 0.5-2% may apply depending on your account tier
@@ -67,6 +69,26 @@ Our system shows that your withdrawal request is being processed. If you've been
         "Confirm identity verification status"
       ]
     } 
+    else if (ticketContent.includes('loan')) {
+      category = 'loan'
+      
+      response = `Thank you for contacting us about your loan request.
+
+Based on my analysis of your inquiry, here's important information about our loan policies:
+
+1. Loans are approved based on your proposed investment amount, with a maximum limit of 300% of your proposed investment
+2. Loan funds can only be used for investments and cannot be withdrawn directly
+3. You must invest at least 33.33% of your loan amount before you can withdraw any profits from loan-funded investments
+4. All loan applications are reviewed within 24-48 hours
+
+If you have any questions about your specific loan application or our lending requirements, please provide additional details so we can better assist you.`
+
+      suggestedNextSteps = [
+        "Review user's loan application details",
+        "Check user's investment history",
+        "Verify proposed investment amount"
+      ]
+    }
     else if (ticketContent.includes('invest') || 
              ticketContent.includes('deposit') || 
              ticketContent.includes('portfolio')) {
@@ -122,13 +144,16 @@ If you're experiencing login issues, you can use the 'Forgot Password' option on
       // General category for everything else
       response = `Thank you for contacting Unicorn Energies support.
 
-We've received your inquiry and are reviewing it. Our team is committed to providing you with personalized assistance shortly.
+I've received your inquiry and am reviewing it. Our team is committed to providing you with personalized assistance shortly.
 
 In the meantime, you might find helpful information in our FAQ section on the website, which addresses many common questions about our platform.
 
 We appreciate your patience and will get back to you as soon as possible.
 
-Unicorn Energies Support Team`
+Best regards,
+${AI_ASSISTANT_NAME}
+AI Support Assistant
+Unicorn Energies`
 
       suggestedNextSteps = [
         "Classify ticket manually",
@@ -148,7 +173,7 @@ Unicorn Energies Support Team`
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
     )
   } catch (error) {
-    console.error('Error analyzing ticket:', error)
+    console.error(`Error in ${AI_ASSISTANT_NAME} analyzing ticket:`, error)
     
     return new Response(
       JSON.stringify({ error: error.message }),
