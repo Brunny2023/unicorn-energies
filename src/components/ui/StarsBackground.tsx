@@ -16,18 +16,19 @@ const StarsBackground = () => {
 
   useEffect(() => {
     const generateStars = () => {
-      const starCount = Math.floor(window.innerWidth / 6); // More stars
+      // Reduce star count slightly to improve performance
+      const starCount = Math.floor(window.innerWidth / 8);
       const newStars: Star[] = [];
 
       for (let i = 0; i < starCount; i++) {
         newStars.push({
           id: i,
-          size: Math.random() * 3 + 1, // Larger stars
+          size: Math.random() * 2.5 + 0.5, // Slightly smaller stars
           x: Math.random() * 100,
           y: Math.random() * 100,
-          opacity: Math.random() * 0.7 + 0.3, // Higher opacity
-          animationDelay: `${Math.random() * 2}s`, // Shorter delay
-          animationDuration: `${Math.random() * 2 + 1}s`, // Faster animation
+          opacity: Math.random() * 0.6 + 0.2, // Lower opacity
+          animationDelay: `${Math.random() * 3}s`,
+          animationDuration: `${Math.random() * 3 + 1.5}s`,
         });
       }
 
@@ -47,16 +48,14 @@ const StarsBackground = () => {
       {/* Animated gradient overlay - using inline styling to avoid external resources */}
       <div className="absolute inset-0 bg-gradient-radial from-unicorn-purple/20 via-transparent to-transparent animate-pulse-glow"></div>
       
-      {/* Shooting stars - move faster */}
+      {/* Shooting stars - reduced count and slowed down */}
       <div className="absolute w-full h-full overflow-hidden">
-        <span className="shooting-star" style={{ animationDuration: '2.5s' }}></span>
-        <span className="shooting-star" style={{ animationDelay: '1s', animationDuration: '2s' }}></span>
+        <span className="shooting-star" style={{ animationDuration: '3.5s' }}></span>
         <span className="shooting-star" style={{ animationDelay: '2s', animationDuration: '3s' }}></span>
-        <span className="shooting-star" style={{ animationDelay: '3s', animationDuration: '2.2s' }}></span>
-        <span className="shooting-star" style={{ animationDelay: '4s', animationDuration: '1.8s' }}></span>
+        <span className="shooting-star" style={{ animationDelay: '4s', animationDuration: '4s' }}></span>
       </div>
       
-      {/* Stars */}
+      {/* Stars with reduced visibility to avoid interference with text */}
       {stars.map((star) => (
         <div
           key={star.id}
@@ -73,12 +72,9 @@ const StarsBackground = () => {
         />
       ))}
       
-      {/* Larger glowing orbs */}
-      <div className="absolute w-32 h-32 rounded-full bg-unicorn-gold/10 blur-xl top-1/4 left-1/4 animate-pulse-glow" style={{ animationDuration: '3s' }}></div>
-      <div className="absolute w-24 h-24 rounded-full bg-unicorn-purple/20 blur-xl top-3/4 right-1/4 animate-pulse-glow" style={{ animationDelay: '1s', animationDuration: '2.5s' }}></div>
-      
-      {/* Radial glow */}
-      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-unicorn-purple/5 to-transparent"></div>
+      {/* Reduced size and opacity of glowing orbs */}
+      <div className="absolute w-24 h-24 rounded-full bg-unicorn-gold/5 blur-xl top-1/4 left-1/4 animate-pulse-glow" style={{ animationDuration: '4s' }}></div>
+      <div className="absolute w-16 h-16 rounded-full bg-unicorn-purple/10 blur-xl top-3/4 right-1/4 animate-pulse-glow" style={{ animationDelay: '1.5s', animationDuration: '3.5s' }}></div>
     </div>
   );
 };

@@ -24,20 +24,18 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Stars background with low z-index to ensure it's behind content */}
+      {/* Stars background with lowest z-index to ensure it's behind content */}
       <div className="fixed inset-0 z-0">
         <StarsBackground />
       </div>
       
-      {/* Content with higher z-index to appear above background */}
+      {/* Main content wrapper with higher z-index */}
       <div className="relative z-10">
-        {/* Explicitly include the Navbar component here */}
+        {/* Navbar with appropriate z-index */}
         <Navbar />
         
-        {/* Make sure HeroBanner has proper z-index hierarchy */}
-        <div className="relative z-20">
-          <HeroBanner />
-        </div>
+        {/* HeroBanner - prevent wrapping in extra div that might affect styling */}
+        <HeroBanner />
         
         {/* Other sections */}
         <AboutSection />
@@ -51,7 +49,7 @@ const Index = () => {
       
       {/* Quick access to dashboard for logged in users */}
       {user && (
-        <div className="fixed bottom-8 right-8 z-10">
+        <div className="fixed bottom-8 right-8 z-50">
           <Button asChild className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black">
             <Link to="/dashboard">
               Go to Dashboard

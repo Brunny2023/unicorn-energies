@@ -33,12 +33,12 @@ const HeroBanner = () => {
         </div>
       </div>
       
-      {/* Oil-themed glow effects */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-[#2F4858]/20 rounded-full blur-3xl"></div>
-      <div className="absolute top-[30%] right-[20%] w-56 h-56 bg-[#D4B24C]/10 rounded-full blur-2xl"></div>
-      <div className="absolute bottom-[20%] left-[25%] w-40 h-40 bg-[#4A3F35]/20 rounded-full blur-xl"></div>
+      {/* Oil-themed glow effects - lowering z-index to prevent overlaps */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-[#2F4858]/20 rounded-full blur-3xl z-0"></div>
+      <div className="absolute top-[30%] right-[20%] w-56 h-56 bg-[#D4B24C]/10 rounded-full blur-2xl z-0"></div>
+      <div className="absolute bottom-[20%] left-[25%] w-40 h-40 bg-[#4A3F35]/20 rounded-full blur-xl z-0"></div>
       
-      <div className="container mx-auto px-4 relative z-30">
+      <div className="container mx-auto px-4 relative z-40">
         <div className="max-w-4xl mx-auto text-center">
           <div className="flex justify-center mb-6">
             <img 
@@ -53,8 +53,9 @@ const HeroBanner = () => {
           
           {/* Enhanced paragraph with stronger background and higher z-index */}
           <div className="relative mb-8 z-50">
-            <div className="absolute inset-0 bg-unicorn-darkPurple/70 backdrop-blur-sm rounded-lg"></div>
-            <p className="text-xl md:text-2xl text-gray-200 animate-slide-up relative z-10 p-5 rounded-lg">
+            {/* Semi-opaque background with blur for better text visibility */}
+            <div className="absolute inset-0 bg-unicorn-darkPurple/80 backdrop-blur-md rounded-lg shadow-xl border border-unicorn-gold/20"></div>
+            <p className="text-xl md:text-2xl text-gray-200 relative z-10 p-5 rounded-lg">
               Harness the power of cutting-edge energy markets with UnicornEnergies' exclusive investment portfolios. Our carefully vetted opportunities deliver industry-leading returns while supporting the future of sustainable energy.
             </p>
           </div>
