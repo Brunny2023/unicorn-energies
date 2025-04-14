@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -51,8 +52,9 @@ const Index = () => {
   useEffect(() => {
     setupConsoleFilters();
 
+    // Add JotForm chatbot
     const jotformScript = document.createElement('script');
-    jotformScript.src = 'https://cdn.jotform.ms/s/umd/latest/for-embedded-agent.js';
+    jotformScript.src = 'https://cdn.jotfor.ms/s/umd/latest/for-embedded-agent.js';
     document.body.appendChild(jotformScript);
 
     jotformScript.onload = () => {
@@ -70,10 +72,11 @@ const Index = () => {
           variant: false,
           customizations: {
             "greeting": "Yes",
-            "greetingMessage": "Hi! How can I assist you today?",
+            "greetingMessage": "Hi! How can I assist you?",
+            "openByDefault": "No",
             "pulse": "Yes",
             "position": "right",
-            "autoOpenChatIn": "5000"
+            "autoOpenChatIn": "0"
           },
           isVoice: false,
         });

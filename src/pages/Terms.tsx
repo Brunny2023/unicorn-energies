@@ -95,11 +95,11 @@ const Terms = () => {
           
           <section className="mb-8">
             <h2 className="text-xl font-semibold text-unicorn-navy mb-4">12. Contact Us</h2>
-            <p>If you have any questions about these Terms, please contact us at legal@unicorn-energies.com.</p>
+            <p>If you have any questions about these Terms, please contact us at texasunic@gmail.com.</p>
           </section>
           
           <div className="mt-10 text-center text-xs text-gray-500">
-            <p>Last Updated: April 13, 2025</p>
+            <p>Last Updated: April 14, 2025</p>
             <p>© 2025 Unicorn Energies. All rights reserved.</p>
           </div>
         </div>
