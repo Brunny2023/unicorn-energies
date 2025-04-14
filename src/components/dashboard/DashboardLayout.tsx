@@ -74,6 +74,7 @@ const DashboardLayout = ({ children, isAdmin = false }: DashboardLayoutProps) =>
             onClick={toggleMenu}
             className="fixed bottom-4 right-4 z-50 rounded-full shadow-lg bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black p-3"
             aria-label="Toggle menu"
+            aria-expanded={isMenuOpen}
           >
             <Menu className="h-6 w-6" />
           </Button>

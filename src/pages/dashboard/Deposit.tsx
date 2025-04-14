@@ -3,6 +3,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import DepositContainer from "@/components/dashboard/deposit/DepositContainer";
+import DashboardTopNav from "@/components/dashboard/layout/DashboardTopNav";
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -11,7 +12,7 @@ import {
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
-import { ChevronRight, Wallet, Home, BarChart, CreditCard } from "lucide-react";
+import { ChevronRight, Home, BarChart, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Deposit = () => {
@@ -62,23 +63,10 @@ const Deposit = () => {
               </Button>
             </div>
           </div>
-
-          {/* Mobile Navigation Pills */}
-          <div className="flex overflow-x-auto gap-2 py-2 md:hidden">
-            <Link to="/dashboard" className="whitespace-nowrap px-3 py-1 bg-unicorn-purple/30 rounded-full text-sm text-white hover:bg-unicorn-purple/50">
-              Dashboard
-            </Link>
-            <Link to="/dashboard/investments" className="whitespace-nowrap px-3 py-1 bg-unicorn-purple/30 rounded-full text-sm text-white hover:bg-unicorn-purple/50">
-              Investments
-            </Link>
-            <Link to="/dashboard/withdraw" className="whitespace-nowrap px-3 py-1 bg-unicorn-purple/30 rounded-full text-sm text-white hover:bg-unicorn-purple/50">
-              Withdraw
-            </Link>
-            <Link to="/dashboard/transactions" className="whitespace-nowrap px-3 py-1 bg-unicorn-purple/30 rounded-full text-sm text-white hover:bg-unicorn-purple/50">
-              Transactions
-            </Link>
-          </div>
         </div>
+        
+        {/* Dashboard navigation tabs */}
+        <DashboardTopNav />
         
         <DepositContainer />
       </div>

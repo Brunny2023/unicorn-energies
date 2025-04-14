@@ -1,5 +1,5 @@
-
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { AffiliateReward } from "@/types/investment";
@@ -9,6 +9,17 @@ import AffiliateStats from "@/components/dashboard/affiliates/AffiliateStats";
 import ReferralLink from "@/components/dashboard/affiliates/ReferralLink";
 import AffiliateRewardsTable from "@/components/dashboard/affiliates/AffiliateRewardsTable";
 import ReferralsList from "@/components/dashboard/affiliates/ReferralsList";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import DashboardTopNav from "@/components/dashboard/layout/DashboardTopNav";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb";
+import { ChevronRight } from "lucide-react";
 
 const Affiliates = () => {
   const { user } = useAuth();
@@ -59,12 +70,12 @@ const Affiliates = () => {
     }
   };
 
-  const calculateStats = (rewardsData: AffiliateReward[], referralsData: any[]) => {
-    const pendingRewards = rewardsData
+  const calculateStats = (applications: AffiliateReward[], referralsData: any[]) => {
+    const pendingRewards = applications
       .filter(reward => reward.status === 'pending')
       .reduce((sum, reward) => sum + Number(reward.amount), 0);
       
-    const totalEarned = rewardsData
+    const totalEarned = applications
       .filter(reward => reward.status === 'processed')
       .reduce((sum, reward) => sum + Number(reward.amount), 0);
       
@@ -90,32 +101,57 @@ const Affiliates = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <AffiliateHeader />
-      
-      <AffiliateStats
-        loading={loading}
-        stats={stats}
-      />
-      
-      <ReferralLink
-        referralCode={referralCode}
-        loading={loading}
-        onCodeGenerated={handleCodeGenerated}
-      />
-      
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <AffiliateRewardsTable
-          rewards={rewards}
+    <DashboardLayout>
+      <div className="space-y-6">
+        {/* Breadcrumb */}
+        <Breadcrumb className="mb-2">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link to="/dashboard" className="text-gray-400 hover:text-unicorn-gold">Dashboard</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator>
+              <ChevronRight className="h-4 w-4" />
+            </BreadcrumbSeparator>
+            <BreadcrumbItem>
+              <BreadcrumbPage className="text-unicorn-gold">Affiliates</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        
+        <div>
+          <h1 className="text-2xl font-bold text-white">Affiliate Program</h1>
+          <p className="text-gray-400">Invite friends and earn rewards</p>
+        </div>
+        
+        {/* Dashboard navigation tabs */}
+        <DashboardTopNav />
+        
+        <AffiliateStats
           loading={loading}
+          stats={stats}
         />
         
-        <ReferralsList
-          referrals={referrals}
+        <ReferralLink
+          referralCode={referralCode}
           loading={loading}
+          onCodeGenerated={handleCodeGenerated}
         />
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <AffiliateRewardsTable
+            rewards={rewards}
+            loading={loading}
+          />
+          
+          <ReferralsList
+            referrals={referrals}
+            loading={loading}
+          />
+        </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

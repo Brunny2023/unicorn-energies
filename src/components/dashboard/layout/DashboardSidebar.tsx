@@ -5,6 +5,8 @@ import { useLogoutHandler } from "@/hooks/useLogoutHandler";
 import DashboardUserInfo from "./DashboardUserInfo";
 import DashboardNavLinks from "./DashboardNavLinks";
 import DashboardFooterLinks from "./DashboardFooterLinks";
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface DashboardSidebarProps {
   isMenuOpen: boolean;
@@ -40,6 +42,19 @@ const DashboardSidebar = ({
         } md:w-64 shadow-xl border-r border-unicorn-purple/20`}
       >
         <div className="h-full flex flex-col space-y-2 p-4 overflow-y-auto">
+          {/* Close button - visible only on mobile */}
+          <div className="flex justify-between items-center md:hidden">
+            <span className="text-unicorn-gold font-medium">Dashboard Menu</span>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={closeMenu}
+              className="text-unicorn-gold hover:bg-unicorn-purple/20"
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
+
           <div className="mb-8 space-y-4">
             {/* User info */}
             <DashboardUserInfo user={user} isAdmin={isAdmin} />
