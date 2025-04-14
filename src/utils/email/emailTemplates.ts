@@ -126,3 +126,16 @@ export const EMAIL_TEMPLATES: Record<string, EmailTemplateType> = {
     `
   }
 };
+
+export const getPlaceholders = (templateId: string): string[] => {
+  const template = EMAIL_TEMPLATES[templateId as keyof typeof EMAIL_TEMPLATES];
+  if (!template) {
+    return [];
+  }
+  const matches = template.html.matchAll(/\{\{(\w+)\}\}/g);
+  const placeholders = new Set<string>();
+  for (const match of matches) {
+    placeholders.add(match[1]);
+  }
+  return Array.from(placeholders);
+};
