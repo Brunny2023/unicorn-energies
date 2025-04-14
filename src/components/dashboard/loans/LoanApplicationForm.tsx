@@ -57,8 +57,8 @@ const LoanApplicationForm = ({ onSubmit, submitting }: LoanApplicationFormProps)
   const watchAmount = form.watch("amount");
   const maxLoanAmount = watchProposedInvestment * 3;
   
-  // Calculate commitment fee (0.00172% of loan amount)
-  const commitmentFee = (watchAmount * 0.0000172).toFixed(2);
+  // Calculate commitment fee (5% of loan amount)
+  const commitmentFee = (watchAmount * 0.05).toFixed(2);
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     // Include the proposed investment amount in the purpose
@@ -87,7 +87,7 @@ const LoanApplicationForm = ({ onSubmit, submitting }: LoanApplicationFormProps)
         <Alert className="mb-4 bg-blue-500/10 text-blue-400 border-blue-500/30">
           <Info className="h-4 w-4" />
           <AlertDescription>
-            <strong>Loan Terms:</strong> A commitment fee of 0.00172% (${commitmentFee}) will be required before your loan can be approved. 
+            <strong>Loan Terms:</strong> A commitment fee of 5% (${commitmentFee}) will be required before your loan can be approved. 
             This fee will be automatically deducted from your wallet balance when you submit your application.
           </AlertDescription>
         </Alert>

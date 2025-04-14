@@ -200,7 +200,7 @@ const Loans = () => {
             <strong>Loan Terms:</strong>
             <ul className="list-disc pl-5 mt-2 space-y-1">
               <li>Minimum loan amount: $3,500</li>
-              <li>A commitment fee of 0.00172% will be charged when submitting your application</li>
+              <li>A commitment fee of 5% will be charged when submitting your application</li>
               <li>Loan amount cannot exceed 300% of your proposed investment</li>
               <li>You must invest at least 33.33% of your loan before withdrawing any profits</li>
             </ul>

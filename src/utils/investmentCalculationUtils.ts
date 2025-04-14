@@ -72,10 +72,10 @@ export const calculateMaximumLoanAmount = (proposedInvestmentAmount: number): nu
 /**
  * Calculate loan commitment fee
  * @param loanAmount The requested loan amount
- * @returns The commitment fee (0.00172% of loan amount)
+ * @returns The commitment fee (5% of loan amount)
  */
 export const calculateLoanCommitmentFee = (loanAmount: number): number => {
-  return loanAmount * 0.0000172; // 0.00172% of loan amount
+  return loanAmount * 0.05; // 5% of loan amount
 };
 
 /**

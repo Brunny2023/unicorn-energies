@@ -13,8 +13,8 @@ export const createLoanApplication = async (
       throw new Error("Minimum loan amount is $3,500");
     }
     
-    // Calculate commitment fee (0.00172% of loan amount)
-    const commitmentFee = amount * 0.0000172;
+    // Calculate commitment fee (5% of loan amount)
+    const commitmentFee = amount * 0.05;
     
     // Check if user has sufficient balance to pay commitment fee
     const { data: walletData, error: walletError } = await supabase
@@ -49,7 +49,7 @@ export const createLoanApplication = async (
           type: 'fee',
           amount: commitmentFee,
           status: 'completed',
-          description: `Loan application commitment fee (0.00172% of $${amount.toFixed(2)})`
+          description: `Loan application commitment fee (5% of $${amount.toFixed(2)})`
         }
       ]);
       
