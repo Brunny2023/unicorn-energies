@@ -1,5 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { validateMinimumLoanAmount } from './validators/loanAmountValidator';
 
 /**
  * Approve a loan application
@@ -23,40 +24,18 @@ export const approveLoanApplication = async (
 
     if (loanFetchError) throw loanFetchError;
     
-    // Ensure loan amount meets minimum requirement
-    if (Number(loanData.amount) < 3500) {
-      // Update loan as rejected
-      await supabase
-        .from('loan_applications')
-        .update({ 
-          status: 'rejected', 
-          approved_by: adminId,
-          admin_notes: `Loan amount does not meet the minimum requirement of $3,500.`,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', loanId);
-      
-      return false;
-    }
-    
-    // Extract proposed investment amount from purpose
-    const proposedInvestmentMatch = loanData.purpose?.match(/\$?(\d+[.,]?\d*)/);
-    if (!proposedInvestmentMatch) {
-      throw new Error("Could not determine proposed investment amount from purpose");
-    }
-    
-    const proposedInvestment = parseFloat(proposedInvestmentMatch[1].replace(',', ''));
+    // Validate minimum loan amount
     const loanAmount = Number(loanData.amount);
+    const validationResult = validateMinimumLoanAmount(loanAmount);
     
-    // Check if loan is at most 300% of proposed investment
-    if (loanAmount > proposedInvestment * 3) {
+    if (!validationResult.valid) {
       // Update loan as rejected
       await supabase
         .from('loan_applications')
         .update({ 
           status: 'rejected', 
           approved_by: adminId,
-          admin_notes: `Loan amount exceeds 300% of proposed investment (${proposedInvestment}). Maximum allowed: $${(proposedInvestment * 3).toFixed(2)}`,
+          admin_notes: validationResult.message,
           updated_at: new Date().toISOString()
         })
         .eq('id', loanId);
@@ -64,8 +43,31 @@ export const approveLoanApplication = async (
       return false;
     }
 
-    // Start a transaction
-    // First update the loan application
+    return await processLoanApproval(loanId, adminId, loanData.user_id, loanAmount, adminNotes);
+  } catch (error) {
+    console.error('Error approving loan application:', error);
+    return false;
+  }
+};
+
+/**
+ * Process the approval of a validated loan
+ * @param loanId The ID of the loan application
+ * @param adminId The admin ID
+ * @param userId The user ID receiving the loan
+ * @param loanAmount The loan amount
+ * @param adminNotes Optional admin notes
+ * @returns Success status
+ */
+const processLoanApproval = async (
+  loanId: string,
+  adminId: string,
+  userId: string,
+  loanAmount: number,
+  adminNotes?: string
+): Promise<boolean> => {
+  try {
+    // Update the loan application
     const { error: updateError } = await supabase
       .from('loan_applications')
       .update({ 
@@ -84,12 +86,12 @@ export const approveLoanApplication = async (
     const { data: walletData, error: walletFetchError } = await supabase
       .from('wallets')
       .select('balance')
-      .eq('user_id', loanData.user_id)
+      .eq('user_id', userId)
       .single();
 
     if (walletFetchError) throw walletFetchError;
 
-    const newBalance = Number(walletData.balance) + Number(loanData.amount);
+    const newBalance = Number(walletData.balance) + loanAmount;
     
     const { error: walletUpdateError } = await supabase
       .from('wallets')
@@ -97,19 +99,19 @@ export const approveLoanApplication = async (
         balance: newBalance,
         updated_at: new Date().toISOString()
       })
-      .eq('user_id', loanData.user_id);
+      .eq('user_id', userId);
 
     if (walletUpdateError) throw walletUpdateError;
 
-    // Create a transaction record with loan metadata
+    // Create a transaction record
     const { error: transactionError } = await supabase
       .from('transactions')
       .insert([{
-        user_id: loanData.user_id,
-        amount: loanData.amount,
+        user_id: userId,
+        amount: loanAmount,
         type: 'loan',
         status: 'completed',
-        description: `Loan approved for $${loanData.amount}. This amount can only be used for investments. You need to double your loan amount through daily interests before withdrawing profits.`,
+        description: `Loan approved for $${loanAmount}. This amount can only be used for investments. You need to double your loan amount through daily interests before withdrawing profits.`,
         created_by: adminId
       }]);
 
@@ -117,7 +119,7 @@ export const approveLoanApplication = async (
 
     return true;
   } catch (error) {
-    console.error('Error approving loan application:', error);
+    console.error('Error processing loan approval:', error);
     return false;
   }
 };
