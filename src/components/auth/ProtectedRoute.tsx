@@ -3,8 +3,8 @@ import React from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
-// Development mode flag - set to true to bypass authentication
-const DEVELOPMENT_MODE = true;
+// Development mode flag - set to false for production
+const DEVELOPMENT_MODE = false;
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();

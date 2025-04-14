@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -13,8 +12,8 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useToast } from "@/hooks/use-toast";
 
-// Development mode flag - set to true to bypass authentication
-const DEVELOPMENT_MODE = true;
+// Development mode flag - set to false for production
+const DEVELOPMENT_MODE = false;
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -50,11 +49,10 @@ const Login = () => {
       return;
     }
     
-    // Normal authentication flow (unused in dev mode)
+    // Normal authentication flow (used in production mode)
     await signIn(data.email, data.password);
   };
 
-  // If we're in dev mode and on the login page, show the login form
   // If we have a real authenticated user, redirect to dashboard
   if (user) {
     return <Navigate to="/dashboard" />;
@@ -135,7 +133,7 @@ const Login = () => {
                   )}
                 />
 
-                {/* Development mode button replaces CAPTCHA */}
+                {/* Development mode buttons, only shown in dev mode */}
                 {DEVELOPMENT_MODE ? (
                   <div className="space-y-4">
                     <Button 
@@ -153,12 +151,7 @@ const Login = () => {
                       Dev Mode Admin Login
                     </Button>
                   </div>
-                ) : (
-                  // This is where the original CAPTCHA would be
-                  <div className="space-y-4">
-                    {/* CAPTCHA component is removed in dev mode */}
-                  </div>
-                )}
+                ) : null}
 
                 <Button
                   type="submit"
