@@ -61,15 +61,6 @@ export const calculateLoanProfitWithdrawalEligibility = async (
 };
 
 /**
- * Calculate the maximum loan amount based on proposed investment
- * @param proposedInvestmentAmount The amount the user proposes to invest
- * @returns The maximum loan amount (300% of proposed investment)
- */
-export const calculateMaximumLoanAmount = (proposedInvestmentAmount: number): number => {
-  return proposedInvestmentAmount * 3; // 300% of proposed investment
-};
-
-/**
  * Calculate loan commitment fee
  * @param loanAmount The requested loan amount
  * @returns The commitment fee (5% of loan amount)
@@ -79,29 +70,18 @@ export const calculateLoanCommitmentFee = (loanAmount: number): number => {
 };
 
 /**
- * Verify if a loan amount is valid based on proposed investment
+ * Verify if a loan amount is valid based on minimum requirements
  * @param loanAmount The requested loan amount
- * @param proposedInvestmentAmount The amount the user proposes to invest
  * @returns Validation result with status and message
  */
 export const validateLoanAmount = (
-  loanAmount: number, 
-  proposedInvestmentAmount: number
+  loanAmount: number
 ): {valid: boolean, message?: string} => {
   // Check minimum loan amount
   if (loanAmount < 3500) {
     return {
       valid: false,
       message: `Minimum loan amount is $3,500`
-    };
-  }
-  
-  const maxLoanAmount = calculateMaximumLoanAmount(proposedInvestmentAmount);
-  
-  if (loanAmount > maxLoanAmount) {
-    return {
-      valid: false,
-      message: `Loan amount cannot exceed $${maxLoanAmount.toLocaleString()} (300% of your proposed investment of $${proposedInvestmentAmount.toLocaleString()})`
     };
   }
   

@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,23 +19,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Loader, AlertCircle, Info } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-// Updated form schema with minimum loan amount of $3,500
+// Updated form schema with minimum loan amount of $3,500 and without proposed investment
 const formSchema = z.object({
   amount: z
     .number()
     .min(3500, "Minimum loan amount is $3,500")
     .max(50000, "Maximum loan amount is $50,000"),
-  proposedInvestment: z
-    .number()
-    .min(1167, "Minimum proposed investment amount is $1,167 (33.33% of minimum loan)")
-    .max(50000, "Maximum proposed investment amount is $50,000"),
   purpose: z
     .string()
     .min(10, "Please provide at least 10 characters")
     .max(500, "Maximum 500 characters allowed"),
-}).refine(data => data.amount <= data.proposedInvestment * 3, {
-  message: "Loan amount cannot exceed 300% of your proposed investment",
-  path: ["amount"]
 });
 
 interface LoanApplicationFormProps {
@@ -48,23 +41,18 @@ const LoanApplicationForm = ({ onSubmit, submitting }: LoanApplicationFormProps)
     resolver: zodResolver(formSchema),
     defaultValues: {
       amount: 3500,
-      proposedInvestment: 1200,
       purpose: "",
     },
   });
 
-  const watchProposedInvestment = form.watch("proposedInvestment");
   const watchAmount = form.watch("amount");
-  const maxLoanAmount = watchProposedInvestment * 3;
   
   // Calculate commitment fee (5% of loan amount)
   const commitmentFee = (watchAmount * 0.05).toFixed(2);
   const canEarnReferralBonus = Number(commitmentFee) >= 688;
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-    // Include the proposed investment amount in the purpose
-    const enhancedPurpose = `Proposed Investment: $${values.proposedInvestment}. ${values.purpose}`;
-    await onSubmit(values.amount, enhancedPurpose);
+    await onSubmit(values.amount, values.purpose);
     form.reset();
   };
 
@@ -92,7 +80,7 @@ const LoanApplicationForm = ({ onSubmit, submitting }: LoanApplicationFormProps)
             This fee will be automatically deducted from your wallet balance when you submit your application.
             {canEarnReferralBonus && (
               <p className="mt-2">
-                <strong>Referral Bonus:</strong> Refer others to apply for loans and earn $250 for each person who pays at least $688 in commitment fees!
+                <strong>Referral Bonus:</strong> Refer others to apply for loans and earn $250 for each person when they deposit at least $688!
               </p>
             )}
           </AlertDescription>
@@ -102,36 +90,12 @@ const LoanApplicationForm = ({ onSubmit, submitting }: LoanApplicationFormProps)
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="proposedInvestment"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-white">Proposed Investment Amount ($)</FormLabel>
-                  <FormDescription className="text-gray-400">
-                    How much do you plan to invest? This determines your maximum loan amount.
-                  </FormDescription>
-                  <FormControl>
-                    <Input 
-                      type="number"
-                      className="bg-unicorn-darkPurple border-unicorn-gold/30 text-white"
-                      placeholder="Enter proposed investment amount" 
-                      {...field}
-                      onChange={(e) => field.onChange(parseFloat(e.target.value))}
-                      disabled={submitting}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
               name="amount"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-white">Loan Amount ($)</FormLabel>
                   <FormDescription className="text-gray-400">
-                    Maximum loan amount: ${maxLoanAmount.toFixed(2)} (300% of proposed investment)
+                    Enter the amount you'd like to borrow (minimum $3,500)
                   </FormDescription>
                   <FormControl>
                     <Input 

@@ -14,7 +14,7 @@ export const processLoanReferralBonus = async (
   try {
     // Check if the commitment fee meets the minimum requirement for bonus
     if (commitmentFee < 688) {
-      console.log(`Commitment fee ($${commitmentFee}) is less than the required $688 for referral bonus`);
+      console.log(`Deposit amount ($${commitmentFee}) is less than the required $688 for referral bonus`);
       return false;
     }
     
@@ -55,7 +55,7 @@ export const processLoanReferralBonus = async (
         amount: bonusAmount,
         type: 'bonus',
         status: 'completed',
-        description: `Loan referral bonus ($${bonusAmount}) for referring a loan applicant who paid $${commitmentFee.toFixed(2)} in commitment fees`
+        description: `Loan referral bonus ($${bonusAmount}) for referring a loan applicant who deposited $${commitmentFee.toFixed(2)}`
       }]);
       
     if (txError) {

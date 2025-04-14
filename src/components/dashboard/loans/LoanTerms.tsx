@@ -12,7 +12,7 @@ const LoanTerms = () => {
           <li>Minimum loan amount: $3,500</li>
           <li>A commitment fee of 5% will be charged when submitting your application</li>
           <li>You must double your loan amount through daily interests before withdrawing any profits</li>
-          <li>Refer other loan applicants and earn $250 for each referred person who pays at least $688 in commitment fees</li>
+          <li>Refer other loan applicants and earn $250 for each person when they deposit at least $688!</li>
         </ul>
       </AlertDescription>
     </Alert>
