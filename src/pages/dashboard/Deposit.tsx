@@ -11,7 +11,7 @@ import {
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
-import { ChevronRight, Wallet } from "lucide-react";
+import { ChevronRight, Wallet, Home, BarChart, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Deposit = () => {
@@ -44,11 +44,39 @@ const Deposit = () => {
             <div className="mt-4 md:mt-0 flex gap-2">
               <Button asChild variant="outline" className="text-unicorn-gold border-unicorn-gold hover:bg-unicorn-gold/20">
                 <Link to="/dashboard">
-                  <ChevronRight className="h-4 w-4 rotate-180 mr-1" />
-                  Back to Dashboard
+                  <Home className="h-4 w-4 mr-1" />
+                  Dashboard
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="text-unicorn-gold border-unicorn-gold hover:bg-unicorn-gold/20">
+                <Link to="/dashboard/withdraw">
+                  <CreditCard className="h-4 w-4 mr-1" />
+                  Withdraw
+                </Link>
+              </Button>
+              <Button asChild className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black">
+                <Link to="/dashboard/investments">
+                  <BarChart className="h-4 w-4 mr-1" />
+                  Investments
                 </Link>
               </Button>
             </div>
+          </div>
+
+          {/* Mobile Navigation Pills */}
+          <div className="flex overflow-x-auto gap-2 py-2 md:hidden">
+            <Link to="/dashboard" className="whitespace-nowrap px-3 py-1 bg-unicorn-purple/30 rounded-full text-sm text-white hover:bg-unicorn-purple/50">
+              Dashboard
+            </Link>
+            <Link to="/dashboard/investments" className="whitespace-nowrap px-3 py-1 bg-unicorn-purple/30 rounded-full text-sm text-white hover:bg-unicorn-purple/50">
+              Investments
+            </Link>
+            <Link to="/dashboard/withdraw" className="whitespace-nowrap px-3 py-1 bg-unicorn-purple/30 rounded-full text-sm text-white hover:bg-unicorn-purple/50">
+              Withdraw
+            </Link>
+            <Link to="/dashboard/transactions" className="whitespace-nowrap px-3 py-1 bg-unicorn-purple/30 rounded-full text-sm text-white hover:bg-unicorn-purple/50">
+              Transactions
+            </Link>
           </div>
         </div>
         

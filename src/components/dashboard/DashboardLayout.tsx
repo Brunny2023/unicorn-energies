@@ -1,6 +1,6 @@
 
 import React, { ReactNode, useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import StarsBackground from "@/components/ui/StarsBackground";
 import DashboardHeader from "./layout/DashboardHeader";
@@ -17,6 +17,7 @@ const DashboardLayout = ({ children, isAdmin = false }: DashboardLayoutProps) =>
   const { user } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const location = useLocation();
 
   // Check if we're on mobile
   useEffect(() => {
@@ -33,6 +34,13 @@ const DashboardLayout = ({ children, isAdmin = false }: DashboardLayoutProps) =>
     // Cleanup
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    if (isMobile) {
+      setIsMenuOpen(false);
+    }
+  }, [location.pathname, isMobile]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -65,6 +73,7 @@ const DashboardLayout = ({ children, isAdmin = false }: DashboardLayoutProps) =>
           <Button
             onClick={toggleMenu}
             className="fixed bottom-4 right-4 z-50 rounded-full shadow-lg bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black p-3"
+            aria-label="Toggle menu"
           >
             <Menu className="h-6 w-6" />
           </Button>

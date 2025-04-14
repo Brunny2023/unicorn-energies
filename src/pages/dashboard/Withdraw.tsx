@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
@@ -8,6 +9,16 @@ import WalletSummary from "@/components/dashboard/withdraw/WalletSummary";
 import WithdrawalHistory from "@/components/dashboard/withdraw/WithdrawalHistory";
 import WithdrawalForm from "@/components/dashboard/withdraw/WithdrawalForm";
 import { fetchWalletData } from "@/utils/wallet";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb";
+import { ChevronRight, Home, Wallet, BarChart } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 // Define the withdrawal history item type
 interface WithdrawalHistoryItem {
@@ -186,41 +197,99 @@ const Withdraw = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-3xl font-bold text-white">Withdraw Funds</h2>
-          <p className="text-gray-400 mt-1">
-            Request a withdrawal from your investment account
-          </p>
-        </div>
-      </div>
+    <DashboardLayout>
+      <div className="space-y-6">
+        {/* Breadcrumb and Navigation */}
+        <div className="flex flex-col space-y-2">
+          <Breadcrumb className="mb-2">
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link to="/dashboard" className="text-gray-400 hover:text-unicorn-gold">Dashboard</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator>
+                <ChevronRight className="h-4 w-4" />
+              </BreadcrumbSeparator>
+              <BreadcrumbItem>
+                <BreadcrumbPage className="text-unicorn-gold">Withdraw</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Wallet Stats */}
-        <div className="lg:col-span-1">
-          <WalletSummary 
-            walletData={walletData} 
-            loading={loading} 
-            lastDepositMethod={lastDepositMethod}
-          />
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+            <div>
+              <h2 className="text-3xl font-bold text-white">Withdraw Funds</h2>
+              <p className="text-gray-400 mt-1">
+                Request a withdrawal from your investment account
+              </p>
+            </div>
+
+            <div className="mt-4 md:mt-0 flex gap-2">
+              <Button asChild variant="outline" className="text-unicorn-gold border-unicorn-gold hover:bg-unicorn-gold/20">
+                <Link to="/dashboard">
+                  <Home className="h-4 w-4 mr-1" />
+                  Dashboard
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="text-unicorn-gold border-unicorn-gold hover:bg-unicorn-gold/20">
+                <Link to="/dashboard/deposit">
+                  <Wallet className="h-4 w-4 mr-1" />
+                  Deposit
+                </Link>
+              </Button>
+              <Button asChild className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black">
+                <Link to="/dashboard/investments">
+                  <BarChart className="h-4 w-4 mr-1" />
+                  Investments
+                </Link>
+              </Button>
+            </div>
+          </div>
+
+          {/* Mobile Navigation Pills */}
+          <div className="flex overflow-x-auto gap-2 py-2 md:hidden">
+            <Link to="/dashboard" className="whitespace-nowrap px-3 py-1 bg-unicorn-purple/30 rounded-full text-sm text-white hover:bg-unicorn-purple/50">
+              Dashboard
+            </Link>
+            <Link to="/dashboard/investments" className="whitespace-nowrap px-3 py-1 bg-unicorn-purple/30 rounded-full text-sm text-white hover:bg-unicorn-purple/50">
+              Investments
+            </Link>
+            <Link to="/dashboard/deposit" className="whitespace-nowrap px-3 py-1 bg-unicorn-purple/30 rounded-full text-sm text-white hover:bg-unicorn-purple/50">
+              Deposit
+            </Link>
+            <Link to="/dashboard/transactions" className="whitespace-nowrap px-3 py-1 bg-unicorn-purple/30 rounded-full text-sm text-white hover:bg-unicorn-purple/50">
+              Transactions
+            </Link>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Wallet Stats */}
+          <div className="lg:col-span-1">
+            <WalletSummary 
+              walletData={walletData} 
+              loading={loading} 
+              lastDepositMethod={lastDepositMethod}
+            />
+          </div>
+          
+          {/* Withdrawal Form */}
+          <div className="lg:col-span-2">
+            <WithdrawalForm 
+              walletData={walletData}
+              loading={loading}
+              fetchWalletData={fetchUserWalletData}
+              onSuccessfulWithdrawal={addWithdrawalToHistory}
+              lastDepositMethod={lastDepositMethod}
+            />
+          </div>
         </div>
         
-        {/* Withdrawal Form */}
-        <div className="lg:col-span-2">
-          <WithdrawalForm 
-            walletData={walletData}
-            loading={loading}
-            fetchWalletData={fetchUserWalletData}
-            onSuccessfulWithdrawal={addWithdrawalToHistory}
-            lastDepositMethod={lastDepositMethod}
-          />
-        </div>
+        {/* Withdrawal History */}
+        <WithdrawalHistory history={withdrawalHistory} loading={false} />
       </div>
-      
-      {/* Withdrawal History */}
-      <WithdrawalHistory history={withdrawalHistory} loading={false} />
-    </div>
+    </DashboardLayout>
   );
 };
 

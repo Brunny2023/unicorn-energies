@@ -1,11 +1,10 @@
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { getUserInvestments } from "@/utils/investmentUtils";
 import { Investment } from "@/types/investment";
 import { useToast } from "@/hooks/use-toast";
-import { ChevronRight, Home } from "lucide-react";
+import { ChevronRight, Home, Wallet, CreditCard, DollarSign } from "lucide-react";
 import StatsCards from "@/components/dashboard/investments/StatsCards";
 import InvestmentsList from "@/components/dashboard/investments/InvestmentsList";
 import InvestmentHeader from "@/components/dashboard/investments/InvestmentHeader";
@@ -19,6 +18,7 @@ import {
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
 
 const Investments = () => {
   const { user } = useAuth();
@@ -34,7 +34,6 @@ const Investments = () => {
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest' | 'amount-high' | 'amount-low'>('newest');
 
   useEffect(() => {
-    // For users with no active account yet
     if (!user || !user.id) {
       setInvestments(getDummyInvestments());
       calculateStats(getDummyInvestments());
@@ -61,7 +60,6 @@ const Investments = () => {
         description: "Failed to load investments data",
         variant: "destructive",
       });
-      // Use dummy data on error
       setInvestments(getDummyInvestments());
       calculateStats(getDummyInvestments());
       setLoading(false);
@@ -80,13 +78,11 @@ const Investments = () => {
     });
   };
 
-  // Filter investments based on active tab
   const filteredInvestments = investments.filter(inv => {
     if (activeTab === 'all') return true;
     return inv.status === activeTab;
   });
 
-  // Sort investments
   const sortedInvestments = [...filteredInvestments].sort((a, b) => {
     switch (sortOrder) {
       case 'newest':
@@ -103,56 +99,82 @@ const Investments = () => {
   });
 
   return (
-    <div className="space-y-6">
-      {/* Breadcrumb navigation */}
-      <Breadcrumb className="mb-2">
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link to="/dashboard" className="text-gray-400 hover:text-unicorn-gold">Dashboard</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator>
-            <ChevronRight className="h-4 w-4" />
-          </BreadcrumbSeparator>
-          <BreadcrumbItem>
-            <BreadcrumbPage className="text-unicorn-gold">Investments</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-      
-      {/* Header with title and actions */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-        <InvestmentHeader sortOrder={sortOrder} setSortOrder={setSortOrder} />
+    <DashboardLayout>
+      <div className="space-y-6">
+        <Breadcrumb className="mb-2">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link to="/dashboard" className="text-gray-400 hover:text-unicorn-gold">Dashboard</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator>
+              <ChevronRight className="h-4 w-4" />
+            </BreadcrumbSeparator>
+            <BreadcrumbItem>
+              <BreadcrumbPage className="text-unicorn-gold">Investments</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
         
-        <div className="mt-4 md:mt-0 flex gap-2">
-          <Button asChild variant="outline" className="text-unicorn-gold border-unicorn-gold hover:bg-unicorn-gold/20">
-            <Link to="/dashboard">
-              <Home className="h-4 w-4 mr-1" />
-              Dashboard
-            </Link>
-          </Button>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-white">Investments</h1>
+            <p className="text-gray-400">Manage your active and pending investments</p>
+          </div>
+          
+          <div className="mt-4 md:mt-0 flex gap-2">
+            <Button asChild variant="outline" className="text-unicorn-gold border-unicorn-gold hover:bg-unicorn-gold/20">
+              <Link to="/dashboard">
+                <Home className="h-4 w-4 mr-1" />
+                Dashboard
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="text-unicorn-gold border-unicorn-gold hover:bg-unicorn-gold/20">
+              <Link to="/dashboard/deposit">
+                <Wallet className="h-4 w-4 mr-1" />
+                Deposit
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="text-unicorn-gold border-unicorn-gold hover:bg-unicorn-gold/20">
+              <Link to="/dashboard/withdraw">
+                <CreditCard className="h-4 w-4 mr-1" />
+                Withdraw
+              </Link>
+            </Button>
+          </div>
         </div>
+
+        <div className="flex overflow-x-auto gap-2 py-2 md:hidden">
+          <Link to="/dashboard" className="whitespace-nowrap px-3 py-1 bg-unicorn-purple/30 rounded-full text-sm text-white hover:bg-unicorn-purple/50">
+            Dashboard
+          </Link>
+          <Link to="/dashboard/deposit" className="whitespace-nowrap px-3 py-1 bg-unicorn-purple/30 rounded-full text-sm text-white hover:bg-unicorn-purple/50">
+            Deposit
+          </Link>
+          <Link to="/dashboard/withdraw" className="whitespace-nowrap px-3 py-1 bg-unicorn-purple/30 rounded-full text-sm text-white hover:bg-unicorn-purple/50">
+            Withdraw
+          </Link>
+          <Link to="/dashboard/loans" className="whitespace-nowrap px-3 py-1 bg-unicorn-purple/30 rounded-full text-sm text-white hover:bg-unicorn-purple/50">
+            Loans
+          </Link>
+        </div>
+        
+        <StatsCards 
+          loading={loading} 
+          activeCount={stats.activeCount} 
+          totalInvested={stats.totalInvested} 
+          totalReturns={stats.totalReturns} 
+        />
+        
+        <InvestmentTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+        
+        <InvestmentsList loading={loading} investments={sortedInvestments} />
       </div>
-      
-      {/* Stats Cards */}
-      <StatsCards 
-        loading={loading} 
-        activeCount={stats.activeCount} 
-        totalInvested={stats.totalInvested} 
-        totalReturns={stats.totalReturns} 
-      />
-      
-      {/* Tab Filters */}
-      <InvestmentTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-      
-      {/* Investments List */}
-      <InvestmentsList loading={loading} investments={sortedInvestments} />
-    </div>
+    </DashboardLayout>
   );
 };
 
-// Helper function to generate dummy investments for development
 const getDummyInvestments = (): Investment[] => {
   return [
     {
