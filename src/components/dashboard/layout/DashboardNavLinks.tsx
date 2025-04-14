@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -63,6 +62,11 @@ const DashboardNavLinks = ({ isAdmin, closeMenu }: DashboardNavLinksProps) => {
       title: "Support Tickets",
       icon: <Ticket className="h-5 w-5" />,
       path: "/dashboard/tickets",
+    },
+    {
+      title: "Settings",
+      icon: <Settings className="h-5 w-5" />,
+      path: "/dashboard/settings",
     }
   ];
   
@@ -109,7 +113,6 @@ const DashboardNavLinks = ({ isAdmin, closeMenu }: DashboardNavLinksProps) => {
     }
   ];
   
-  // Choose which items to show based on the user's role
   const menuItems = isAdmin ? adminNavItems : userNavItems;
 
   return (

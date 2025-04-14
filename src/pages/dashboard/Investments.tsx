@@ -1,12 +1,24 @@
+
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { getUserInvestments } from "@/utils/investmentUtils";
 import { Investment } from "@/types/investment";
 import { useToast } from "@/hooks/use-toast";
+import { ChevronRight, Home } from "lucide-react";
 import StatsCards from "@/components/dashboard/investments/StatsCards";
 import InvestmentsList from "@/components/dashboard/investments/InvestmentsList";
 import InvestmentHeader from "@/components/dashboard/investments/InvestmentHeader";
 import InvestmentTabs from "@/components/dashboard/investments/InvestmentTabs";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
 
 const Investments = () => {
   const { user } = useAuth();
@@ -92,8 +104,36 @@ const Investments = () => {
 
   return (
     <div className="space-y-6">
+      {/* Breadcrumb navigation */}
+      <Breadcrumb className="mb-2">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link to="/dashboard" className="text-gray-400 hover:text-unicorn-gold">Dashboard</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <ChevronRight className="h-4 w-4" />
+          </BreadcrumbSeparator>
+          <BreadcrumbItem>
+            <BreadcrumbPage className="text-unicorn-gold">Investments</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+      
       {/* Header with title and actions */}
-      <InvestmentHeader sortOrder={sortOrder} setSortOrder={setSortOrder} />
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+        <InvestmentHeader sortOrder={sortOrder} setSortOrder={setSortOrder} />
+        
+        <div className="mt-4 md:mt-0 flex gap-2">
+          <Button asChild variant="outline" className="text-unicorn-gold border-unicorn-gold hover:bg-unicorn-gold/20">
+            <Link to="/dashboard">
+              <Home className="h-4 w-4 mr-1" />
+              Dashboard
+            </Link>
+          </Button>
+        </div>
+      </div>
       
       {/* Stats Cards */}
       <StatsCards 

@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -14,6 +13,7 @@ import WhyChooseUsSection from "@/components/home/WhyChooseUsSection";
 import CtaSection from "@/components/home/CtaSection";
 import Navbar from "@/components/layout/Navbar";
 import { setupConsoleFilters } from "@/utils/consoleErrorFilter";
+import { Home, Menu } from "lucide-react";
 
 const ServiceHighlights = () => {
   return (
@@ -48,18 +48,14 @@ const ServiceHighlights = () => {
 const Index = () => {
   const { user } = useAuth();
 
-  // Set up console filters to reduce noise from extensions and external services
   useEffect(() => {
     setupConsoleFilters();
 
-    // Load JotForm chatbot script
     const jotformScript = document.createElement('script');
-    jotformScript.src = 'https://cdn.jotfor.ms/s/umd/latest/for-embedded-agent.js';
+    jotformScript.src = 'https://cdn.jotform.ms/s/umd/latest/for-embedded-agent.js';
     document.body.appendChild(jotformScript);
 
-    // Initialize JotForm chatbot after script loads
     jotformScript.onload = () => {
-      // Make sure AgentInitializer exists before using it
       if (window.AgentInitializer) {
         window.AgentInitializer.init({
           agentRenderURL: "https://agent.jotform.com/019632161ac57399a1f3d33d5152b336a174",
@@ -86,7 +82,6 @@ const Index = () => {
       }
     };
 
-    // Cleanup function to remove script on component unmount
     return () => {
       if (document.body.contains(jotformScript)) {
         document.body.removeChild(jotformScript);
@@ -96,23 +91,17 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Stars background with lowest z-index to ensure it's behind content */}
       <div className="fixed inset-0 z-0">
         <StarsBackground />
       </div>
       
-      {/* Main content wrapper with higher z-index */}
       <div className="relative z-10">
-        {/* Navbar with appropriate z-index */}
         <Navbar />
         
-        {/* HeroBanner - prevent wrapping in extra div that might affect styling */}
         <HeroBanner />
         
-        {/* Service Highlights Section - new section with bold statements */}
         <ServiceHighlights />
         
-        {/* Other sections */}
         <AboutSection />
         <HowItWorksSection />
         <InvestmentPlansSection />
@@ -122,15 +111,14 @@ const Index = () => {
         <CtaSection />
       </div>
       
-      {/* JotForm Chatbot Container */}
       <div id="JotformAgent-019632161ac57399a1f3d33d5152b336a174"></div>
       
-      {/* Quick access to dashboard for logged in users */}
       {user && (
-        <div className="fixed bottom-8 right-8 z-50">
+        <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-2 items-end">
           <Button asChild className="bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black">
             <Link to="/dashboard">
-              Go to Dashboard
+              <Home className="h-4 w-4 mr-2" />
+              Dashboard
             </Link>
           </Button>
         </div>
