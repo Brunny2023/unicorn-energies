@@ -73,7 +73,6 @@ const Index = () => {
           customizations: {
             "greeting": "Yes",
             "greetingMessage": "Hi! How can I assist you?",
-            "openByDefault": "No",
             "pulse": "Yes",
             "position": "right",
             "autoOpenChatIn": "0"
