@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -50,6 +51,40 @@ const Index = () => {
   // Set up console filters to reduce noise from extensions and external services
   useEffect(() => {
     setupConsoleFilters();
+
+    // Load JotForm chatbot script
+    const jotformScript = document.createElement('script');
+    jotformScript.src = 'https://cdn.jotfor.ms/s/umd/latest/for-embedded-agent.js';
+    document.body.appendChild(jotformScript);
+
+    // Initialize JotForm chatbot after script loads
+    jotformScript.onload = () => {
+      window.AgentInitializer.init({
+        agentRenderURL: "https://agent.jotform.com/019632161ac57399a1f3d33d5152b336a174",
+        rootId: "JotformAgent-019632161ac57399a1f3d33d5152b336a174",
+        formID: "019632161ac57399a1f3d33d5152b336a174",
+        queryParams: ["skipWelcome=1", "maximizable=1"],
+        domain: "https://www.jotform.com",
+        isDraggable: false,
+        background: "linear-gradient(180deg, #910E3E 0%, #910E3E 100%)",
+        buttonBackgroundColor: "#04569D",
+        buttonIconColor: "#F7FFE9",
+        variant: false,
+        customizations: {
+          "greeting": "Yes",
+          "greetingMessage": "Hi! How can I assist you today?",
+          "pulse": "Yes",
+          "position": "right",
+          "autoOpenChatIn": "5000"
+        },
+        isVoice: false,
+      });
+    };
+
+    // Cleanup function to remove script on component unmount
+    return () => {
+      document.body.removeChild(jotformScript);
+    };
   }, []);
 
   return (
@@ -79,6 +114,9 @@ const Index = () => {
         <WhyChooseUsSection />
         <CtaSection />
       </div>
+      
+      {/* JotForm Chatbot Container */}
+      <div id="JotformAgent-019632161ac57399a1f3d33d5152b336a174"></div>
       
       {/* Quick access to dashboard for logged in users */}
       {user && (
