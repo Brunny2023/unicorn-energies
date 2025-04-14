@@ -34,7 +34,7 @@ export const sendInvestmentConfirmationEmail = async (
     
     const formattedData = {
       userName: data.userName,
-      amount: data.amount.toFixed(2),
+      amount: `$${data.amount.toFixed(2)}`,
       planName: data.planName,
       duration: data.duration,
       expectedReturn: data.expectedReturn
@@ -64,7 +64,7 @@ export const sendWithdrawalConfirmationEmail = async (
     
     const formattedData = {
       userName: data.userName,
-      amount: data.amount.toFixed(2),
+      amount: `$${data.amount.toFixed(2)}`,
       method: data.method,
       destination: data.destination,
       status: data.status
@@ -96,7 +96,7 @@ export const sendLoanStatusEmail = async (
     
     const formattedData = {
       userName: data.userName,
-      amount: data.amount.toFixed(2),
+      amount: `$${data.amount.toFixed(2)}`,
       purpose: data.purpose,
       applicationDate: data.applicationDate,
       status: data.status,

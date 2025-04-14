@@ -1,3 +1,4 @@
+
 // Define the email template types
 export interface EmailTemplateType {
   name: string;
@@ -116,7 +117,7 @@ export const EMAIL_TEMPLATES: Record<string, EmailTemplateType> = {
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
         <h1 style="color: #8a6d3b; border-bottom: 2px solid #f0ad4e; padding-bottom: 10px;">Password Reset Request</h1>
         <p>Hello {{userName}},</p>
-        <p>We received a request to reset your password for your UnicornEnergies account. If you didn’t make this request, you can safely ignore this email.</p>
+        <p>We received a request to reset your password for your UnicornEnergies account. If you didn't make this request, you can safely ignore this email.</p>
         <p>Otherwise, click the button below to reset your password:</p>
         <a href="{{resetLink}}" style="display: inline-block; background-color: #8a6d3b; color: white; text-decoration: none; padding: 10px 20px; border-radius: 4px;">Reset Password</a>
         <p style="margin-top: 20px;">This link will expire in 1 hour for your security.</p>
@@ -127,6 +128,11 @@ export const EMAIL_TEMPLATES: Record<string, EmailTemplateType> = {
   }
 };
 
+/**
+ * Extract placeholders from a specific email template
+ * @param templateId - The ID of the template to extract placeholders from
+ * @returns An array of placeholder names found in the template
+ */
 export const getPlaceholders = (templateId: string): string[] => {
   const template = EMAIL_TEMPLATES[templateId as keyof typeof EMAIL_TEMPLATES];
   if (!template) {
