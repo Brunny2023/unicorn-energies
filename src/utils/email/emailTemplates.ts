@@ -1,4 +1,3 @@
-
 // Define the email template types
 export interface EmailTemplateType {
   name: string;
@@ -39,6 +38,7 @@ export const EMAIL_TEMPLATES: Record<string, EmailTemplateType> = {
       </div>
     `
   },
+
   investment_confirmation: {
     name: "Investment Confirmation",
     subject: "Investment Confirmation - Your UnicornEnergies Investment",
@@ -48,7 +48,7 @@ export const EMAIL_TEMPLATES: Record<string, EmailTemplateType> = {
         <p>Hello {{userName}},</p>
         <p>Thank you for your investment with UnicornEnergies! We're pleased to confirm that your investment has been successfully processed.</p>
         <div style="background-color: #f8f9fa; border-left: 4px solid #28a745; padding: 15px; margin: 20px 0;">
-          <p style="margin: 0; font-size: 18px;">Investment Amount: <strong>${{amount}}</strong></p>
+          <p style="margin: 0; font-size: 18px;">Investment Amount: <strong>{{amount}}</strong></p>
           <p style="margin: 5px 0 0 0;">Plan: <strong>{{planName}}</strong></p>
           <p style="margin: 5px 0 0 0;">Duration: <strong>{{duration}} days</strong></p>
           <p style="margin: 5px 0 0 0;">Expected Return: <strong>{{expectedReturn}}%</strong></p>
@@ -61,6 +61,7 @@ export const EMAIL_TEMPLATES: Record<string, EmailTemplateType> = {
       </div>
     `
   },
+
   withdrawal_confirmation: {
     name: "Withdrawal Confirmation",
     subject: "Withdrawal Request Confirmation - UnicornEnergies",
@@ -70,12 +71,12 @@ export const EMAIL_TEMPLATES: Record<string, EmailTemplateType> = {
         <p>Hello {{userName}},</p>
         <p>We've received your withdrawal request and are processing it now.</p>
         <div style="background-color: #f8f9fa; border-left: 4px solid #28a745; padding: 15px; margin: 20px 0;">
-          <p style="margin: 0; font-size: 18px;">Withdrawal Amount: <strong>${{amount}}</strong></p>
+          <p style="margin: 0; font-size: 18px;">Withdrawal Amount: <strong>{{amount}}</strong></p>
           <p style="margin: 5px 0 0 0;">Withdrawal Method: <strong>{{method}}</strong></p>
           <p style="margin: 5px 0 0 0;">Withdrawal Destination: <strong>{{destination}}</strong></p>
           <p style="margin: 5px 0 0 0;">Status: <strong>{{status}}</strong></p>
         </div>
-        <p>Your withdrawal is being processed and will be sent to your specified {{method}} within 1-3 business days, depending on your withdrawal method.</p>
+        <p>Your withdrawal is being processed and will be sent to your specified {{method}} within 1–3 business days, depending on your withdrawal method.</p>
         <p>You'll receive another email once your withdrawal has been completed.</p>
         <a href="https://unicornenergies.com/dashboard/withdraw" style="display: inline-block; background-color: #8a6d3b; color: white; text-decoration: none; padding: 10px 20px; border-radius: 4px; margin-top: 15px;">View Withdrawal Status</a>
         <p style="margin-top: 30px;">Thank you for your trust in UnicornEnergies.</p>
@@ -84,6 +85,7 @@ export const EMAIL_TEMPLATES: Record<string, EmailTemplateType> = {
       </div>
     `
   },
+
   loan_status: {
     name: "Loan Application Status",
     subject: "Loan Application Update - UnicornEnergies",
@@ -93,7 +95,7 @@ export const EMAIL_TEMPLATES: Record<string, EmailTemplateType> = {
         <p>Hello {{userName}},</p>
         <p>We're writing to inform you about an update to your loan application with UnicornEnergies.</p>
         <div style="background-color: #f8f9fa; border-left: 4px solid {{statusColor}}; padding: 15px; margin: 20px 0;">
-          <p style="margin: 0; font-size: 18px;">Loan Amount: <strong>${{amount}}</strong></p>
+          <p style="margin: 0; font-size: 18px;">Loan Amount: <strong>{{amount}}</strong></p>
           <p style="margin: 5px 0 0 0;">Loan Purpose: <strong>{{purpose}}</strong></p>
           <p style="margin: 5px 0 0 0;">Application Date: <strong>{{applicationDate}}</strong></p>
           <p style="margin: 5px 0 0 0;">Status: <strong>{{status}}</strong></p>
@@ -106,6 +108,7 @@ export const EMAIL_TEMPLATES: Record<string, EmailTemplateType> = {
       </div>
     `
   },
+
   password_reset: {
     name: "Password Reset",
     subject: "Password Reset Request - UnicornEnergies",
@@ -113,33 +116,13 @@ export const EMAIL_TEMPLATES: Record<string, EmailTemplateType> = {
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
         <h1 style="color: #8a6d3b; border-bottom: 2px solid #f0ad4e; padding-bottom: 10px;">Password Reset Request</h1>
         <p>Hello {{userName}},</p>
-        <p>We received a request to reset your password for your UnicornEnergies account. If you didn't make this request, you can safely ignore this email.</p>
-        <p>To reset your password, click the button below. This link will expire in 30 minutes for security reasons.</p>
-        <a href="{{resetLink}}" style="display: inline-block; background-color: #8a6d3b; color: white; text-decoration: none; padding: 10px 20px; border-radius: 4px; margin-top: 15px; margin-bottom: 15px;">Reset Your Password</a>
-        <p>If the button above doesn't work, you can copy and paste the following link into your browser:</p>
-        <p style="word-break: break-all; background-color: #f8f9fa; padding: 10px; font-size: 14px;">{{resetLink}}</p>
-        <p style="margin-top: 30px;">For security reasons, this password reset link will expire in 30 minutes. If you need to reset your password after that time, please submit a new password reset request.</p>
+        <p>We received a request to reset your password for your UnicornEnergies account. If you didn’t make this request, you can safely ignore this email.</p>
+        <p>Otherwise, click the button below to reset your password:</p>
+        <a href="{{resetLink}}" style="display: inline-block; background-color: #8a6d3b; color: white; text-decoration: none; padding: 10px 20px; border-radius: 4px;">Reset Password</a>
+        <p style="margin-top: 20px;">This link will expire in 1 hour for your security.</p>
         <p>Best regards,<br>The UnicornEnergies Team</p>
         <p style="margin-top: 30px; font-size: 12px; color: #777; border-top: 1px solid #eee; padding-top: 15px;">This is an automated message. Please do not reply to this email.</p>
       </div>
     `
-  },
-};
-
-// Get the available placeholders based on template type
-export const getPlaceholders = (templateId: string): string[] => {
-  switch(templateId) {
-    case 'welcome':
-      return ['userName'];
-    case 'investment_confirmation':
-      return ['userName', 'amount', 'planName', 'duration', 'expectedReturn'];
-    case 'withdrawal_confirmation':
-      return ['userName', 'amount', 'method', 'destination', 'status'];
-    case 'loan_status':
-      return ['userName', 'amount', 'purpose', 'applicationDate', 'status', 'statusColor', 'statusMessage'];
-    case 'password_reset':
-      return ['userName', 'resetLink'];
-    default:
-      return [];
   }
 };
