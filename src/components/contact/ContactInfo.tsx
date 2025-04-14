@@ -14,8 +14,9 @@ const ContactInfo = () => {
           <div>
             <h3 className="font-semibold text-investment-navy mb-1">Our Location</h3>
             <p className="text-gray-600">
-              5900 Balcones Drive, Suite 4000<br />
-              Austin, TX 78731
+              Unicorn Allied Resources Texas<br />
+              Branch: Unicorn Energy Inc.<br />
+              RR5 Box 181-N, Elgin, TX 78621
             </p>
           </div>
         </div>
@@ -26,8 +27,8 @@ const ContactInfo = () => {
           </div>
           <div>
             <h3 className="font-semibold text-investment-navy mb-1">Phone Number</h3>
-            <p className="text-gray-600">+1 (212) 555-7890</p>
-            <p className="text-sm text-gray-500">Monday to Friday, 9am to 6pm EST</p>
+            <p className="text-gray-600">+1 (512) 285-7900</p>
+            <p className="text-sm text-gray-500">Monday to Friday, 9am to 6pm CST</p>
           </div>
         </div>
         
@@ -37,7 +38,7 @@ const ContactInfo = () => {
           </div>
           <div>
             <h3 className="font-semibold text-investment-navy mb-1">Email Address</h3>
-            <p className="text-gray-600">support@unicorn-energies.com</p>
+            <p className="text-gray-600">texasunic@gmail.com</p>
             <p className="text-sm text-gray-500">We'll respond within 24 hours</p>
           </div>
         </div>

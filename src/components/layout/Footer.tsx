@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 
@@ -72,15 +71,15 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-start">
                 <MapPin className="h-5 w-5 text-unicorn-gold mr-2 mt-1" />
-                <span className="text-gray-300">5900 Balcones Drive, Suite 4000, Austin, TX 78731</span>
+                <span className="text-gray-300">Unicorn Allied Resources Texas, Branch: Unicorn Energy Inc. RR5 Box 181-N, Elgin, TX 78621</span>
               </li>
               <li className="flex items-center">
                 <Phone className="h-5 w-5 text-unicorn-gold mr-2" />
-                <span className="text-gray-300">+1 (555) 123-4567</span>
+                <span className="text-gray-300">+1 (512) 285-7900</span>
               </li>
               <li className="flex items-center">
                 <Mail className="h-5 w-5 text-unicorn-gold mr-2" />
-                <span className="text-gray-300">contact@unicornenergies.com</span>
+                <span className="text-gray-300">texasunic@gmail.com</span>
               </li>
             </ul>
           </div>
