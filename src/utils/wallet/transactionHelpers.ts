@@ -27,27 +27,16 @@ export const checkWithdrawalEligibility = async (
   // Sum of all approved loans
   const totalLoans = loanData.reduce((sum, loan) => sum + Number(loan.amount), 0);
   
-  // Get total investments
-  const { data: investmentsData, error: investmentsError } = await supabase
-    .from('investments')
-    .select('amount')
-    .eq('user_id', userId);
-    
-  if (investmentsError) throw investmentsError;
-  
-  // Sum of all investments
-  const totalInvestments = investmentsData.reduce((sum, inv) => sum + Number(inv.amount), 0);
-  
   // Get the user's non-loan balance (balance before loans)
   const nonLoanBalance = walletData.balance - totalLoans;
   
-  // If withdrawal amount is greater than non-loan balance, check investment requirements
+  // If withdrawal amount is greater than non-loan balance, check profit requirements
   if (amount > nonLoanBalance) {
-    // If there are loans but insufficient investments, prevent withdrawal
-    if (totalLoans > 0 && totalInvestments < totalLoans / 3) {
+    // If there are loans, check if accrued profits have doubled the loan amount
+    if (totalLoans > 0 && walletData.accrued_profits < totalLoans) {
       return {
         eligible: false,
-        reason: `You must invest at least $${(totalLoans / 3).toFixed(2)} (33.33% of your loans) before withdrawing. Currently invested: $${totalInvestments.toFixed(2)}`
+        reason: `You need to accrue profits equal to your loan amount ($${totalLoans.toFixed(2)}) before withdrawing. Current accrued profits: $${walletData.accrued_profits.toFixed(2)}`
       };
     }
     

@@ -59,6 +59,7 @@ const LoanApplicationForm = ({ onSubmit, submitting }: LoanApplicationFormProps)
   
   // Calculate commitment fee (5% of loan amount)
   const commitmentFee = (watchAmount * 0.05).toFixed(2);
+  const canEarnReferralBonus = Number(commitmentFee) >= 688;
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     // Include the proposed investment amount in the purpose
@@ -79,8 +80,8 @@ const LoanApplicationForm = ({ onSubmit, submitting }: LoanApplicationFormProps)
         <Alert className="mb-4 bg-amber-500/10 text-amber-500 border-amber-500/30">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            Loans can only be used for investments and cannot be withdrawn. You must invest at least 33.33% of the loan 
-            amount before you can withdraw any profits earned from investments made with the loan.
+            Loans can only be used for investments and cannot be withdrawn. You must double your loan amount 
+            through daily interests before you can withdraw any profits earned from your investments.
           </AlertDescription>
         </Alert>
         
@@ -89,6 +90,11 @@ const LoanApplicationForm = ({ onSubmit, submitting }: LoanApplicationFormProps)
           <AlertDescription>
             <strong>Loan Terms:</strong> A commitment fee of 5% (${commitmentFee}) will be required before your loan can be approved. 
             This fee will be automatically deducted from your wallet balance when you submit your application.
+            {canEarnReferralBonus && (
+              <p className="mt-2">
+                <strong>Referral Bonus:</strong> Refer others to apply for loans and earn $250 for each person who pays at least $688 in commitment fees!
+              </p>
+            )}
           </AlertDescription>
         </Alert>
         

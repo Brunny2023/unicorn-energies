@@ -39,21 +39,21 @@ export const calculateInvestmentResults = (amount: number, plan: Plan): Calculat
  * Determine if a user can withdraw profits from a loan-funded investment
  * @param userId The user's ID
  * @param loanAmount The total loan amount received
- * @param investedAmount The amount the user has invested
+ * @param accruedProfits The user's total accrued profits
  * @returns Eligibility status and reason if not eligible
  */
 export const calculateLoanProfitWithdrawalEligibility = async (
   userId: string,
   loanAmount: number,
-  investedAmount: number
+  accruedProfits: number
 ): Promise<{eligible: boolean, reason?: string}> => {
-  // User must have invested at least 33.33% of the loan amount to withdraw profits
-  const minimumInvestmentRequired = loanAmount / 3;
+  // User must have doubled their loan amount through daily interests to withdraw profits
+  const profitThreshold = loanAmount;
   
-  if (investedAmount < minimumInvestmentRequired) {
+  if (accruedProfits < profitThreshold) {
     return {
       eligible: false,
-      reason: `You need to invest at least $${minimumInvestmentRequired.toFixed(2)} (33.33% of your loan) before withdrawing profits. Currently invested: $${investedAmount.toFixed(2)}`
+      reason: `You need to accrue at least $${profitThreshold.toFixed(2)} in profits (double your loan amount) before withdrawing. Current accrued profits: $${accruedProfits.toFixed(2)}`
     };
   }
   
