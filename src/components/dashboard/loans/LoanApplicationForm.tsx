@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,17 +16,18 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader, AlertCircle } from "lucide-react";
+import { Loader, AlertCircle, Info } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
+// Updated form schema with minimum loan amount of $3,500
 const formSchema = z.object({
   amount: z
     .number()
-    .min(100, "Minimum loan amount is $100")
+    .min(3500, "Minimum loan amount is $3,500")
     .max(50000, "Maximum loan amount is $50,000"),
   proposedInvestment: z
     .number()
-    .min(33.34, "Minimum proposed investment amount is $33.34")
+    .min(1167, "Minimum proposed investment amount is $1,167 (33.33% of minimum loan)")
     .max(50000, "Maximum proposed investment amount is $50,000"),
   purpose: z
     .string()
@@ -46,14 +47,18 @@ const LoanApplicationForm = ({ onSubmit, submitting }: LoanApplicationFormProps)
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      amount: 1000,
-      proposedInvestment: 500,
+      amount: 3500,
+      proposedInvestment: 1200,
       purpose: "",
     },
   });
 
   const watchProposedInvestment = form.watch("proposedInvestment");
+  const watchAmount = form.watch("amount");
   const maxLoanAmount = watchProposedInvestment * 3;
+  
+  // Calculate commitment fee (0.00172% of loan amount)
+  const commitmentFee = (watchAmount * 0.0000172).toFixed(2);
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     // Include the proposed investment amount in the purpose
@@ -76,6 +81,14 @@ const LoanApplicationForm = ({ onSubmit, submitting }: LoanApplicationFormProps)
           <AlertDescription>
             Loans can only be used for investments and cannot be withdrawn. You must invest at least 33.33% of the loan 
             amount before you can withdraw any profits earned from investments made with the loan.
+          </AlertDescription>
+        </Alert>
+        
+        <Alert className="mb-4 bg-blue-500/10 text-blue-400 border-blue-500/30">
+          <Info className="h-4 w-4" />
+          <AlertDescription>
+            <strong>Loan Terms:</strong> A commitment fee of 0.00172% (${commitmentFee}) will be required before your loan can be approved. 
+            This fee will be automatically deducted from your wallet balance when you submit your application.
           </AlertDescription>
         </Alert>
         
@@ -162,7 +175,7 @@ const LoanApplicationForm = ({ onSubmit, submitting }: LoanApplicationFormProps)
                     Submitting...
                   </>
                 ) : (
-                  "Submit Application"
+                  `Submit Application (Commitment Fee: $${commitmentFee})`
                 )}
               </Button>
             </div>

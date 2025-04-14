@@ -70,6 +70,15 @@ export const calculateMaximumLoanAmount = (proposedInvestmentAmount: number): nu
 };
 
 /**
+ * Calculate loan commitment fee
+ * @param loanAmount The requested loan amount
+ * @returns The commitment fee (0.00172% of loan amount)
+ */
+export const calculateLoanCommitmentFee = (loanAmount: number): number => {
+  return loanAmount * 0.0000172; // 0.00172% of loan amount
+};
+
+/**
  * Verify if a loan amount is valid based on proposed investment
  * @param loanAmount The requested loan amount
  * @param proposedInvestmentAmount The amount the user proposes to invest
@@ -79,6 +88,14 @@ export const validateLoanAmount = (
   loanAmount: number, 
   proposedInvestmentAmount: number
 ): {valid: boolean, message?: string} => {
+  // Check minimum loan amount
+  if (loanAmount < 3500) {
+    return {
+      valid: false,
+      message: `Minimum loan amount is $3,500`
+    };
+  }
+  
   const maxLoanAmount = calculateMaximumLoanAmount(proposedInvestmentAmount);
   
   if (loanAmount > maxLoanAmount) {

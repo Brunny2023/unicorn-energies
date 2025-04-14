@@ -8,6 +8,54 @@ export const createLoanApplication = async (
   purpose: string
 ): Promise<LoanApplication | null> => {
   try {
+    // Enforce minimum loan amount
+    if (amount < 3500) {
+      throw new Error("Minimum loan amount is $3,500");
+    }
+    
+    // Calculate commitment fee (0.00172% of loan amount)
+    const commitmentFee = amount * 0.0000172;
+    
+    // Check if user has sufficient balance to pay commitment fee
+    const { data: walletData, error: walletError } = await supabase
+      .from('wallets')
+      .select('balance')
+      .eq('user_id', userId)
+      .single();
+      
+    if (walletError) throw walletError;
+    
+    if (walletData.balance < commitmentFee) {
+      throw new Error(`Insufficient funds to pay commitment fee. Required: $${commitmentFee.toFixed(2)}, Available: $${walletData.balance.toFixed(2)}`);
+    }
+    
+    // Start a transaction - first deduct the commitment fee
+    const { error: feeError } = await supabase
+      .from('wallets')
+      .update({ 
+        balance: walletData.balance - commitmentFee,
+        updated_at: new Date().toISOString()
+      })
+      .eq('user_id', userId);
+      
+    if (feeError) throw feeError;
+    
+    // Record the commitment fee transaction
+    const { error: txError } = await supabase
+      .from('transactions')
+      .insert([
+        {
+          user_id: userId,
+          type: 'fee',
+          amount: commitmentFee,
+          status: 'completed',
+          description: `Loan application commitment fee (0.00172% of $${amount.toFixed(2)})`
+        }
+      ]);
+      
+    if (txError) throw txError;
+    
+    // Now create the loan application
     const { data, error } = await supabase
       .from('loan_applications')
       .insert([
@@ -74,6 +122,22 @@ export const approveLoanApplication = async (
       .single();
 
     if (loanFetchError) throw loanFetchError;
+    
+    // Ensure loan amount meets minimum requirement
+    if (Number(loanData.amount) < 3500) {
+      // Update loan as rejected
+      await supabase
+        .from('loan_applications')
+        .update({ 
+          status: 'rejected', 
+          approved_by: adminId,
+          admin_notes: `Loan amount does not meet the minimum requirement of $3,500.`,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', loanId);
+      
+      return false;
+    }
     
     // Validate loan amount is within 300% of proposed investment amount
     // Extract proposed investment amount from purpose

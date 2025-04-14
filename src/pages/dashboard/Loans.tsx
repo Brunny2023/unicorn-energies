@@ -17,8 +17,9 @@ import {
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
-import { ChevronRight, Home, Wallet, BarChart, CreditCard } from "lucide-react";
+import { ChevronRight, Home, Wallet, BarChart, CreditCard, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Loans = () => {
   const { user } = useAuth();
@@ -32,6 +33,7 @@ const Loans = () => {
     rejected: 0,
     totalApproved: 0
   });
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (user?.id) {
@@ -86,22 +88,24 @@ const Loans = () => {
     }
 
     setSubmitting(true);
+    setError(null);
     try {
       const result = await createLoanApplication(user.id, amount, purpose);
       if (result) {
         toast({
           title: "Application Submitted",
-          description: "Your loan application has been submitted successfully",
+          description: "Your loan application has been submitted successfully. The commitment fee has been deducted from your wallet.",
         });
         fetchLoanApplications();
       } else {
         throw new Error("Failed to submit loan application");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error submitting loan application:", error);
+      setError(error.message || "There was an error submitting your loan application");
       toast({
         title: "Submission Failed",
-        description: "There was an error submitting your loan application",
+        description: error.message || "There was an error submitting your loan application",
         variant: "destructive",
       });
     } finally {
@@ -180,6 +184,28 @@ const Loans = () => {
           loading={loading} 
           stats={stats}
         />
+        
+        {/* Error display */}
+        {error && (
+          <Alert className="bg-red-500/10 text-red-500 border-red-500/30">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+        
+        {/* Loan Terms Information Alert */}
+        <Alert className="bg-blue-500/10 text-blue-400 border-blue-500/30">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            <strong>Loan Terms:</strong>
+            <ul className="list-disc pl-5 mt-2 space-y-1">
+              <li>Minimum loan amount: $3,500</li>
+              <li>A commitment fee of 0.00172% will be charged when submitting your application</li>
+              <li>Loan amount cannot exceed 300% of your proposed investment</li>
+              <li>You must invest at least 33.33% of your loan before withdrawing any profits</li>
+            </ul>
+          </AlertDescription>
+        </Alert>
         
         {/* Loan Application Form */}
         <LoanApplicationForm 
