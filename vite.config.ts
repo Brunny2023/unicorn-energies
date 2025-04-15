@@ -7,6 +7,17 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   base: "/", // Ensures correct asset path resolution for production
+  build: {
+    outDir: "dist",
+    assetsDir: "assets",
+    sourcemap: false,
+    // Ensure proper MIME types
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+      },
+    },
+  },
   server: {
     host: "::",
     port: 8080,

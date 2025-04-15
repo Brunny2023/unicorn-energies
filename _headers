@@ -1,0 +1,8 @@
+
+# All JavaScript files should be served with the correct MIME type
+/*.js
+  Content-Type: text/javascript
+
+# All CSS files should be served with the correct MIME type
+/*.css
+  Content-Type: text/css
