@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -12,16 +11,14 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useToast } from "@/hooks/use-toast";
-
-// Development mode flag - set to false for production
-const DEVELOPMENT_MODE = false;
+import { Shield } from "lucide-react";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
-const Login = () => {
+const AdminLogin = () => {
   const { user, signIn, loading, isAdmin } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -35,53 +32,43 @@ const Login = () => {
     },
   });
 
-  // Redirect to appropriate dashboard if already logged in
+  // Redirect to admin dashboard if already logged in as admin
   useEffect(() => {
-    if (user) {
-      if (isAdmin) {
-        navigate("/admin/dashboard");
-      } else {
-        navigate("/dashboard");
-      }
+    if (user && isAdmin) {
+      navigate("/admin/dashboard");
+    } else if (user && !isAdmin) {
+      // If logged in but not admin, show access denied
+      toast({
+        variant: "destructive",
+        title: "Access Denied",
+        description: "Your account does not have administrator privileges.",
+      });
     }
-  }, [user, isAdmin, navigate]);
-
-  const handleDevModeLogin = () => {
-    toast({
-      title: "Development Mode",
-      description: "Bypassing authentication and navigating to dashboard.",
-    });
-    
-    // Navigate to the dashboard instead of admin/dashboard
-    navigate("/dashboard");
-  };
+  }, [user, isAdmin, navigate, toast]);
 
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
     try {
       setIsSubmitting(true);
       
-      if (DEVELOPMENT_MODE) {
-        handleDevModeLogin();
-        return;
-      }
-      
-      // Normal authentication flow (used in production mode)
+      // Try to sign in - regular auth flow
       await signIn(data.email, data.password);
+      
+      // Navigate will happen in the useEffect if the user is an admin
     } catch (error) {
-      console.error("Error during login:", error);
+      console.error("Error during admin login:", error);
       toast({
         variant: "destructive",
         title: "Login failed",
-        description: "An unexpected error occurred. Please try again.",
+        description: "Invalid credentials or you don't have admin privileges.",
       });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // If we have a real authenticated user, redirect to the appropriate dashboard
-  if (user) {
-    return <Navigate to={isAdmin ? "/admin/dashboard" : "/dashboard"} />;
+  // If we have a real authenticated admin user, redirect to admin dashboard
+  if (user && isAdmin) {
+    return <Navigate to="/admin/dashboard" />;
   }
 
   return (
@@ -101,15 +88,13 @@ const Login = () => {
                   className="mx-auto h-16 w-16"
                 />
               </Link>
-              <h1 className="mt-4 text-2xl font-bold text-white">Sign in to your account</h1>
+              <div className="flex items-center justify-center mt-4">
+                <Shield className="h-5 w-5 text-unicorn-gold mr-2" />
+                <h1 className="text-2xl font-bold text-white">Administrator Login</h1>
+              </div>
               <p className="mt-2 text-gray-400">
-                Welcome back! Please enter your credentials to continue.
+                Secure access for administration staff only
               </p>
-              {DEVELOPMENT_MODE && (
-                <div className="mt-2 text-green-400 border border-green-400 p-2 rounded-md">
-                  Development Mode: Authentication bypass enabled
-                </div>
-              )}
             </div>
             
             <Form {...form}>
@@ -119,11 +104,11 @@ const Login = () => {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-white">Email</FormLabel>
+                      <FormLabel className="text-white">Admin Email</FormLabel>
                       <FormControl>
                         <Input
                           type="email"
-                          placeholder="your@email.com"
+                          placeholder="admin@unicorn-energies.com"
                           className="bg-unicorn-darkPurple/50 border-unicorn-gold/30 text-white placeholder:text-gray-500"
                           {...field}
                         />
@@ -138,15 +123,7 @@ const Login = () => {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <div className="flex items-center justify-between">
-                        <FormLabel className="text-white">Password</FormLabel>
-                        <Link
-                          to="/forgot-password"
-                          className="text-sm text-unicorn-gold hover:text-unicorn-gold/80"
-                        >
-                          Forgot password?
-                        </Link>
-                      </div>
+                      <FormLabel className="text-white">Password</FormLabel>
                       <FormControl>
                         <Input
                           type="password"
@@ -159,26 +136,6 @@ const Login = () => {
                   )}
                 />
 
-                {/* Development mode buttons, only shown in dev mode */}
-                {DEVELOPMENT_MODE ? (
-                  <div className="space-y-4">
-                    <Button 
-                      type="button"
-                      onClick={handleDevModeLogin}
-                      className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold"
-                    >
-                      Dev Mode Login (Skip Authentication)
-                    </Button>
-                    <Button 
-                      type="button"
-                      onClick={() => navigate("/admin/dashboard")}
-                      className="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold"
-                    >
-                      Dev Mode Admin Login
-                    </Button>
-                  </div>
-                ) : null}
-
                 <Button
                   type="submit"
                   className="w-full bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black font-semibold"
@@ -187,21 +144,16 @@ const Login = () => {
                   {(isSubmitting || loading) ? (
                     <div className="h-5 w-5 border-t-2 border-unicorn-black border-solid rounded-full animate-spin mr-2"></div>
                   ) : null}
-                  Sign in
+                  Sign in as Administrator
                 </Button>
               </form>
             </Form>
             
-            <div className="mt-6 text-center space-y-3">
+            <div className="mt-6 text-center">
               <p className="text-gray-400">
-                Don't have an account?{" "}
-                <Link to="/register" className="text-unicorn-gold hover:text-unicorn-gold/80 font-semibold">
-                  Sign up
-                </Link>
-              </p>
-              <p className="text-gray-400 text-sm">
-                <Link to="/admin-login" className="text-unicorn-gold/70 hover:text-unicorn-gold/90">
-                  Administrator Login
+                Looking for standard login?{" "}
+                <Link to="/login" className="text-unicorn-gold hover:text-unicorn-gold/80 font-semibold">
+                  Click here
                 </Link>
               </p>
             </div>
@@ -213,4 +165,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default AdminLogin;

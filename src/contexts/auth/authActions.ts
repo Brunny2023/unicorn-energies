@@ -3,7 +3,7 @@ import { signUp } from './actions/signupAction';
 import { signIn } from './actions/signinAction';
 import { signOut } from './actions/signoutAction';
 import { resetPassword, updatePassword } from './actions/passwordActions';
-import { checkIfAdmin } from './actions/adminAction';
+import { checkIfAdmin, createAdminUser, initializeSuperAdmin } from './actions/adminAction';
 
 export type { AuthToast, NavigateFunction } from './types';
 
@@ -13,5 +13,7 @@ export {
   signOut, 
   resetPassword, 
   updatePassword, 
-  checkIfAdmin 
+  checkIfAdmin,
+  createAdminUser,
+  initializeSuperAdmin
 };

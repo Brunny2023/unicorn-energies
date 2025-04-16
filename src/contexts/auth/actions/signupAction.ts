@@ -11,7 +11,7 @@ export const signUp = async (
   try {
     console.log("Starting signup process for:", email);
     
-    // Sign up the user using Supabase's built-in functionality
+    // Sign up the user using Supabase's built-in functionality with simplified options
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -35,6 +35,7 @@ export const signUp = async (
     });
 
     navigate("/login");
+    return { success: true };
   } catch (error: any) {
     console.error("Registration error:", error.message, error);
     
@@ -52,5 +53,7 @@ export const signUp = async (
       title: "Registration failed",
       description: errorMessage,
     });
+    
+    return { success: false, error: errorMessage };
   }
 };
