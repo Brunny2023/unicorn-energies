@@ -46,9 +46,8 @@ const Register = () => {
   });
 
   const onSubmit = async (data: z.infer<typeof registerSchema>) => {
-    // We're making captcha optional since it's been disabled on Supabase
-    // Only check captcha if verified is explicitly false, not undefined
-    if (verified === false) {
+    // Making captcha optional - if siteKey is set but not verified, show error
+    if (siteKey && verified === false) {
       setCaptchaError(true);
       return;
     }
@@ -159,17 +158,19 @@ const Register = () => {
                   )}
                 />
 
-                {/* CAPTCHA */}
-                <div className="space-y-4">
-                  <Captcha siteKey={siteKey} onVerify={handleVerify} />
-                  
-                  {captchaError && (
-                    <Alert variant="destructive">
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertDescription>Please complete the CAPTCHA verification</AlertDescription>
-                    </Alert>
-                  )}
-                </div>
+                {/* CAPTCHA - only show if siteKey is available */}
+                {siteKey && (
+                  <div className="space-y-4">
+                    <Captcha siteKey={siteKey} onVerify={handleVerify} />
+                    
+                    {captchaError && (
+                      <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription>Please complete the CAPTCHA verification</AlertDescription>
+                      </Alert>
+                    )}
+                  </div>
+                )}
 
                 <FormField
                   control={form.control}

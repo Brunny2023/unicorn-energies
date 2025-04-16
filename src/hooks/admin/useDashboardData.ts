@@ -1,14 +1,13 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { DashboardStats, TransactionItem, ChartDataPoint } from '@/types/admin';
 import { useSampleData } from './useSampleData';
 
 // Separate hook for fetching user count
 const useUserCount = () => {
-  const { supabase } = useAuth();
-  
   const fetchUserCount = async (): Promise<number> => {
     try {
       console.log("Fetching user count...");
@@ -33,8 +32,6 @@ const useUserCount = () => {
 
 // Separate hook for fetching investment data
 const useInvestmentsData = () => {
-  const { supabase } = useAuth();
-  
   const fetchActiveInvestmentsCount = async (): Promise<number> => {
     try {
       console.log("Fetching active investments count...");
@@ -60,8 +57,6 @@ const useInvestmentsData = () => {
 
 // Separate hook for fetching transactions data
 const useTransactionsData = () => {
-  const { supabase } = useAuth();
-  
   const fetchTransactionTotals = async (): Promise<{
     totalDeposits: number;
     totalWithdrawals: number;
@@ -244,8 +239,6 @@ const useTransactionsData = () => {
 
 // Separate hook for fetching wallet data
 const useWalletData = () => {
-  const { supabase } = useAuth();
-  
   const fetchWalletBalances = async (): Promise<number> => {
     try {
       console.log("Fetching wallet balances...");

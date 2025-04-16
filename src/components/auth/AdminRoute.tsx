@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 
-// Development mode flag - set to false for production
-const DEVELOPMENT_MODE = true; // Setting to true for debugging purposes
+// Development mode flag - set to true for debugging purposes
+const DEVELOPMENT_MODE = true;
 
 const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading, isAdmin } = useAuth();
@@ -12,6 +12,7 @@ const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   useEffect(() => {
     console.log("AdminRoute: User state", { user, isAdmin, loading });
     if (DEVELOPMENT_MODE) {
+      console.log("AdminRoute: Development mode enabled, showing content");
       setShowContent(true);
       return;
     }

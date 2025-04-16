@@ -41,7 +41,7 @@ export const signUp = async (
     toast({
       variant: "destructive",
       title: "Registration failed",
-      description: error.message || "Database error saving user",
+      description: error.message || "Error creating account",
     });
   }
 };
