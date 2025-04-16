@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -34,7 +33,7 @@ const Register = () => {
   const { siteKey, token, verified, handleVerify } = useCaptcha();
   const [captchaError, setCaptchaError] = useState(false);
   const [formSubmitting, setFormSubmitting] = useState(false);
-  
+
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -48,18 +47,38 @@ const Register = () => {
 
   const onSubmit = async (data: z.infer<typeof registerSchema>) => {
     try {
-      // Making captcha optional - if siteKey is set but not verified, show error
-      if (siteKey && verified === false) {
+      // Ensure CAPTCHA is verified
+      if (!verified || !token) {
         setCaptchaError(true);
         return;
       }
-      
       setCaptchaError(false);
+
       setFormSubmitting(true);
-      
-      await signUp(data.email, data.password, data.fullName);
+
+      // Include the CAPTCHA token in the payload
+      const payload = {
+        email: data.email,
+        password: data.password,
+        fullName: data.fullName,
+        captchaToken: token, // Add the CAPTCHA token
+      };
+
+      // Call the backend or Supabase endpoint
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Signup failed: ${response.statusText}`);
+      }
+
+      // Handle success
+      console.log("Signup successful");
     } catch (error) {
-      console.error("Form submission error:", error);
+      console.error("Error during signup:", error);
     } finally {
       setFormSubmitting(false);
     }
@@ -76,7 +95,7 @@ const Register = () => {
         <div className="relative mx-auto w-full max-w-md px-4 sm:px-6 lg:px-8">
           {/* Background glow effect */}
           <div className="absolute inset-0 rounded-2xl bg-unicorn-gold/10 blur-xl"></div>
-          
+
           <div className="relative p-8 bg-unicorn-darkPurple/90 rounded-xl border border-unicorn-gold/30 shadow-2xl">
             <div className="text-center mb-8">
               <Link to="/" className="inline-block">
@@ -91,7 +110,7 @@ const Register = () => {
                 Join UnicornEnergies and start your investment journey
               </p>
             </div>
-            
+
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <FormField
@@ -171,7 +190,7 @@ const Register = () => {
                 {siteKey && (
                   <div className="space-y-4">
                     <Captcha siteKey={siteKey} onVerify={handleVerify} />
-                    
+
                     {captchaError && (
                       <Alert variant="destructive">
                         <AlertCircle className="h-4 w-4" />
@@ -215,7 +234,7 @@ const Register = () => {
                 </Button>
               </form>
             </Form>
-            
+
             <div className="mt-6 text-center">
               <p className="text-gray-400">
                 Already have an account?{" "}
