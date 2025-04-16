@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 
 export type AuthToast = {
@@ -18,6 +19,23 @@ export const signUp = async (
   { toast, navigate }: { toast: AuthToast['toast'], navigate: NavigateFunction }
 ) => {
   try {
+    // Check if user already exists
+    const { data: existingUsers, error: checkError } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('email', email);
+      
+    if (checkError) {
+      console.error("Error checking existing user:", checkError);
+    } else if (existingUsers && existingUsers.length > 0) {
+      toast({
+        variant: "destructive",
+        title: "Registration failed",
+        description: "A user with this email already exists",
+      });
+      return;
+    }
+    
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -30,6 +48,24 @@ export const signUp = async (
 
     if (error) {
       throw error;
+    }
+
+    // Create profile record after successful signup
+    if (data.user) {
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert([
+          { 
+            id: data.user.id, 
+            email: email,
+            full_name: fullName,
+            role: 'user' 
+          }
+        ]);
+        
+      if (profileError) {
+        console.error("Error creating profile:", profileError);
+      }
     }
 
     toast({
@@ -69,11 +105,19 @@ export const signIn = async (
 
     // Redirect based on role
     if (data.user) {
-      const { data: profileData } = await supabase
+      console.log("User authenticated:", data.user);
+      
+      const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', data.user.id)
         .single();
+        
+      if (profileError) {
+        console.error("Error fetching user role:", profileError);
+        navigate("/dashboard");
+        return;
+      }
         
       if (profileData?.role === 'admin') {
         navigate("/admin/dashboard");
@@ -82,6 +126,7 @@ export const signIn = async (
       }
     }
   } catch (error: any) {
+    console.error("Login error:", error);
     toast({
       variant: "destructive",
       title: "Login failed",
@@ -94,6 +139,7 @@ export const signOut = async (
   { toast, navigate }: { toast: AuthToast['toast'], navigate: NavigateFunction }
 ) => {
   try {
+    console.log("Signing out...");
     await supabase.auth.signOut();
     toast({
       title: "Logged out",
@@ -101,6 +147,7 @@ export const signOut = async (
     });
     navigate("/");
   } catch (error: any) {
+    console.error("Logout error:", error);
     toast({
       variant: "destructive",
       title: "Error",
@@ -127,6 +174,7 @@ export const resetPassword = async (
       description: "Check your inbox for a password reset link.",
     });
   } catch (error: any) {
+    console.error("Password reset error:", error);
     toast({
       variant: "destructive",
       title: "Reset failed",
@@ -153,6 +201,7 @@ export const updatePassword = async (
 
     navigate("/dashboard");
   } catch (error: any) {
+    console.error("Password update error:", error);
     toast({
       variant: "destructive",
       title: "Update failed",
@@ -163,6 +212,7 @@ export const updatePassword = async (
 
 export const checkIfAdmin = async (userId: string): Promise<boolean> => {
   try {
+    console.log("Checking admin status for user:", userId);
     const { data, error } = await supabase
       .from('profiles')
       .select('role')
@@ -174,7 +224,9 @@ export const checkIfAdmin = async (userId: string): Promise<boolean> => {
       return false;
     }
     
-    return data?.role === 'admin';
+    const isAdmin = data?.role === 'admin';
+    console.log("Is admin?", isAdmin);
+    return isAdmin;
   } catch (error) {
     console.error("Error checking admin status:", error);
     return false;

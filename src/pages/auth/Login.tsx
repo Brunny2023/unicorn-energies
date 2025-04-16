@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +25,7 @@ const Login = () => {
   const { user, signIn, loading } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -32,6 +34,13 @@ const Login = () => {
       password: "",
     },
   });
+
+  // Redirect to dashboard if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
 
   const handleDevModeLogin = () => {
     toast({
@@ -44,13 +53,26 @@ const Login = () => {
   };
 
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
-    if (DEVELOPMENT_MODE) {
-      handleDevModeLogin();
-      return;
+    try {
+      setIsSubmitting(true);
+      
+      if (DEVELOPMENT_MODE) {
+        handleDevModeLogin();
+        return;
+      }
+      
+      // Normal authentication flow (used in production mode)
+      await signIn(data.email, data.password);
+    } catch (error) {
+      console.error("Error during login:", error);
+      toast({
+        variant: "destructive",
+        title: "Login failed",
+        description: "An unexpected error occurred. Please try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
-    
-    // Normal authentication flow (used in production mode)
-    await signIn(data.email, data.password);
   };
 
   // If we have a real authenticated user, redirect to dashboard
@@ -156,9 +178,9 @@ const Login = () => {
                 <Button
                   type="submit"
                   className="w-full bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black font-semibold"
-                  disabled={loading}
+                  disabled={isSubmitting || loading}
                 >
-                  {loading ? (
+                  {(isSubmitting || loading) ? (
                     <div className="h-5 w-5 border-t-2 border-unicorn-black border-solid rounded-full animate-spin mr-2"></div>
                   ) : null}
                   Sign in

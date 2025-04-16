@@ -36,9 +36,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("AuthProvider initialized");
+    
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log("Auth state changed:", event, session?.user?.id);
         setSession(session);
         setUser(session?.user ?? null);
         
@@ -55,6 +58,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("Got existing session:", session?.user?.id);
       setSession(session);
       setUser(session?.user ?? null);
       
@@ -67,32 +71,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     return () => {
+      console.log("Unsubscribing from auth state changes");
       subscription.unsubscribe();
     };
   }, []);
 
   const handleAdminCheck = async (userId: string) => {
+    console.log("Checking if user is admin:", userId);
     const isUserAdmin = await checkIfAdmin(userId);
+    console.log("Admin check result:", isUserAdmin);
     setIsAdmin(isUserAdmin);
   };
 
   const handleSignUp = async (email: string, password: string, fullName: string) => {
+    console.log("Handling sign up for:", email);
     return signUp(email, password, fullName, { toast, navigate });
   };
 
   const handleSignIn = async (email: string, password: string) => {
+    console.log("Handling sign in for:", email);
     return signIn(email, password, { toast, navigate });
   };
 
   const handleSignOut = async () => {
+    console.log("Handling sign out");
     return signOut({ toast, navigate });
   };
 
   const handleResetPassword = async (email: string) => {
+    console.log("Handling password reset for:", email);
     return resetPassword(email, { toast });
   };
 
   const handleUpdatePassword = async (newPassword: string) => {
+    console.log("Handling password update");
     return updatePassword(newPassword, { toast, navigate });
   };
 
