@@ -30,6 +30,11 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    allowedHosts: [
+      "9481aec2-d961-4dd7-8980-9431c1358349.lovableproject.com",
+      "unicorn-energies.lovable.app",
+      "unicorn-energies.com"
+    ],
   },
   plugins: [
     react(),
