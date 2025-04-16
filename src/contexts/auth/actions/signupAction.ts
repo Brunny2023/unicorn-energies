@@ -12,7 +12,6 @@ export const signUp = async (
     console.log("Starting signup process for:", email);
     
     // Sign up the user using Supabase's built-in functionality
-    // This will automatically trigger the database trigger to create the profile
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -37,11 +36,21 @@ export const signUp = async (
 
     navigate("/login");
   } catch (error: any) {
-    console.error("Registration error:", error);
+    console.error("Registration error:", error.message, error);
+    
+    // More descriptive error message to help diagnose issues
+    let errorMessage = "Error creating account";
+    
+    if (error.message) {
+      errorMessage = error.message;
+    } else if (error.code) {
+      errorMessage = `Error (${error.code}): ${error.message || "Unknown error"}`;
+    }
+    
     toast({
       variant: "destructive",
       title: "Registration failed",
-      description: error.message || "Error creating account",
+      description: errorMessage,
     });
   }
 };

@@ -1,9 +1,10 @@
 
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { Navigate } from "react-router-dom";
 
-// Development mode flag - set to true for debugging purposes
-const DEVELOPMENT_MODE = true;
+// Development mode flag - set to false for production
+const DEVELOPMENT_MODE = false;
 
 const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading, isAdmin } = useAuth();
@@ -28,6 +29,12 @@ const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <div className="h-16 w-16 border-t-4 border-unicorn-gold border-solid rounded-full animate-spin"></div>
       </div>
     );
+  }
+
+  // If not in dev mode and either not logged in or not admin, redirect to login
+  if (!DEVELOPMENT_MODE && (!user || !isAdmin)) {
+    console.log("AdminRoute: Access denied, redirecting to login");
+    return <Navigate to="/login" />;
   }
 
   return showContent ? <>{children}</> : (

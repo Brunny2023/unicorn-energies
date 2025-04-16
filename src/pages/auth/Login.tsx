@@ -22,7 +22,7 @@ const loginSchema = z.object({
 });
 
 const Login = () => {
-  const { user, signIn, loading } = useAuth();
+  const { user, signIn, loading, isAdmin } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,12 +35,16 @@ const Login = () => {
     },
   });
 
-  // Redirect to dashboard if already logged in
+  // Redirect to appropriate dashboard if already logged in
   useEffect(() => {
     if (user) {
-      navigate("/dashboard");
+      if (isAdmin) {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/dashboard");
+      }
     }
-  }, [user, navigate]);
+  }, [user, isAdmin, navigate]);
 
   const handleDevModeLogin = () => {
     toast({
@@ -75,9 +79,9 @@ const Login = () => {
     }
   };
 
-  // If we have a real authenticated user, redirect to dashboard
+  // If we have a real authenticated user, redirect to the appropriate dashboard
   if (user) {
-    return <Navigate to="/dashboard" />;
+    return <Navigate to={isAdmin ? "/admin/dashboard" : "/dashboard"} />;
   }
 
   return (

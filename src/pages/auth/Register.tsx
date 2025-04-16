@@ -33,6 +33,7 @@ const Register = () => {
   const { user, signUp, loading } = useAuth();
   const { siteKey, token, verified, handleVerify } = useCaptcha();
   const [captchaError, setCaptchaError] = useState(false);
+  const [formSubmitting, setFormSubmitting] = useState(false);
   
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -46,14 +47,22 @@ const Register = () => {
   });
 
   const onSubmit = async (data: z.infer<typeof registerSchema>) => {
-    // Making captcha optional - if siteKey is set but not verified, show error
-    if (siteKey && verified === false) {
-      setCaptchaError(true);
-      return;
+    try {
+      // Making captcha optional - if siteKey is set but not verified, show error
+      if (siteKey && verified === false) {
+        setCaptchaError(true);
+        return;
+      }
+      
+      setCaptchaError(false);
+      setFormSubmitting(true);
+      
+      await signUp(data.email, data.password, data.fullName);
+    } catch (error) {
+      console.error("Form submission error:", error);
+    } finally {
+      setFormSubmitting(false);
     }
-    
-    setCaptchaError(false);
-    await signUp(data.email, data.password, data.fullName);
   };
 
   if (user) {
@@ -197,9 +206,9 @@ const Register = () => {
                 <Button
                   type="submit"
                   className="w-full bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black font-semibold"
-                  disabled={loading}
+                  disabled={loading || formSubmitting}
                 >
-                  {loading ? (
+                  {(loading || formSubmitting) ? (
                     <div className="h-5 w-5 border-t-2 border-unicorn-black border-solid rounded-full animate-spin mr-2"></div>
                   ) : null}
                   Create Account
