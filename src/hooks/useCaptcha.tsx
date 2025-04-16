@@ -1,10 +1,7 @@
-
 import { useState } from 'react';
 
-// This is your site key
-const CLOUDFLARE_SITE_KEY = '0x4AAAAAABMldzeTZllunb-Z';
-
-// Using the global Turnstile interface without declaring it again
+// Replace the hardcoded site key with an environment variable
+const CLOUDFLARE_SITE_KEY = process.env.REACT_APP_CAPTCHA_SITE_KEY || '';
 
 export const useCaptcha = () => {
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
@@ -21,11 +18,11 @@ export const useCaptcha = () => {
   };
 
   return {
-    siteKey: CLOUDFLARE_SITE_KEY,
+    siteKey: CLOUDFLARE_SITE_KEY, // Updated to use the environment variable
     token: captchaToken,
     verified,
     handleVerify: handleCaptchaVerify,
-    resetCaptcha
+    resetCaptcha,
   };
 };
 
