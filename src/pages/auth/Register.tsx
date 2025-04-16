@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -32,8 +33,7 @@ const Register = () => {
   const { user, signUp, loading } = useAuth();
   const { siteKey, token, verified, handleVerify } = useCaptcha();
   const [captchaError, setCaptchaError] = useState(false);
-  const [formSubmitting, setFormSubmitting] = useState(false);
-
+  
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -46,42 +46,13 @@ const Register = () => {
   });
 
   const onSubmit = async (data: z.infer<typeof registerSchema>) => {
-    try {
-      // Ensure CAPTCHA is verified
-      if (!verified || !token) {
-        setCaptchaError(true);
-        return;
-      }
-      setCaptchaError(false);
-
-      setFormSubmitting(true);
-
-      // Include the CAPTCHA token in the payload
-      const payload = {
-        email: data.email,
-        password: data.password,
-        fullName: data.fullName,
-        captchaToken: token, // Add the CAPTCHA token
-      };
-
-      // Call the backend or Supabase endpoint
-      const response = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Signup failed: ${response.statusText}`);
-      }
-
-      // Handle success
-      console.log("Signup successful");
-    } catch (error) {
-      console.error("Error during signup:", error);
-    } finally {
-      setFormSubmitting(false);
+    if (!verified || !token) {
+      setCaptchaError(true);
+      return;
     }
+    
+    setCaptchaError(false);
+    await signUp(data.email, data.password, data.fullName);
   };
 
   if (user) {
@@ -95,7 +66,7 @@ const Register = () => {
         <div className="relative mx-auto w-full max-w-md px-4 sm:px-6 lg:px-8">
           {/* Background glow effect */}
           <div className="absolute inset-0 rounded-2xl bg-unicorn-gold/10 blur-xl"></div>
-
+          
           <div className="relative p-8 bg-unicorn-darkPurple/90 rounded-xl border border-unicorn-gold/30 shadow-2xl">
             <div className="text-center mb-8">
               <Link to="/" className="inline-block">
@@ -110,7 +81,7 @@ const Register = () => {
                 Join UnicornEnergies and start your investment journey
               </p>
             </div>
-
+            
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <FormField
@@ -186,19 +157,17 @@ const Register = () => {
                   )}
                 />
 
-                {/* CAPTCHA - only show if siteKey is available */}
-                {siteKey && (
-                  <div className="space-y-4">
-                    <Captcha siteKey={siteKey} onVerify={handleVerify} />
-
-                    {captchaError && (
-                      <Alert variant="destructive">
-                        <AlertCircle className="h-4 w-4" />
-                        <AlertDescription>Please complete the CAPTCHA verification</AlertDescription>
-                      </Alert>
-                    )}
-                  </div>
-                )}
+                {/* CAPTCHA */}
+                <div className="space-y-4">
+                  <Captcha siteKey={siteKey} onVerify={handleVerify} />
+                  
+                  {captchaError && (
+                    <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>Please complete the CAPTCHA verification</AlertDescription>
+                    </Alert>
+                  )}
+                </div>
 
                 <FormField
                   control={form.control}
@@ -225,16 +194,16 @@ const Register = () => {
                 <Button
                   type="submit"
                   className="w-full bg-unicorn-gold hover:bg-unicorn-darkGold text-unicorn-black font-semibold"
-                  disabled={loading || formSubmitting}
+                  disabled={loading}
                 >
-                  {(loading || formSubmitting) ? (
+                  {loading ? (
                     <div className="h-5 w-5 border-t-2 border-unicorn-black border-solid rounded-full animate-spin mr-2"></div>
                   ) : null}
                   Create Account
                 </Button>
               </form>
             </Form>
-
+            
             <div className="mt-6 text-center">
               <p className="text-gray-400">
                 Already have an account?{" "}
