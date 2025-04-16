@@ -2,7 +2,7 @@
 import { useState } from 'react';
 
 // This is your site key
-const CLOUDFLARE_SITE_KEY = '0x4AAAAAABGKmbd6_-BPt1A-';
+const CLOUDFLARE_SITE_KEY = '0x4AAAAAABMldzeTZllunb-Z';
 
 // Using the global Turnstile interface without declaring it again
 
