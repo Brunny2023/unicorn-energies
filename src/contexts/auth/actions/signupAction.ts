@@ -11,24 +11,8 @@ export const signUp = async (
   try {
     console.log("Starting signup process for:", email);
     
-    // Check if user already exists
-    const { data: existingUsers, error: checkError } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('email', email);
-      
-    if (checkError) {
-      console.error("Error checking existing user:", checkError);
-    } else if (existingUsers && existingUsers.length > 0) {
-      toast({
-        variant: "destructive",
-        title: "Registration failed",
-        description: "A user with this email already exists",
-      });
-      return;
-    }
-    
-    // Sign up the user
+    // Sign up the user using Supabase's built-in functionality
+    // This will automatically trigger the database trigger to create the profile
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -40,6 +24,7 @@ export const signUp = async (
     });
 
     if (error) {
+      console.error("Registration error from Supabase:", error);
       throw error;
     }
 
@@ -56,7 +41,7 @@ export const signUp = async (
     toast({
       variant: "destructive",
       title: "Registration failed",
-      description: error.message || "An error occurred during registration",
+      description: error.message || "Database error saving user",
     });
   }
 };

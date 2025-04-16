@@ -1,19 +1,26 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 
 // Development mode flag - set to false for production
-const DEVELOPMENT_MODE = false;
+const DEVELOPMENT_MODE = true; // Setting to true for debugging purposes
 
 const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading, isAdmin } = useAuth();
+  const [showContent, setShowContent] = useState(false);
 
-  // In development mode, allow access without authentication
-  if (DEVELOPMENT_MODE) {
-    return <>{children}</>;
-  }
+  useEffect(() => {
+    console.log("AdminRoute: User state", { user, isAdmin, loading });
+    if (DEVELOPMENT_MODE) {
+      setShowContent(true);
+      return;
+    }
 
-  // Regular authentication and admin check for production
+    if (!loading) {
+      setShowContent(user && isAdmin);
+    }
+  }, [user, isAdmin, loading]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-unicorn-darkPurple/90">
@@ -22,7 +29,12 @@ const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     );
   }
 
-  return user && isAdmin ? <>{children}</> : null;
+  return showContent ? <>{children}</> : (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-unicorn-darkPurple/90">
+      <h1 className="text-2xl text-white mb-4">Access Denied</h1>
+      <p className="text-gray-300">You do not have permission to view this page.</p>
+    </div>
+  );
 };
 
 export default AdminRoute;

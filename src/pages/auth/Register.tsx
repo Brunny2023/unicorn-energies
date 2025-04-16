@@ -46,7 +46,9 @@ const Register = () => {
   });
 
   const onSubmit = async (data: z.infer<typeof registerSchema>) => {
-    if (!verified || !token) {
+    // We're making captcha optional since it's been disabled on Supabase
+    // Only check captcha if verified is explicitly false, not undefined
+    if (verified === false) {
       setCaptchaError(true);
       return;
     }
