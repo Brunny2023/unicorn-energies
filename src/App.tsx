@@ -1,5 +1,6 @@
 
-import { Routes, Route, useEffect } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
 import NotFound from "./pages/NotFound";
 import PublicRoutes from "./routes/PublicRoutes";
 import DashboardRoutes from "./routes/DashboardRoutes";
