@@ -2,8 +2,8 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-// Mock transaction data interface
-interface Transaction {
+// Transaction data interface
+export interface Transaction {
   id: string;
   amount: number;
   type: string;
@@ -27,6 +27,7 @@ export const useTransactions = (userId?: string) => {
     const fetchTransactions = async () => {
       try {
         setLoading(true);
+        console.log("Fetching transactions for user:", userId);
         
         // Try to fetch from Supabase first
         try {
@@ -37,13 +38,17 @@ export const useTransactions = (userId?: string) => {
             .order('created_at', { ascending: false });
             
           if (error) {
+            console.error("Supabase error:", error);
             throw error;
           }
           
           if (data && data.length > 0) {
+            console.log("Found transactions in Supabase:", data.length);
             setTransactions(data as Transaction[]);
             setLoading(false);
             return;
+          } else {
+            console.log("No transactions found in Supabase, using mock data");
           }
         } catch (supabaseError) {
           console.error("Error fetching transactions from Supabase:", supabaseError);

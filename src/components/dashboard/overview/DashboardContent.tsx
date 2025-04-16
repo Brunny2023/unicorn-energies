@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import DashboardOverview from "./DashboardOverview";
 import DashboardTopNav from "../layout/DashboardTopNav";
-import OilTradingChart from "./OilTradingChart"; // Import the OilTradingChart component
+import OilTradingChart from "./OilTradingChart"; 
 import StatCards from "./StatCards";
 import RecentActivities from "./RecentActivities";
 import PortfolioSummary from "./PortfolioSummary";
@@ -91,7 +91,8 @@ const DashboardContent = () => {
               // Calculate stats from actual investments
               const activeInvestments = investments.filter(inv => inv.status === 'active');
               const totalInvested = activeInvestments.reduce((sum, inv) => sum + Number(inv.amount), 0);
-              const totalReturn = activeInvestments.reduce((sum, inv) => sum + Number(inv.expected_return), 0);
+              // Change here: use total_return instead of expected_return
+              const totalReturn = activeInvestments.reduce((sum, inv) => sum + Number(inv.total_return), 0);
               
               setInvestmentStats({
                 active_count: activeInvestments.length,
@@ -202,7 +203,7 @@ const DashboardContent = () => {
           loading={loading}
           investmentStats={investmentStats}
         />
-        <OilTradingChart /> {/* Added oil trading chart */}
+        <OilTradingChart />
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

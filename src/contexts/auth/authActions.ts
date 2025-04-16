@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 export type AuthToast = {
@@ -19,6 +18,8 @@ export const signUp = async (
   { toast, navigate }: { toast: AuthToast['toast'], navigate: NavigateFunction }
 ) => {
   try {
+    console.log("Starting signup process for:", email);
+    
     // Check if user already exists
     const { data: existingUsers, error: checkError } = await supabase
       .from('profiles')
@@ -36,6 +37,7 @@ export const signUp = async (
       return;
     }
     
+    // Sign up the user
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -50,24 +52,12 @@ export const signUp = async (
       throw error;
     }
 
-    // Create profile record after successful signup
-    if (data.user) {
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert([
-          { 
-            id: data.user.id, 
-            email: email,
-            full_name: fullName,
-            role: 'user' 
-          }
-        ]);
-        
-      if (profileError) {
-        console.error("Error creating profile:", profileError);
-      }
-    }
+    console.log("User signup successful:", data.user?.id);
 
+    // The profile creation is now handled by a Supabase trigger function
+    // No need to manually create the profile as it's done automatically when a user signs up
+    // This avoids the "database error saving user" issue
+    
     toast({
       title: "Account created!",
       description: "Please check your email for verification.",
@@ -75,6 +65,7 @@ export const signUp = async (
 
     navigate("/login");
   } catch (error: any) {
+    console.error("Registration error:", error);
     toast({
       variant: "destructive",
       title: "Registration failed",

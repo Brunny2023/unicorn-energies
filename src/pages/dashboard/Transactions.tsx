@@ -17,17 +17,37 @@ import {
 } from "@/components/ui/breadcrumb";
 import { ChevronRight } from "lucide-react";
 
+// Define the local Transaction type that matches the TransactionsTable component's expectations
+interface Transaction {
+  id: string;
+  amount: number;
+  type: string;
+  status: string;
+  description: string;
+  date: string;
+}
+
 const Transactions = () => {
   const { user } = useAuth();
   const { transactions, loading, error } = useTransactions(user?.id);
-  const [filteredTransactions, setFilteredTransactions] = useState(transactions);
+  const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
 
   useEffect(() => {
     if (transactions) {
-      let filtered = [...transactions];
+      // Map the transactions from useTransactions hook to match the expected Transaction interface
+      const formattedTransactions = transactions.map(tx => ({
+        id: tx.id,
+        amount: tx.amount,
+        type: tx.type,
+        status: tx.status,
+        description: tx.description || "",
+        date: tx.created_at // Map created_at to date
+      }));
+      
+      let filtered = [...formattedTransactions];
       
       // Apply search filter
       if (searchQuery) {
