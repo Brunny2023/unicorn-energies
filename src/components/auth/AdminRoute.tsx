@@ -2,8 +2,8 @@
 import React from "react";
 import { useAuth } from "@/contexts/AuthContext";
 
-// Development mode flag - set to false for production
-const DEVELOPMENT_MODE = false;
+// Development mode flag - set to true to easily test admin functionality
+const DEVELOPMENT_MODE = true;
 
 const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading, isAdmin } = useAuth();

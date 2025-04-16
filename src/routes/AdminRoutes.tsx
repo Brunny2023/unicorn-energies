@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import AdminRoute from "@/components/auth/AdminRoute";
 
 // Admin pages
@@ -17,6 +17,12 @@ import EmailTemplateEditor from "@/pages/admin/EmailTemplateEditor";
 
 const AdminRoutes = () => (
   <Routes>
+    {/* Redirect from /admin to /admin/dashboard */}
+    <Route
+      path="/"
+      element={<Navigate to="/admin/dashboard" replace />}
+    />
+    
     {/* Admin Pages */}
     <Route
       path="/dashboard"
