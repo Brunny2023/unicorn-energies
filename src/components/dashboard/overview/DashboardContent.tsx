@@ -2,15 +2,13 @@
 import React, { useState, useEffect } from "react";
 import DashboardOverview from "./DashboardOverview";
 import DashboardTopNav from "../layout/DashboardTopNav";
-import OilTradingChart from "./OilTradingChart"; 
-import StatCards from "./StatCards";
-import RecentActivities from "./RecentActivities";
-import PortfolioSummary from "./PortfolioSummary";
-import TransactionsPanel from "./TransactionsPanel";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTransactions } from "@/hooks/useTransactions";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import WalletSection from "./sections/WalletSection";
+import PortfolioSection from "./sections/PortfolioSection";
+import ActivitySection from "./sections/ActivitySection";
 
 const DashboardContent = () => {
   const { user } = useAuth();
@@ -91,7 +89,6 @@ const DashboardContent = () => {
               // Calculate stats from actual investments
               const activeInvestments = investments.filter(inv => inv.status === 'active');
               const totalInvested = activeInvestments.reduce((sum, inv) => sum + Number(inv.amount), 0);
-              // Change here: use total_return instead of expected_return
               const totalReturn = activeInvestments.reduce((sum, inv) => sum + Number(inv.total_return), 0);
               
               setInvestmentStats({
@@ -190,7 +187,7 @@ const DashboardContent = () => {
       <DashboardTopNav />
       
       {/* Stats and overview cards */}
-      <StatCards 
+      <WalletSection 
         loading={loading}
         walletData={walletData}
         investmentStats={investmentStats}
@@ -198,21 +195,15 @@ const DashboardContent = () => {
       />
       
       {/* Main dashboard content */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <PortfolioSummary 
-          loading={loading}
-          investmentStats={investmentStats}
-        />
-        <OilTradingChart />
-      </div>
+      <PortfolioSection 
+        loading={loading}
+        investmentStats={investmentStats}
+      />
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <TransactionsPanel 
-          loading={loading || transactionsLoading}
-          transactions={transactions}
-        />
-        <RecentActivities />
-      </div>
+      <ActivitySection 
+        loading={loading || transactionsLoading}
+        transactions={transactions}
+      />
       
       <DashboardOverview />
     </div>

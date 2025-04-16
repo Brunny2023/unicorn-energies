@@ -65,6 +65,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Check if user is admin
       if (session?.user) {
         handleAdminCheck(session.user.id);
+      } else {
+        console.log("No session found during initialization");
       }
       
       setLoading(false);

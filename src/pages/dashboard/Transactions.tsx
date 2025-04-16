@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { useAuth } from "@/contexts/AuthContext";
-import { useTransactions } from "@/hooks/useTransactions";
+import { useTransactions, Transaction as ApiTransaction } from "@/hooks/useTransactions";
 import TransactionsTable from "@/components/dashboard/transactions/TransactionsTable";
 import TransactionFilters from "@/components/dashboard/transactions/TransactionFilters";
 import DashboardTopNav from "@/components/dashboard/layout/DashboardTopNav";
@@ -38,7 +38,7 @@ const Transactions = () => {
   useEffect(() => {
     if (transactions) {
       // Map the transactions from useTransactions hook to match the expected Transaction interface
-      const formattedTransactions = transactions.map(tx => ({
+      const formattedTransactions: Transaction[] = transactions.map((tx: ApiTransaction) => ({
         id: tx.id,
         amount: tx.amount,
         type: tx.type,
