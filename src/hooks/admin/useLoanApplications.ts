@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { LoanApplication } from "@/types/investment";
 import { getAllLoanApplications } from "@/utils/loanUtils";
@@ -21,23 +20,28 @@ export const useLoanApplications = () => {
     pending: 0,
     approved: 0,
     rejected: 0,
-    totalAmount: 0
+    totalAmount: 0,
   });
   const [processingId, setProcessingId] = useState<string | null>(null);
 
-  const fetchApplications = async () => {
+  const fetchApplications = async (retryCount = 3) => {
     setLoading(true);
     try {
       const data = await getAllLoanApplications();
       setApplications(data);
       calculateStats(data);
     } catch (error) {
-      console.error("Error fetching loan applications:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load loan applications",
-        variant: "destructive",
-      });
+      if (retryCount > 0) {
+        console.warn("Retrying fetchApplications...");
+        fetchApplications(retryCount - 1); // Retry the fetch
+      } else {
+        console.error("Error fetching loan applications:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load loan applications after multiple attempts",
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -45,9 +49,9 @@ export const useLoanApplications = () => {
 
   const calculateStats = (data: LoanApplication[]) => {
     const total = data.length;
-    const pending = data.filter(app => app.status === 'pending').length;
-    const approved = data.filter(app => app.status === 'approved').length;
-    const rejected = data.filter(app => app.status === 'rejected').length;
+    const pending = data.filter((app) => app.status === "pending").length;
+    const approved = data.filter((app) => app.status === "approved").length;
+    const rejected = data.filter((app) => app.status === "rejected").length;
     const totalAmount = data.reduce((sum, app) => sum + Number(app.amount), 0);
 
     setStats({
@@ -55,7 +59,7 @@ export const useLoanApplications = () => {
       pending,
       approved,
       rejected,
-      totalAmount
+      totalAmount,
     });
   };
 
@@ -69,6 +73,6 @@ export const useLoanApplications = () => {
     stats,
     processingId,
     setProcessingId,
-    fetchApplications
+    fetchApplications,
   };
 };
