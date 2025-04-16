@@ -1,3 +1,3 @@
 
-// Development mode flag - set to true to easily test functionality
-export const DEVELOPMENT_MODE = true;
+// Development mode flag - set to false for production
+export const DEVELOPMENT_MODE = false;
