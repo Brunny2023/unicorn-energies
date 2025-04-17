@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 
-// Development mode flag - set to true to bypass authentication checks
+// Development mode flag - enables bypassing authentication for testing
 const DEVELOPMENT_MODE = true;
 
 const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {

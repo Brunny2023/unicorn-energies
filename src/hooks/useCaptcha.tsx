@@ -1,6 +1,7 @@
+
 import { useState } from 'react';
 
-// Replace the hardcoded site key with an environment variable
+// Use an empty string for site key to avoid process reference
 const CLOUDFLARE_SITE_KEY = '';
 
 export const useCaptcha = () => {

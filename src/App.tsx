@@ -1,6 +1,5 @@
 
 import { useEffect } from "react";
-import { BrowserRouter as Router } from "react-router-dom";
 import PublicRoutes from "@/routes/PublicRoutes";
 import DashboardRoutes from "@/routes/DashboardRoutes";
 import AdminRoutes from "@/routes/AdminRoutes";
@@ -15,14 +14,12 @@ function App() {
   }, []);
 
   return (
-    <Router>
-      <AuthProvider>
-        <PublicRoutes />
-        <DashboardRoutes />
-        <AdminRoutes />
-        <Toaster />
-      </AuthProvider>
-    </Router>
+    <AuthProvider>
+      <PublicRoutes />
+      <DashboardRoutes />
+      <AdminRoutes />
+      <Toaster />
+    </AuthProvider>
   );
 }
 
