@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -11,9 +12,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useToast } from "@/hooks/use-toast";
-
-// Development mode flag - set to true for testing
-const DEVELOPMENT_MODE = true;
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -33,23 +31,7 @@ const Login = () => {
     },
   });
 
-  const handleDevModeLogin = () => {
-    toast({
-      title: "Development Mode",
-      description: "Bypassing authentication and navigating to dashboard.",
-    });
-    
-    // Navigate to the dashboard instead of admin/dashboard
-    navigate("/dashboard");
-  };
-
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
-    if (DEVELOPMENT_MODE) {
-      handleDevModeLogin();
-      return;
-    }
-    
-    // Normal authentication flow (used in production mode)
     await signIn(data.email, data.password);
   };
 
@@ -79,11 +61,6 @@ const Login = () => {
               <p className="mt-2 text-gray-400">
                 Welcome back! Please enter your credentials to continue.
               </p>
-              {DEVELOPMENT_MODE && (
-                <div className="mt-2 text-green-400 border border-green-400 p-2 rounded-md">
-                  Development Mode: Authentication bypass enabled
-                </div>
-              )}
             </div>
             
             <Form {...form}>
@@ -132,26 +109,6 @@ const Login = () => {
                     </FormItem>
                   )}
                 />
-
-                {/* Development mode buttons, only shown in dev mode */}
-                {DEVELOPMENT_MODE ? (
-                  <div className="space-y-4">
-                    <Button 
-                      type="button"
-                      onClick={handleDevModeLogin}
-                      className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold"
-                    >
-                      Dev Mode Login (Skip Authentication)
-                    </Button>
-                    <Button 
-                      type="button"
-                      onClick={() => navigate("/admin/dashboard")}
-                      className="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold"
-                    >
-                      Dev Mode Admin Login
-                    </Button>
-                  </div>
-                ) : null}
 
                 <Button
                   type="submit"

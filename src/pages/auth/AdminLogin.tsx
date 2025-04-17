@@ -18,9 +18,6 @@ const loginSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
-// Development mode flag - enables bypassing authentication for testing
-const DEVELOPMENT_MODE = true;
-
 const AdminLogin = () => {
   const { user, signIn, loading, isAdmin } = useAuth();
   const { toast } = useToast();
@@ -35,15 +32,8 @@ const AdminLogin = () => {
     },
   });
 
-  // Handle development mode direct access
+  // Check authentication and admin status
   useEffect(() => {
-    if (DEVELOPMENT_MODE) {
-      console.log("AdminLogin: Development mode enabled, redirecting to admin dashboard");
-      navigate("/admin/dashboard");
-      return;
-    }
-    
-    // Normal mode - check authentication
     if (user && isAdmin) {
       navigate("/admin/dashboard");
     } else if (user && !isAdmin) {
@@ -59,12 +49,6 @@ const AdminLogin = () => {
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
     try {
       setIsSubmitting(true);
-      
-      if (DEVELOPMENT_MODE) {
-        // Just redirect in dev mode
-        navigate("/admin/dashboard");
-        return;
-      }
       
       // Try to sign in - regular auth flow
       await signIn(data.email, data.password);
@@ -84,11 +68,6 @@ const AdminLogin = () => {
 
   // If we have a real authenticated admin user, redirect to admin dashboard
   if (user && isAdmin) {
-    return <Navigate to="/admin/dashboard" />;
-  }
-  
-  // In development mode, auto-redirect to admin dashboard
-  if (DEVELOPMENT_MODE) {
     return <Navigate to="/admin/dashboard" />;
   }
 

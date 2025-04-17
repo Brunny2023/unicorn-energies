@@ -3,17 +3,8 @@ import React from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 
-// Development mode flag - enables bypassing authentication for testing
-const DEVELOPMENT_MODE = true;
-
 const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading, isAdmin } = useAuth();
-
-  // In development mode, always render content
-  if (DEVELOPMENT_MODE) {
-    console.log("AdminRoute: Development mode enabled, bypassing auth check");
-    return <>{children}</>;
-  }
 
   // Loading state
   if (loading) {
