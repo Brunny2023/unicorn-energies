@@ -9,8 +9,6 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
-import Captcha from '@/components/ui/Captcha';
-import useCaptcha from '@/hooks/useCaptcha';
 import { Link } from 'react-router-dom';
 
 const formSchema = z.object({
@@ -29,7 +27,6 @@ interface ContactFormProps {
 const ContactForm = ({ onSubmit }: ContactFormProps) => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const captcha = useCaptcha();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -42,20 +39,10 @@ const ContactForm = ({ onSubmit }: ContactFormProps) => {
   });
 
   const handleSubmit = async (values: FormValues) => {
-    if (!captcha.verified) {
-      toast({
-        variant: "destructive",
-        title: "CAPTCHA Required",
-        description: "Please complete the CAPTCHA verification first.",
-      });
-      return;
-    }
-
     setIsSubmitting(true);
     try {
       await onSubmit(values);
       form.reset();
-      captcha.resetCaptcha && captcha.resetCaptcha();
       toast({
         title: 'Message Sent',
         description: 'Your message has been sent successfully. We\'ll get back to you soon.',
@@ -134,17 +121,13 @@ const ContactForm = ({ onSubmit }: ContactFormProps) => {
           )}
         />
         
-        <div className="mt-4">
-          <Captcha siteKey={captcha.siteKey} onVerify={captcha.handleVerify} />
-        </div>
-        
         <div className="text-xs text-gray-500 mt-3">
           By submitting this form, you agree to our <Link to="/terms" className="text-investment-navy hover:underline">Terms of Service</Link> and <Link to="/privacy" className="text-investment-navy hover:underline">Privacy Policy</Link>.
         </div>
         
         <Button 
           type="submit" 
-          disabled={isSubmitting || !captcha.verified}
+          disabled={isSubmitting}
           className="w-full bg-investment-navy hover:bg-investment-navy/90"
         >
           {isSubmitting ? (

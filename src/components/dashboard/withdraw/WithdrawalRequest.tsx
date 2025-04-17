@@ -4,8 +4,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
 import { processWithdrawal } from "@/utils/wallet";
 import { useAuth } from "@/contexts/AuthContext";
-import Captcha from "@/components/ui/Captcha";
-import useCaptcha from "@/hooks/useCaptcha";
 import { WithdrawalDestination } from "@/types/investment";
 
 interface WithdrawalRequestProps {
@@ -38,7 +36,6 @@ const WithdrawalRequest: React.FC<WithdrawalRequestProps> = ({
   onSuccess
 }) => {
   const { user } = useAuth();
-  const captcha = useCaptcha();
 
   const handleWithdraw = async () => {
     if (!withdrawalRequest || !withdrawalRequest.eligible) {
@@ -51,16 +48,6 @@ const WithdrawalRequest: React.FC<WithdrawalRequestProps> = ({
         variant: "destructive",
         title: "Withdrawal Destination Required",
         description: "Please select or add a withdrawal destination.",
-      });
-      return;
-    }
-
-    // Bypass captcha check in dev mode
-    if (!devMode && !captcha.verified) {
-      toast({
-        variant: "destructive",
-        title: "CAPTCHA Required",
-        description: "Please complete the CAPTCHA verification first.",
       });
       return;
     }
@@ -87,10 +74,6 @@ const WithdrawalRequest: React.FC<WithdrawalRequestProps> = ({
         });
         // Refresh wallet data after withdrawal
         fetchWalletData();
-        // Reset captcha
-        if (captcha.resetCaptcha) {
-          captcha.resetCaptcha();
-        }
         // Call onSuccess callback if provided
         if (onSuccess) {
           onSuccess();
@@ -163,14 +146,9 @@ const WithdrawalRequest: React.FC<WithdrawalRequestProps> = ({
         </div>
       </div>
       
-      {/* Bypassing captcha in development mode */}
-      <div className="mt-4">
-        {!devMode && <Captcha siteKey={captcha.siteKey} onVerify={captcha.handleVerify} />}
-      </div>
-      
       <Button
         onClick={handleWithdraw}
-        disabled={processing || (!devMode && !captcha.verified)}
+        disabled={processing}
         className="w-full mt-4 bg-green-500 hover:bg-green-600 text-white"
       >
         {processing ? (

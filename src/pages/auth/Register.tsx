@@ -11,8 +11,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Checkbox } from "@/components/ui/checkbox";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import Captcha from "@/components/ui/Captcha";
-import useCaptcha from "@/hooks/useCaptcha";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 
@@ -31,8 +29,6 @@ const registerSchema = z.object({
 
 const Register = () => {
   const { user, signUp, loading } = useAuth();
-  const { siteKey, token, verified, handleVerify } = useCaptcha();
-  const [captchaError, setCaptchaError] = useState(false);
   
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -46,12 +42,6 @@ const Register = () => {
   });
 
   const onSubmit = async (data: z.infer<typeof registerSchema>) => {
-    if (!verified || !token) {
-      setCaptchaError(true);
-      return;
-    }
-    
-    setCaptchaError(false);
     await signUp(data.email, data.password, data.fullName);
   };
 
@@ -156,18 +146,6 @@ const Register = () => {
                     </FormItem>
                   )}
                 />
-
-                {/* CAPTCHA */}
-                <div className="space-y-4">
-                  <Captcha siteKey={siteKey} onVerify={handleVerify} />
-                  
-                  {captchaError && (
-                    <Alert variant="destructive">
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertDescription>Please complete the CAPTCHA verification</AlertDescription>
-                    </Alert>
-                  )}
-                </div>
 
                 <FormField
                   control={form.control}

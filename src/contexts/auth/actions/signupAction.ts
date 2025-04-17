@@ -19,6 +19,7 @@ export const signUp = async (
         data: {
           full_name: fullName,
         },
+        emailRedirectTo: window.location.origin + '/login',
       },
     });
 
@@ -31,7 +32,7 @@ export const signUp = async (
     
     toast({
       title: "Account created!",
-      description: "Please check your email for verification.",
+      description: "You can now log in with your credentials.",
     });
 
     navigate("/login");
