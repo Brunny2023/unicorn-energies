@@ -1,25 +1,21 @@
 
 import { useState } from 'react';
 
-// Use an empty string for site key to avoid process reference
-const CLOUDFLARE_SITE_KEY = '';
-
+// This is now a dummy hook that always returns "verified: true"
 export const useCaptcha = () => {
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-  const [verified, setVerified] = useState(true); // Always set verified to true by default
-
-  const handleCaptchaVerify = (token: string) => {
-    setCaptchaToken(token);
-    setVerified(true);
+  const [captchaToken, setCaptchaToken] = useState<string | null>("dummy-token");
+  
+  // Dummy functions that do nothing but maintain the API
+  const handleCaptchaVerify = () => {
+    console.log("Captcha verification bypassed");
   };
 
   const resetCaptcha = () => {
-    setCaptchaToken(null);
-    // Keep verified as true
+    console.log("Captcha reset bypassed");
   };
 
   return {
-    siteKey: CLOUDFLARE_SITE_KEY,
+    siteKey: "no-site-key-needed",
     token: captchaToken,
     verified: true, // Always return true
     handleVerify: handleCaptchaVerify,

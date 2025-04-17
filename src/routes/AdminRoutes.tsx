@@ -17,15 +17,11 @@ import EmailTemplateEditor from "@/pages/admin/EmailTemplateEditor";
 
 const AdminRoutes = () => (
   <Routes>
-    {/* Redirect from /admin to /admin/dashboard */}
-    <Route
-      path="/"
-      element={<Navigate to="/admin/dashboard" replace />}
-    />
+    {/* Admin routes */}
+    <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
     
-    {/* Admin Pages */}
     <Route
-      path="/dashboard"
+      path="/admin/dashboard"
       element={
         <AdminRoute>
           <AdminDashboard />
@@ -33,7 +29,7 @@ const AdminRoutes = () => (
       }
     />
     <Route
-      path="/users"
+      path="/admin/users"
       element={
         <AdminRoute>
           <AdminUsers />
@@ -41,7 +37,7 @@ const AdminRoutes = () => (
       }
     />
     <Route
-      path="/transactions"
+      path="/admin/transactions"
       element={
         <AdminRoute>
           <AdminTransactions />
@@ -49,7 +45,7 @@ const AdminRoutes = () => (
       }
     />
     <Route
-      path="/tickets"
+      path="/admin/tickets"
       element={
         <AdminRoute>
           <AdminTickets />
@@ -57,7 +53,7 @@ const AdminRoutes = () => (
       }
     />
     <Route
-      path="/tickets/:id"
+      path="/admin/tickets/:id"
       element={
         <AdminRoute>
           <AdminTicketDetails />
@@ -65,7 +61,7 @@ const AdminRoutes = () => (
       }
     />
     <Route
-      path="/payment-connections"
+      path="/admin/payment-connections"
       element={
         <AdminRoute>
           <AdminPaymentConnections />
@@ -73,7 +69,7 @@ const AdminRoutes = () => (
       }
     />
     <Route
-      path="/broadcast"
+      path="/admin/broadcast"
       element={
         <AdminRoute>
           <AdminBroadcastMessages />
@@ -81,7 +77,7 @@ const AdminRoutes = () => (
       }
     />
     <Route
-      path="/settings"
+      path="/admin/settings"
       element={
         <AdminRoute>
           <AdminSettings />
@@ -89,7 +85,7 @@ const AdminRoutes = () => (
       }
     />
     <Route
-      path="/settings/email-templates/:templateId"
+      path="/admin/settings/email-templates/:templateId"
       element={
         <AdminRoute>
           <EmailTemplateEditor />
@@ -97,7 +93,7 @@ const AdminRoutes = () => (
       }
     />
     <Route
-      path="/loan-applications"
+      path="/admin/loan-applications"
       element={
         <AdminRoute>
           <AdminLoanApplications />
