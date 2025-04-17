@@ -11,7 +11,7 @@ export const signUp = async (
   try {
     console.log("Starting signup process for:", email);
     
-    // Sign up the user using Supabase's built-in functionality with simplified options
+    // Sign up the user using Supabase's built-in functionality with simplified options - no captcha
     const { data, error } = await supabase.auth.signUp({
       email,
       password,

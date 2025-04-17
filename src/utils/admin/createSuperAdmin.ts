@@ -11,7 +11,7 @@ export async function createSuperAdmin() {
       .from('profiles')
       .select('id, email, role')
       .eq('email', 'GlobalUnicorns@admin.com')
-      .single();
+      .maybeSingle();
     
     if (checkError) {
       console.log("Error checking for existing admin:", checkError);
@@ -56,7 +56,7 @@ export async function createSuperAdmin() {
         console.log("Super admin created successfully");
       }
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error creating super admin:", error);
   }
 }

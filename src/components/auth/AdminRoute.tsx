@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 
@@ -8,21 +8,14 @@ const DEVELOPMENT_MODE = true;
 
 const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading, isAdmin } = useAuth();
-  const [showContent, setShowContent] = useState(false);
 
-  useEffect(() => {
-    console.log("AdminRoute: User state", { user, isAdmin, loading });
-    if (DEVELOPMENT_MODE) {
-      console.log("AdminRoute: Development mode enabled, showing content");
-      setShowContent(true);
-      return;
-    }
+  // In development mode, always render content
+  if (DEVELOPMENT_MODE) {
+    console.log("AdminRoute: Development mode enabled, bypassing auth check");
+    return <>{children}</>;
+  }
 
-    if (!loading) {
-      setShowContent(user && isAdmin);
-    }
-  }, [user, isAdmin, loading]);
-
+  // Loading state
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-unicorn-darkPurple/90">
@@ -31,18 +24,14 @@ const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     );
   }
 
-  // If not in dev mode and either not logged in or not admin, redirect to login
-  if (!DEVELOPMENT_MODE && (!user || !isAdmin)) {
+  // If not logged in or not admin, redirect to login
+  if (!user || !isAdmin) {
     console.log("AdminRoute: Access denied, redirecting to login");
     return <Navigate to="/admin-login" />;
   }
 
-  return showContent ? <>{children}</> : (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-unicorn-darkPurple/90">
-      <h1 className="text-2xl text-white mb-4">Access Denied</h1>
-      <p className="text-gray-300">You do not have permission to view this page.</p>
-    </div>
-  );
+  // User is authenticated and is an admin
+  return <>{children}</>;
 };
 
 export default AdminRoute;

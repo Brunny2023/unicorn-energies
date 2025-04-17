@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -13,8 +12,8 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useToast } from "@/hooks/use-toast";
 
-// Development mode flag - set to false for production
-const DEVELOPMENT_MODE = false;
+// Development mode flag - set to true for testing
+const DEVELOPMENT_MODE = true;
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
