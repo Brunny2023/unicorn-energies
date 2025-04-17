@@ -14,7 +14,7 @@ import WhyChooseUsSection from "@/components/home/WhyChooseUsSection";
 import CtaSection from "@/components/home/CtaSection";
 import Navbar from "@/components/layout/Navbar";
 import { setupConsoleFilters } from "@/utils/consoleErrorFilter";
-import { Home, Menu } from "lucide-react";
+import { Home } from "lucide-react";
 
 const ServiceHighlights = () => {
   return (
