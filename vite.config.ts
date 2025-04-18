@@ -4,14 +4,12 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: "/", // Ensures correct asset path resolution for production
+  base: "/", 
   build: {
     outDir: "dist",
     assetsDir: "assets",
-    sourcemap: true, // Enable sourcemaps for better debugging
-    // Ensure proper MIME types and chunks
+    sourcemap: true,
     rollupOptions: {
       output: {
         manualChunks: {
